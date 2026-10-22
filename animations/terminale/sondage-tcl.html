@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;box-sizing:border-box}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head><body>
+<title>La marge d'erreur d'un sondage</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root {
+  --papier: #f7f8fa; --carte: #ffffff; --encre: #1b1f24; --discret: #5d6672; --filet: #d9dee5; --grille: #e7eaef;
+  --bleu: #1a56db; --orange: #f07800; --rouge: #d81b2c; --violet: #7b2cbf; --vert: #0b8a3a;
+  --bleu-fond: rgba(26, 86, 219, 0.16); --orange-fond: rgba(240, 120, 0, 0.18); --rouge-fond: rgba(216, 27, 44, 0.12);
+  --math: "STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --ui: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #252b34;
+    --bleu: #6fa3f0; --orange: #ffa040; --rouge: #ff6b6b; --violet: #c49bff; --vert: #5fd38a;
+    --bleu-fond: rgba(111, 163, 240, 0.22); --orange-fond: rgba(255, 160, 64, 0.22); --rouge-fond: rgba(255, 107, 107, 0.16); color-scheme: dark; }
+}
+:root[data-theme="dark"] { --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #252b34;
+  --bleu: #6fa3f0; --orange: #ffa040; --rouge: #ff6b6b; --violet: #c49bff; --vert: #5fd38a;
+  --bleu-fond: rgba(111, 163, 240, 0.22); --orange-fond: rgba(255, 160, 64, 0.22); --rouge-fond: rgba(255, 107, 107, 0.16); color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--papier); color: var(--encre); font-family: var(--ui); font-size: 15px; line-height: 1.5; }
+.page { max-width: 960px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 40px; display: grid; gap: 12px; }
+.niveau { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--discret); }
+h1 { font-family: var(--math); font-weight: 600; font-size: clamp(26px, 4vw, 36px); line-height: 1.15; margin: 0; text-wrap: balance; }
+.chapeau { margin: 0; color: var(--discret); max-width: 72ch; }
+.m { font-family: var(--math); font-style: italic; }
+.barre { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; font-size: 14px; }
+select, input[type=number] { font: inherit; font-size: 14px; padding: 4px 8px; border-radius: 7px; border: 1px solid var(--filet); background: var(--carte); color: var(--encre); }
+input[type=number] { width: 4.2em; }
+input[type=range] { accent-color: var(--bleu); }
+button { font: inherit; font-size: 14px; font-weight: 500; border-radius: 7px; padding: 5px 12px; cursor: pointer; border: 1px solid var(--bleu); background: transparent; color: var(--bleu); }
+button.principal { background: var(--bleu); color: var(--carte); }
+button:disabled { opacity: .45; cursor: default; }
+button:focus-visible, select:focus-visible, input:focus-visible, summary:focus-visible, .poignee:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
+.onglets { display: flex; gap: 6px; flex-wrap: wrap; }
+.onglets button { border-color: var(--filet); color: var(--discret); }
+.onglets button[aria-selected="true"] { border-color: var(--bleu); color: var(--bleu); background: var(--bleu-fond); }
+.figure { background: var(--carte); border: 1px solid var(--filet); border-radius: 10px; padding: 8px; touch-action: none; }
+svg { display: block; width: 100%; height: auto; user-select: none; }
+canvas { display: block; width: 100%; user-select: none; }
+.constat { font-size: 16px; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--filet); background: var(--carte); margin: 0; min-height: 3.2em; }
+details { background: var(--carte); border: 1px solid var(--filet); border-radius: 10px; padding: 10px 14px; }
+summary { cursor: pointer; font-weight: 500; }
+details p, details li { color: var(--discret); }
+details p { margin: 8px 0; }
+.tableau { overflow-x: auto; }
+table { border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: 14px; margin-top: 6px; }
+td, th { border: 1px solid var(--filet); padding: 3px 9px; text-align: center; }
+th { font-family: var(--math); font-weight: 400; font-style: italic; }
+pre { background: var(--papier); border: 1px solid var(--filet); border-radius: 8px; padding: 10px 12px; overflow-x: auto; font-size: 13.5px; color: var(--encre); }
+.b { color: var(--bleu); } .o { color: var(--orange); } .r { color: var(--rouge); } .v { color: var(--violet); }
+.vec { position: relative; display: inline-block; padding-top: .18em; font-family: var(--math); font-style: italic; }
+.vec::before { content: ""; position: absolute; left: .04em; right: .12em; top: .1em; border-top: 1.2px solid currentColor; }
+.vec::after { content: ""; position: absolute; right: 0; top: calc(.1em - .19em); border: .19em solid transparent; border-left: .3em solid currentColor; border-right: 0; }
+
+#toile { height: min(64vh, 600px); }
+.valeur { font-variant-numeric: tabular-nums; min-width: 2.8em; display: inline-block; }
+</style>
+
+<div class="page">
+  <span class="niveau">Terminale spécialité · Chapitre 12 · Pour aller plus loin</span>
+  <h1>La marge d'erreur d'un sondage</h1>
+  <p class="chapeau">Dans une ville, une proportion <span class="m">p</span> des électeurs vote « oui ». Un institut interroge <span class="m">n</span> personnes au hasard et publie la fréquence <span class="m">F</span> de « oui » : c'est la moyenne <span class="m">M<sub>n</sub></span> de <span class="m">n</span> variables de Bernoulli. Refaites le sondage des centaines de fois : où tombent les résultats ?</p>
+
+  <div class="barre">
+    <label for="n"><span class="m">n</span> =
+      <select id="n"><option>25</option><option>100</option><option>400</option><option selected>1000</option><option>2500</option></select>
+    </label>
+    <label><span class="m">p</span> = <span class="valeur" id="vp">0,52</span> <input id="p" type="range" min="0.3" max="0.7" step="0.01" value="0.52"></label>
+    <button id="un" type="button" class="principal">1 sondage</button>
+    <button id="cent" type="button">100 sondages</button>
+    <button id="mille" type="button">1 000 sondages</button>
+    <button id="raz" type="button">Vider</button>
+  </div>
+  <div class="onglets" role="tablist">
+    <button type="button" role="tab" id="vF" aria-selected="true">Les fréquences <i>F</i></button>
+    <button type="button" role="tab" id="vZ" aria-selected="false">Centrées réduites <i>Z</i></button>
+  </div>
+
+  <div class="figure"><canvas id="toile" role="img" aria-label="Dernier sondage et histogramme des fréquences obtenues"></canvas></div>
+  <p class="constat" id="constat"></p>
+
+  <details>
+    <summary>Pour aller plus loin</summary>
+    <p><b>Ce que dit le cours.</b> <span class="m">E</span>[<span class="m">F</span>] = <span class="m">p</span> et <span class="m">V</span>(<span class="m">F</span>) = <span class="m">p</span>(1 − <span class="m">p</span>)/<span class="m">n</span> : l'écart-type σ<sub><span class="m">n</span></sub> = √(<span class="m">p</span>(1 − <span class="m">p</span>)/<span class="m">n</span>) est divisé par 2 quand <span class="m">n</span> est multiplié par 4. La loi des grands nombres dit que <span class="m">F</span> se concentre autour de <span class="m">p</span>.</p>
+    <p><b>Ce qu'ajoute le théorème central limite</b> (Laplace, 1810, après de Moivre en 1733). Il donne la <i>forme</i> de cette concentration : pour <span class="m">n</span> grand, <span class="m">Z</span> = (<span class="m">F</span> − <span class="m">p</span>)/σ<sub><span class="m">n</span></sub> suit presque la loi normale centrée réduite, de densité <span class="m">t</span> ↦ e<sup>−<span class="m">t</span>²/2</sup>/√(2π) : la même cloche quels que soient <span class="m">n</span> et <span class="m">p</span>, et même quelle que soit la loi de départ. Comme l'aire sous cette cloche entre −1,96 et 1,96 vaut environ 0,95, 95 % des sondages tombent dans [<span class="m">p</span> − 1,96σ<sub><span class="m">n</span></sub> ; <span class="m">p</span> + 1,96σ<sub><span class="m">n</span></sub>]. Avec <span class="m">n</span> = 1 000 et <span class="m">p</span> proche de 0,5, cela fait environ ± 3 points : c'est la « marge d'erreur » des instituts.</p>
+    <p><b>Comparaison avec Bienaymé-Tchebychev.</b> L'inégalité du cours garantit P(|<span class="m">F</span> − <span class="m">p</span>| ≥ δ) ≤ <span class="m">p</span>(1 − <span class="m">p</span>)/(<span class="m">n</span>δ²). Pour être sûr à 95 % d'une marge de 3,1 points, elle réclame <span class="m">n</span> ≥ 0,25/(0,05 × 0,031²) ≈ 5 200 personnes ; le théorème central limite montre que 1 000 suffisent. L'inégalité est vraie pour toutes les lois, donc prudente ; le théorème est précis, mais seulement pour <span class="m">n</span> grand.</p>
+  </details>
+</div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const toile = $("toile"), ctx = toile.getContext("2d");
+  const MATH = "STIX Two Text, Cambria Math, Times New Roman, serif", UI = "IBM Plex Sans, Segoe UI, system-ui, sans-serif";
+  const fr = (x, d = 3) => { let s = x.toFixed(d); if (s.includes(".")) s = s.replace(/0+$/, "").replace(/\.$/, ""); return s.replace(".", ",").replace("-", "−"); };
+  const C = {};
+  function couleurs() { const s = getComputedStyle(document.documentElement); for (const k of ["encre", "discret", "grille", "bleu", "orange", "rouge", "violet", "carte", "filet", "rouge-fond", "bleu-fond"]) C[k] = s.getPropertyValue("--" + k).trim(); }
+
+  let n = 1000, p = 0.52, vue = "F", res = [], dernier = null, file = 0;
+  const sigma = () => Math.sqrt(p * (1 - p) / n);
+  const phi = t => Math.exp(-t * t / 2) / Math.sqrt(2 * Math.PI);
+  function sonder() { const s = new Uint8Array(n); let k = 0; for (let i = 0; i < n; i++) { s[i] = Math.random() < p ? 1 : 0; k += s[i]; } dernier = s; res.push(k); }
+  function vider() { res = []; dernier = null; file = 0; }
+
+  function dessiner() {
+    couleurs();
+    const dpr = window.devicePixelRatio || 1, W = toile.clientWidth, H = toile.clientHeight;
+    toile.width = W * dpr; toile.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
+    // bandeau : le dernier sondage, une pastille par personne interrogée
+    const hb = Math.min(120, H * 0.2);
+    ctx.font = `13px ${UI}`; ctx.fillStyle = C.discret; ctx.textAlign = "left"; ctx.textBaseline = "top";
+    if (dernier) {
+      const k = dernier.reduce((a, b) => a + b, 0);
+      const cols = Math.ceil(Math.sqrt(n * (W - 40) / hb)), rows = Math.ceil(n / cols), pas = Math.min((W - 40) / cols, (hb - 22) / rows), r = Math.max(0.8, pas * 0.38);
+      for (let i = 0; i < n; i++) { const x = 20 + (i % cols) * pas + pas / 2, y = 22 + Math.floor(i / cols) * pas + pas / 2; ctx.fillStyle = dernier[i] ? C.bleu : C.orange; ctx.beginPath(); ctx.arc(x, y, r, 0, 2 * Math.PI); ctx.fill(); }
+      ctx.fillStyle = C.encre; ctx.fillText(`Dernier sondage : ${k} « oui » (bleu) sur ${n}, soit F = ${fr(k / n, 3)}`, 20, 2);
+    } else ctx.fillText("Lancez un sondage : chaque pastille sera une personne interrogée, bleue pour « oui », orange pour « non ».", 20, 2);
+    // histogramme
+    const G = { g: 50, d: W - 20, h: hb + 34, b: H - 34 }, s = sigma(), sn = Math.sqrt(n * p * (1 - p));
+    let x1, x2, m;            // fenêtre et regroupement des valeurs de k
+    if (vue === "F") { x1 = p - 0.2; x2 = p + 0.2; m = Math.max(1, Math.ceil(0.005 * n)); }
+    else { x1 = -4; x2 = 4; m = Math.max(1, Math.ceil(0.25 * sn)); }
+    const X = x => vue === "F" ? x : (x - p) / s;          // abscisse affichée d'une fréquence
+    const sx = v => G.g + (v - x1) / (x2 - x1) * (G.d - G.g);
+    // groupes de valeurs : k ∈ [j m ; (j+1) m − 1]
+    const groupes = new Map(); for (const k of res) { const j = Math.floor(k / m); groupes.set(j, (groupes.get(j) || 0) + 1); }
+    const largeur = vue === "F" ? m / n : m / sn;           // largeur d'un groupe sur l'axe affiché
+    const dens = v => vue === "F" ? res.length * largeur * phi((v - p) / s) / s : res.length * largeur * phi(v);
+    const top = Math.max(1, ...groupes.values(), res.length ? dens(vue === "F" ? p : 0) : 0);
+    const sy = c => G.b - c / top * (G.b - G.h) * 0.92;
+    // bande à 95 %
+    const a95 = vue === "F" ? p - 1.96 * s : -1.96, b95 = vue === "F" ? p + 1.96 * s : 1.96;
+    ctx.fillStyle = C["rouge-fond"]; ctx.fillRect(sx(a95), G.h, sx(b95) - sx(a95), G.b - G.h);
+    ctx.strokeStyle = C.rouge; ctx.lineWidth = 1.6; ctx.setLineDash([6, 4]);
+    for (const v of [a95, b95]) { ctx.beginPath(); ctx.moveTo(sx(v), G.h); ctx.lineTo(sx(v), G.b); ctx.stroke(); }
+    ctx.setLineDash([]);
+    // barres
+    ctx.fillStyle = C.bleu; ctx.globalAlpha = 0.75;
+    for (const [j, c] of groupes) {
+      const k0 = j * m, k1 = (j + 1) * m;   // valeurs k0 … k1 − 1
+      const u = X((k0 - 0.5) / n), v = X((k1 - 0.5) / n);
+      if (v < x1 || u > x2) continue;
+      ctx.fillRect(sx(u) + 0.5, sy(c), Math.max(1, sx(v) - sx(u) - 1), G.b - sy(c));
+    }
+    ctx.globalAlpha = 1;
+    // cloche
+    if (res.length) {
+      ctx.beginPath();
+      for (let i = 0; i <= 300; i++) { const v = x1 + (x2 - x1) * i / 300, y = sy(dens(v)); i ? ctx.lineTo(sx(v), y) : ctx.moveTo(sx(v), y); }
+      ctx.strokeStyle = C.violet; ctx.lineWidth = 3; ctx.stroke();
+    }
+    // axe et graduations
+    ctx.strokeStyle = C.encre; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(G.g, G.b); ctx.lineTo(G.d, G.b); ctx.stroke();
+    ctx.fillStyle = C.discret; ctx.font = `13px ${UI}`; ctx.textAlign = "center"; ctx.textBaseline = "top";
+    if (vue === "F") for (let v = Math.ceil(x1 * 20) / 20; v <= x2 + 1e-9; v += 0.05) { ctx.fillText(fr(v, 2), sx(v), G.b + 6); ctx.fillRect(sx(v) - 0.5, G.b, 1, 5); }
+    else for (let v = -4; v <= 4; v++) { ctx.fillText(String(v).replace("-", "−"), sx(v), G.b + 6); ctx.fillRect(sx(v) - 0.5, G.b, 1, 5); }
+    ctx.fillStyle = C.rouge; ctx.font = `italic 15px ${MATH}`;
+    ctx.fillText(vue === "F" ? "p − 1,96σ" : "−1,96", sx(a95), G.h - 18); ctx.fillText(vue === "F" ? "p + 1,96σ" : "1,96", sx(b95), G.h - 18);
+    ctx.fillStyle = C.encre; ctx.font = `italic 17px ${MATH}`; ctx.textAlign = "right"; ctx.fillText(vue === "F" ? "F" : "Z", G.d, G.b + 6 + 14);
+    constat();
+  }
+
+  function constat() {
+    const s = sigma(), N = res.length;
+    const dedans = res.filter(k => Math.abs(k / n - p) <= 1.96 * s).length;
+    let t = `σ<sub><i>n</i></sub> = √(<i>p</i>(1 − <i>p</i>)/<i>n</i>) ≈ ${fr(s, 4)}, donc 1,96σ<sub><i>n</i></sub> ≈ <b>${fr(1.96 * s * 100, 1)} points</b>. `;
+    if (!N) t += "Lancez des sondages.";
+    else t += `${N} sondage${N > 1 ? "s" : ""} : <b>${fr(100 * dedans / N, 1)} %</b> tombent à moins de ${fr(1.96 * s * 100, 1)} points de <i>p</i> = ${fr(p, 2)}` + (N >= 300 ? ", proche des 95 % que prévoit la cloche." : ".") + (vue === "Z" && N >= 300 ? " Changez <i>n</i> ou <i>p</i> : centrée et réduite, c'est toujours la même cloche." : "");
+    $("constat").innerHTML = t;
+  }
+
+  // lots de sondages animés
+  function lancer(nb) { file += nb; if (file === nb) requestAnimationFrame(boucle); }
+  function boucle() { const lot = Math.min(file, Math.max(1, Math.ceil(file / 20))); for (let i = 0; i < lot; i++) sonder(); file -= lot; dessiner(); if (file > 0) requestAnimationFrame(boucle); }
+  $("un").addEventListener("click", () => lancer(1));
+  $("cent").addEventListener("click", () => lancer(100));
+  $("mille").addEventListener("click", () => lancer(1000));
+  $("raz").addEventListener("click", () => { vider(); dessiner(); });
+  $("n").addEventListener("change", e => { n = +e.target.value; vider(); dessiner(); });
+  $("p").addEventListener("input", e => { p = +e.target.value; $("vp").textContent = fr(p, 2); vider(); dessiner(); });
+  function changerVue(v) { vue = v; $("vF").setAttribute("aria-selected", v === "F"); $("vZ").setAttribute("aria-selected", v === "Z"); dessiner(); }
+  $("vF").addEventListener("click", () => changerVue("F"));
+  $("vZ").addEventListener("click", () => changerVue("Z"));
+  window.addEventListener("resize", dessiner);
+  if (location.hash === "#demo" || location.hash === "#demoZ") { for (let i = 0; i < 1500; i++) sonder(); if (location.hash === "#demoZ") vue = "Z"; changerVue(vue); }
+  else dessiner();
+})();
+</script>
+
+<!-- plein-ecran : bouton commun à toutes les pages interactives -->
+<style>
+#pleinEcran { position: fixed; top: calc(10px + env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); z-index: 50; font: 500 13px var(--ui, system-ui, sans-serif); padding: 6px 12px; border-radius: 999px; border: 1px solid var(--filet, #d9dee5); background: var(--carte, #fff); color: var(--encre, #1b1f24); cursor: pointer; opacity: .9; }
+#pleinEcran:hover { opacity: 1; }
+body.plein-ecran .niveau, body.plein-ecran h1, body.plein-ecran h1 + .chapeau { display: none !important; }
+body.plein-ecran .page { max-width: none !important; min-height: 100vh; padding-top: 48px !important; align-content: start; }
+body.plein-ecran .page svg:not(.mini) { max-height: 76vh; }
+body.plein-ecran.plein-multi .page svg:not(.mini) { max-height: 46vh; }
+body.plein-ecran .constat { font-size: clamp(20px, 2.6vw, 30px); }
+</style>
+<script>
+(() => {
+  const b = document.createElement("button");
+  b.type = "button"; b.id = "pleinEcran"; document.body.appendChild(b);
+  function etat(on) { document.body.classList.toggle("plein-ecran", on); b.textContent = on ? "✕ Quitter le plein écran" : "⛶ Plein écran"; b.setAttribute("aria-pressed", on); window.dispatchEvent(new Event("resize")); }
+  b.addEventListener("click", async () => {
+    const on = !document.body.classList.contains("plein-ecran");
+    etat(on);
+    try { on ? await document.documentElement.requestFullscreen() : (document.fullscreenElement && await document.exitFullscreen()); } catch (e) {}
+  });
+  document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement && document.body.classList.contains("plein-ecran")) etat(false); });
+  window.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("plein-ecran")) etat(false); });
+  if (document.querySelectorAll(".page svg:not(.mini), .page canvas").length > 1) document.body.classList.add("plein-multi");
+  etat(location.hash === "#plein");
+})();
+</script>
+
+
+</body></html>

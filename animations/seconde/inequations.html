@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;box-sizing:border-box}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head><body>
+<title>Inéquations graphiques</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root {
+  --papier: #f7f8fa; --carte: #ffffff; --encre: #1b1f24; --discret: #5d6672; --filet: #d9dee5; --grille: #e4e8ee;
+  --courbe: #1f5fbf; --rouge: #e0161b; --rouge-fond: rgba(224, 22, 27, 0.10);
+  --hausse: #1a56db; --baisse: #f07800; --hausse-fond: rgba(26, 86, 219, 0.20); --baisse-fond: rgba(240, 120, 0, 0.24);
+  --orange: #e07000; --violet: #7c3aed;
+  --math: "STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --ui: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #262c35; --courbe: #6fa3f0; --rouge: #ff4d52; --rouge-fond: rgba(255, 77, 82, 0.14); --hausse: #6aa0ff; --baisse: #ffa133; --hausse-fond: rgba(106, 160, 255, 0.24); --baisse-fond: rgba(255, 161, 51, 0.26); --orange: #ffa53d; --violet: #b794f6; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #262c35; --courbe: #6fa3f0; --rouge: #ff4d52; --rouge-fond: rgba(255, 77, 82, 0.14); --hausse: #6aa0ff; --baisse: #ffa133; --hausse-fond: rgba(106, 160, 255, 0.24); --baisse-fond: rgba(255, 161, 51, 0.26); --orange: #ffa53d; --violet: #b794f6; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--papier); color: var(--encre); font-family: var(--ui); font-size: 15px; line-height: 1.5; margin: 0; }
+.page { max-width: 920px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 40px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+.page > * { min-width: 0; }
+.niveau { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--discret); }
+h1 { font-family: var(--math); font-weight: 600; font-size: clamp(26px, 4vw, 36px); line-height: 1.15; margin: 0; }
+.centre { text-align: center; margin: 0 auto !important; }
+.chapeau { margin: 0; color: var(--discret); max-width: 68ch; }
+.m { font-family: var(--math); font-style: italic; }
+.barre { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
+.groupe { display: flex; gap: 8px; flex-wrap: wrap; }
+button { font: inherit; font-weight: 500; padding: 7px 14px; border-radius: 999px; border: 1px solid var(--filet); background: var(--carte); color: var(--encre); cursor: pointer; }
+button[aria-pressed="true"] { border-color: var(--rouge); color: var(--rouge); box-shadow: inset 0 0 0 1.5px var(--rouge); }
+button:focus-visible { outline: 3px solid var(--rouge); outline-offset: 2px; }
+.figure { background: var(--carte); border: 1px solid var(--filet); border-radius: 10px; padding: 6px; touch-action: none; }
+svg { display: block; width: 100%; height: auto; user-select: none; -webkit-user-select: none; }
+.constat { font-family: var(--math); font-size: clamp(18px, 2.5vw, 23px); text-align: center; margin: 0; padding: 10px 14px; border-radius: 10px; background: var(--carte); border: 1.5px solid var(--filet); min-height: 1.6em; }
+.constat b { font-weight: 600; }
+.fr { display: inline-flex; flex-direction: column; vertical-align: middle; font-size: .78em; line-height: 1.05; text-align: center; margin: 0 .08em; } .fr > span:first-child { border-bottom: 1.3px solid currentColor; padding: 0 .15em; }
+
+</style>
+
+<div class="page">
+  <span class="niveau">Seconde · Chapitre 10 · Résolution d'inéquations</span>
+  <h1>Résoudre graphiquement une inéquation</h1>
+  <p class="chapeau" id="chapeau">Faites glisser la droite rouge <span class="m">y</span> = <span class="m">k</span>. Les solutions sont les abscisses des points de la courbe situés sous la droite (ou au-dessus).</p>
+  <div class="barre">
+    <div class="groupe" role="group" aria-label="Inégalité"><button type="button" data-sens="≤"><span class="m">f</span>(<span class="m">x</span>) ≤ <span class="m">k</span></button><button type="button" data-sens="≥"><span class="m">f</span>(<span class="m">x</span>) ≥ <span class="m">k</span></button></div>
+    <div class="groupe" role="group" aria-label="Courbe"><button type="button" data-c="0">Courbe 1</button><button type="button" data-c="1">Courbe 2</button></div>
+  </div>
+  <div class="figure"><svg id="g" viewBox="0 0 900 606" role="img" aria-label="Résolution graphique d'une inéquation"></svg></div>
+  <p class="constat" id="constat" aria-live="polite"></p>
+  <p class="chapeau centre" id="note" style="font-size:13px;min-height:1.4em"></p>
+</div>
+
+<script>
+(() => {
+  const NS = "http://www.w3.org/2000/svg", $ = id => document.getElementById(id);
+  const el = (t, a, txt) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); if (txt != null) e.textContent = txt; return e; };
+  const fr = (x, d = 2) => { const r = Math.round(x * 10 ** d) / 10 ** d; return (Object.is(r, -0) ? 0 : r).toString().replace(".", ",").replace("-", "−"); };
+  const entier = x => Math.abs(x - Math.round(x)) < 1e-9;
+  const pgcd = (a, b) => { a = Math.abs(a); b = Math.abs(b); while (b) [a, b] = [b, a % b]; return a || 1; };
+  // fraction p/q réduite, écrite en HTML (−3/4 en barre de fraction compacte)
+  const frac = (p, q) => { if (q < 0) { p = -p; q = -q; } const g = pgcd(p, q); p /= g; q /= g;
+    const s = p < 0 ? "−" : ""; p = Math.abs(p);
+    return q === 1 ? s + p : `${s}<span class="fr"><span>${p}</span><span>${q}</span></span>`; };
+  const pos = (svg, ev) => { const p = svg.createSVGPoint(); p.x = ev.clientX; p.y = ev.clientY; return p.matrixTransform(svg.getScreenCTM().inverse()); };
+  function glisser(svg, cible, maj, fini) {
+    cible.addEventListener("pointerdown", e => {
+      e.preventDefault(); maj(pos(svg, e));
+      const bouge = ev => maj(pos(svg, ev));
+      const fin = () => { window.removeEventListener("pointermove", bouge); window.removeEventListener("pointerup", fin); if (fini) fini(); };
+      window.addEventListener("pointermove", bouge); window.addEventListener("pointerup", fin);
+    });
+  }
+  // courbe lisse passant par des points, sans dépassement (Fritsch-Carlson)
+  function lisse(P) {
+    const n = P.length, h = [], s = [], m = [];
+    for (let i = 0; i < n - 1; i++) { h[i] = P[i + 1][0] - P[i][0]; s[i] = (P[i + 1][1] - P[i][1]) / h[i]; }
+    m[0] = s[0]; m[n - 1] = s[n - 2];
+    for (let i = 1; i < n - 1; i++) m[i] = s[i - 1] * s[i] <= 0 ? 0 : 3 * (h[i - 1] + h[i]) / ((2 * h[i] + h[i - 1]) / s[i - 1] + (h[i] + 2 * h[i - 1]) / s[i]);
+    return x => { let i = 0; while (i < n - 2 && x > P[i + 1][0]) i++;
+      const t = (x - P[i][0]) / h[i], t2 = t * t, t3 = t2 * t;
+      return (2 * t3 - 3 * t2 + 1) * P[i][1] + (t3 - 2 * t2 + t) * h[i] * m[i] + (-2 * t3 + 3 * t2) * P[i + 1][1] + (t3 - t2) * h[i] * m[i + 1]; };
+  }
+  // repère quadrillé : renvoie les fonctions d'échelle
+  function repere(g, X, Y, cadre, opt = {}) {
+    const [G, D, Hh, B] = cadre;
+    const id = "c" + Math.random().toString(36).slice(2, 7);
+    g.appendChild(el("defs")).appendChild(el("clipPath", { id })).appendChild(el("rect", { x: G, y: Hh, width: D - G, height: B - Hh }));
+    const sx = x => G + (x - X[0]) / (X[1] - X[0]) * (D - G), sy = y => B - (y - Y[0]) / (Y[1] - Y[0]) * (B - Hh);
+    const pas = opt.pas || 1;
+    for (let x = Math.ceil(X[0]); x <= X[1]; x++) g.appendChild(el("line", { x1: sx(x), x2: sx(x), y1: Hh, y2: B, stroke: "var(--grille)" }));
+    for (let y = Math.ceil(Y[0]); y <= Y[1]; y++) g.appendChild(el("line", { x1: G, x2: D, y1: sy(y), y2: sy(y), stroke: "var(--grille)" }));
+    g.appendChild(el("line", { x1: G, x2: D, y1: sy(0), y2: sy(0), stroke: "var(--encre)", "stroke-width": 1.6 }));
+    g.appendChild(el("line", { x1: sx(0), x2: sx(0), y1: Hh, y2: B, stroke: "var(--encre)", "stroke-width": 1.6 }));
+    const t = { x: {}, y: {} };
+    for (let x = Math.ceil(X[0]); x <= X[1]; x++) if (x % pas === 0) { const e = el("text", { x: x ? sx(x) : sx(0) - 9, y: sy(0) + 20, "text-anchor": "middle", "font-size": 14, fill: "var(--discret)", "font-family": "var(--ui)" }, String(x).replace("-", "−")); g.appendChild(e); t.x[x] = e; }
+    for (let y = Math.ceil(Y[0]); y <= Y[1]; y++) if (y && y % pas === 0) { const e = el("text", { x: sx(0) - 8, y: sy(y) + 5, "text-anchor": "end", "font-size": 14, fill: "var(--discret)", "font-family": "var(--ui)" }, String(y).replace("-", "−")); g.appendChild(e); t.y[y] = e; }
+    return { clip: `url(#${id})`, sx, sy, ix: p => X[0] + (p - G) / (D - G) * (X[1] - X[0]), iy: p => Y[0] + (B - p) / (B - Hh) * (Y[1] - Y[0]), t };
+  }
+
+  // On fait glisser la droite y = k : la partie de la courbe sous (ou sur) la droite
+  // se colore, et l'ensemble des solutions s'allume sur l'axe des abscisses.
+  const C = [
+    { P: [[-5,-3],[-4,-1],[-2,3],[0,2],[1,0],[3,-3],[5,1],[6,3]], X: [-6, 7], Y: [-4, 4] },
+    { P: [[-4,4],[-2,0],[0,-2],[2,0],[3,1],[5,-1],[6,0]], X: [-5, 7], Y: [-3, 5] }
+  ];
+  C.forEach(c => { c.f = lisse(c.P); c.a = c.P[0][0]; c.b = c.P.at(-1)[0]; });
+  let k = 0, sens = location.hash === "#sup" ? "≥" : "≤", yk = 1;
+  const svg = $("g");
+  document.querySelectorAll("[data-sens]").forEach(b => b.addEventListener("click", () => { sens = b.dataset.sens; dessine(); }));
+  document.querySelectorAll("[data-c]").forEach(b => b.addEventListener("click", () => { k = +b.dataset.c; yk = 1; dessine(); }));
+  const ok = v => sens === "≤" ? v <= yk + 1e-9 : v >= yk - 1e-9;
+  function intervalles(c) {
+    // découpage fin de [a ; b] : morceaux où l'inégalité est vraie
+    const N = 2600, res = []; let deb = null;
+    const bord = (x0, x1) => { let lo = x0, hi = x1; for (let j = 0; j < 50; j++) { const m = (lo + hi) / 2; ok(c.f(m)) === ok(c.f(lo)) ? lo = m : hi = m; } return (lo + hi) / 2; };
+    let prec = c.a, vp = ok(c.f(c.a)); if (vp) deb = c.a;
+    for (let i = 1; i <= N; i++) {
+      const x = c.a + (c.b - c.a) * i / N, v = ok(c.f(x));
+      if (v && !vp) deb = bord(prec, x);
+      if (!v && vp) { res.push([deb, bord(prec, x)]); deb = null; }
+      prec = x; vp = v;
+    }
+    if (vp) res.push([deb, c.b]);
+    // points isolés : contact (sommet exactement à la hauteur k)
+    c.P.forEach(([px, py]) => { if (Math.abs(py - yk) < 1e-9 && !res.some(([u, v]) => px >= u - 1e-6 && px <= v + 1e-6)) res.push([px, px]); });
+    return res.sort((p, q) => p[0] - q[0]).map(([u, v]) => [Math.abs(u - Math.round(u)) < 0.02 ? Math.round(u) : u, Math.abs(v - Math.round(v)) < 0.02 ? Math.round(v) : v]);
+  }
+  function dessine() {
+    const c = C[k];
+    document.querySelectorAll("[data-sens]").forEach(b => b.setAttribute("aria-pressed", b.dataset.sens === sens));
+    document.querySelectorAll("[data-c]").forEach(b => b.setAttribute("aria-pressed", +b.dataset.c === k));
+    svg.textContent = "";
+    const R = repere(svg, c.X, c.Y, [36, 884, 16, 590]), { sx, sy } = R;
+    const S = intervalles(c);
+    // bandes verticales légères au-dessus des solutions
+    S.forEach(([u, v]) => svg.appendChild(el("rect", { x: sx(u), y: 16, width: Math.max(2, sx(v) - sx(u)), height: 574, fill: "var(--rouge-fond)" })));
+    // courbe : grise hors solution, rouge vif sur les solutions
+    let d = "";
+    for (let i = 0; i <= 500; i++) { const x = c.a + (c.b - c.a) * i / 500; d += (i ? "L" : "M") + sx(x).toFixed(1) + "," + sy(c.f(x)).toFixed(1); }
+    svg.appendChild(el("path", { d, fill: "none", stroke: "var(--courbe)", "stroke-width": 3.5, opacity: .45 }));
+    S.forEach(([u, v]) => { let e = ""; for (let i = 0; i <= 200; i++) { const x = u + (v - u) * i / 200; e += (i ? "L" : "M") + sx(x).toFixed(1) + "," + sy(c.f(x)).toFixed(1); }
+      svg.appendChild(el("path", { d: e, fill: "none", stroke: "var(--courbe)", "stroke-width": 5.5, "stroke-linecap": "round" })); });
+    [c.a, c.b].forEach(x => svg.appendChild(el("circle", { cx: sx(x), cy: sy(c.f(x)), r: 5, fill: "var(--courbe)" })));
+    // droite y = k
+    svg.appendChild(el("line", { x1: 36, x2: 884, y1: sy(yk), y2: sy(yk), stroke: "var(--rouge)", "stroke-width": 3, "stroke-dasharray": "10 7" }));
+    const etk = el("text", { x: 878, y: sy(yk) - 10, "text-anchor": "end", "font-family": "var(--math)", "font-size": 21, fill: "var(--rouge)", stroke: "var(--carte)", "stroke-width": 5, "paint-order": "stroke" });
+    etk.appendChild(el("tspan", { "font-style": "italic" }, "y")); etk.appendChild(el("tspan", {}, " = " + fr(yk))); svg.appendChild(etk);
+    if (R.t.y[yk]) { const t = R.t.y[yk]; t.setAttribute("fill", "var(--rouge)"); t.setAttribute("font-weight", 700); }
+    // solutions sur l'axe : noir épais, crochets dessinés
+    const y0 = sy(0);
+    S.forEach(([u, v]) => {
+      if (u === v) { svg.appendChild(el("circle", { cx: sx(u), cy: y0, r: 7, fill: "var(--encre)" })); return; }
+      svg.appendChild(el("line", { x1: sx(u), x2: sx(v), y1: y0, y2: y0, stroke: "var(--encre)", "stroke-width": 8, "stroke-linecap": "butt" }));
+      [[u, 1], [v, -1]].forEach(([x, s]) => {
+        const p = sx(x); svg.appendChild(el("path", { d: `M${p + 7 * s},${y0 - 13} H${p} V${y0 + 13} H${p + 7 * s}`, fill: "none", stroke: "var(--encre)", "stroke-width": 3.5 }));
+      });
+    });
+    // graduations remises au premier plan, sous la barre des solutions
+    Object.values(R.t.x).forEach(t => { t.setAttribute("y", y0 + 32); t.setAttribute("stroke", "var(--carte)"); t.setAttribute("stroke-width", 4); t.setAttribute("paint-order", "stroke"); svg.appendChild(t); });
+    Object.values(R.t.y).forEach(t => { t.setAttribute("stroke", "var(--carte)"); t.setAttribute("stroke-width", 4); t.setAttribute("paint-order", "stroke"); svg.appendChild(t); });
+    // poignée
+    const hy = sy(yk);
+    svg.appendChild(el("path", { d: `M${884 - 26},${hy} l24,-11 v22 z`, fill: "var(--rouge)", stroke: "var(--carte)", "stroke-width": 2 }));
+    const zone = el("rect", { x: 36, y: 16, width: 848, height: 574, fill: "transparent", style: "cursor:ns-resize" });
+    svg.appendChild(zone);
+    glisser(svg, zone, p => { const v = Math.max(c.Y[0] + 0.5, Math.min(c.Y[1] - 0.5, Math.round(R.iy(p.y) * 2) / 2)); if (v !== yk) { yk = v; dessine(); } });
+    // constat
+    const nb = x => fr(x, 1), arrondi = S.some(([u, v]) => !entier(u) || !entier(v));
+    const txt = S.map(([u, v]) => u === v ? `{${nb(u)}}` : `[${nb(u)} ; ${nb(v)}]`).join(" ∪ ");
+    $("constat").innerHTML = `<span class="m">f</span>(<span class="m">x</span>) ${sens} ${fr(yk)} &nbsp;⟺&nbsp; ` + (S.length ? `<span class="m">x</span> ∈ <b>${txt}</b>` : `<b>aucune solution</b>`);
+    $("note").textContent = arrondi ? "Les bornes non entières sont des valeurs arrondies au dixième, lues sur le graphique." : "";
+  }
+  window.addEventListener("keydown", e => { if (e.key === "ArrowUp" || e.key === "ArrowDown") { const c = C[k]; yk = Math.max(c.Y[0] + .5, Math.min(c.Y[1] - .5, yk + (e.key === "ArrowUp" ? .5 : -.5))); e.preventDefault(); dessine(); } });
+  dessine();
+
+})();
+</script>
+
+<!-- plein-ecran : bouton commun à toutes les pages interactives -->
+<style>
+#pleinEcran { position: fixed; top: calc(10px + env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); z-index: 50; font: 500 13px var(--ui, system-ui, sans-serif); padding: 6px 12px; border-radius: 999px; border: 1px solid var(--filet, #d9dee5); background: var(--carte, #fff); color: var(--encre, #1b1f24); cursor: pointer; opacity: .9; }
+#pleinEcran:hover { opacity: 1; }
+body.plein-ecran .niveau, body.plein-ecran h1, body.plein-ecran h1 + .chapeau { display: none !important; }
+body.plein-ecran .page { max-width: none !important; min-height: 100vh; padding-top: 48px !important; align-content: start; }
+body.plein-ecran .page svg:not(.mini) { max-height: 76vh; }
+body.plein-ecran.plein-multi .page svg:not(.mini) { max-height: 46vh; }
+body.plein-ecran .constat { font-size: clamp(20px, 2.6vw, 30px); }
+</style>
+<script>
+(() => {
+  const b = document.createElement("button");
+  b.type = "button"; b.id = "pleinEcran"; document.body.appendChild(b);
+  function etat(on) { document.body.classList.toggle("plein-ecran", on); b.textContent = on ? "✕ Quitter le plein écran" : "⛶ Plein écran"; b.setAttribute("aria-pressed", on); window.dispatchEvent(new Event("resize")); }
+  b.addEventListener("click", async () => {
+    const on = !document.body.classList.contains("plein-ecran");
+    etat(on);
+    try { on ? await document.documentElement.requestFullscreen() : (document.fullscreenElement && await document.exitFullscreen()); } catch (e) {}
+  });
+  document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement && document.body.classList.contains("plein-ecran")) etat(false); });
+  window.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("plein-ecran")) etat(false); });
+  if (document.querySelectorAll(".page svg:not(.mini), .page canvas").length > 1) document.body.classList.add("plein-multi");
+  etat(location.hash === "#plein");
+})();
+</script>
+
+</body></html>

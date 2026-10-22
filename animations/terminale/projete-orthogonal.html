@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;box-sizing:border-box}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head><body>
+<title>Projeté orthogonal</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Page épurée : une barre de commandes, la grande scène 3D qu'on fait tourner au centre, une ligne de constat ;
+   les coordonnées et les réglages fins repliés. Chapitre 8 : projeté orthogonal d'un point sur un plan
+   ou sur une droite, point le plus proche et distance. */
+:root {
+  --papier: #f7f8fa;
+  --carte: #ffffff;
+  --encre: #1b1f24;
+  --discret: #5d6672;
+  --filet: #d9dee5;
+  --grille: #e3e7ec;
+  --bleu: #1f5fbf;
+  --rouge: #c62828;
+  --vert: #2e7d32;
+  --orange: #d97706;
+  --plan: rgba(31, 95, 191, 0.13);
+  --plan-bord: rgba(31, 95, 191, 0.45);
+  --plan2: rgba(46, 125, 50, 0.12);
+  --math: "STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --ui: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #2a3039;
+    --bleu: #6fa3f0; --rouge: #f07a7a; --vert: #7cc983; --orange: #f0a952;
+    --plan: rgba(111, 163, 240, 0.16); --plan-bord: rgba(111, 163, 240, 0.5); --plan2: rgba(124, 201, 131, 0.14); color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #2a3039;
+  --bleu: #6fa3f0; --rouge: #f07a7a; --vert: #7cc983; --orange: #f0a952;
+  --plan: rgba(111, 163, 240, 0.16); --plan-bord: rgba(111, 163, 240, 0.5); --plan2: rgba(124, 201, 131, 0.14); color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { background: var(--papier); color: var(--encre); font-family: var(--ui); font-size: 15px; line-height: 1.5; }
+.page { max-width: 1040px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 40px; display: grid; gap: 14px; }
+header { display: grid; gap: 4px; }
+.niveau { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--discret); }
+h1 { font-family: var(--math); font-weight: 600; font-size: clamp(26px, 4vw, 34px); line-height: 1.15; margin: 0; }
+.chapeau { margin: 0; color: var(--discret); max-width: 75ch; min-height: 3em; }
+.barre { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; min-height: 40px; }
+.reglage { display: flex; align-items: center; gap: 10px; flex: 1 1 260px; min-width: 0; }
+.reglage label { font-family: var(--math); font-style: italic; font-size: 20px; }
+.reglage output { font-family: var(--math); font-size: 20px; min-width: 3.5ch; font-variant-numeric: tabular-nums; }
+select, button, input[type="number"] { font: inherit; color: var(--encre); background: var(--carte); border: 1px solid var(--filet); border-radius: 7px; padding: 6px 10px; }
+input[type="number"] { width: 4.2em; font-family: var(--math); font-size: 17px; padding: 3px 6px; }
+button { cursor: pointer; }
+button:hover { border-color: var(--bleu); }
+:focus-visible { outline: 2px solid var(--bleu); outline-offset: 2px; }
+input[type="range"] { width: 100%; accent-color: var(--rouge); }
+.segments { display: inline-flex; border: 1px solid var(--filet); border-radius: 8px; overflow: hidden; }
+.segments button { border: 0; border-radius: 0; background: var(--carte); }
+.segments button + button { border-left: 1px solid var(--filet); }
+.segments button[aria-pressed="true"] { background: var(--encre); color: var(--carte); }
+.scene { position: relative; background: var(--carte); border: 1px solid var(--filet); border-radius: 12px; overflow: hidden; }
+canvas { display: block; width: 100%; height: min(62vh, 560px); min-height: 340px; touch-action: none; cursor: grab; }
+canvas.prise { cursor: grabbing; }
+canvas.survol { cursor: pointer; }
+.astuce { position: absolute; right: 12px; bottom: 8px; font-size: 12px; color: var(--discret); pointer-events: none; }
+.constat { font-size: 18px; text-align: center; min-height: 1.6em; }
+.constat b { font-family: var(--math); font-size: 20px; }
+.bleu { color: var(--bleu); } .rouge { color: var(--rouge); } .vert { color: var(--vert); } .orange { color: var(--orange); }
+details { background: var(--carte); border: 1px solid var(--filet); border-radius: 10px; padding: 10px 16px; }
+summary { cursor: pointer; color: var(--discret); font-weight: 500; }
+.plus { display: grid; gap: 12px; padding-top: 12px; }
+.plus p { margin: 0; }
+.saisie { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font-family: var(--math); font-size: 18px; }
+.saisie span { display: inline-flex; align-items: center; gap: 4px; }
+.systeme { font-family: var(--math); font-size: 18px; display: inline-grid; grid-template-columns: auto auto; gap: 0 6px; border-left: 2px solid var(--encre); padding-left: 10px; }
+.note { font-size: 13px; color: var(--discret); }
+.m { font-family: var(--math); }
+</style>
+
+<div class="page">
+  <header>
+    <span class="niveau">Terminale spécialité · Chapitre 8 · Orthogonalité dans l'espace</span>
+    <h1>Projeté orthogonal</h1>
+    <p class="chapeau" id="chapeau"></p>
+  </header>
+
+  <div class="barre">
+    <div class="segments" id="zone-proj" role="group" aria-label="Projection sur">
+      <button type="button" data-sur="plan" aria-pressed="true">sur un plan</button>
+      <button type="button" data-sur="droite" aria-pressed="false">sur une droite</button>
+    </div>
+    <button type="button" id="vue">Vue de départ</button>
+  </div>
+
+  <div class="scene">
+    <canvas id="toile" role="img" aria-label="Scène en trois dimensions, que l'on fait tourner en la faisant glisser"></canvas>
+    <span class="astuce">Faites glisser pour tourner</span>
+  </div>
+
+  <div class="constat" id="constat" role="status" aria-live="polite"></div>
+
+  <details>
+    <summary>Pour aller plus loin</summary>
+    <div class="plus" id="plus-proj">
+      <div class="saisie" id="saisie-plan">
+        <span><i>P</i> : <input type="number" id="pa" value="2"> <i>x</i> + <input type="number" id="pb" value="1"> <i>y</i> + <input type="number" id="pc" value="2"> <i>z</i> + <input type="number" id="pd" value="-6"> = 0</span>
+      </div>
+      <div class="saisie" id="saisie-droite">
+        <span><i>d</i> passe par <i>A</i>(<input type="number" id="da" value="0"> ; <input type="number" id="db" value="4"> ; <input type="number" id="dc" value="3">)</span>
+        <span>dirigée par <span class="m"><i>u⃗</i></span>(<input type="number" id="dx" value="1"> ; <input type="number" id="dy" value="-2"> ; <input type="number" id="dz" value="0">)</span>
+      </div>
+      <div class="saisie">
+        <span><i>M</i>(<input type="number" id="mx" value="5"> ; <input type="number" id="my" value="4"> ; <input type="number" id="mz" value="5">)</span>
+      </div>
+      <p id="resultat-proj"></p>
+    </div>
+  </details>
+</div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const toile = $("toile"), ctx = toile.getContext("2d");
+  const MATH = "STIX Two Text, Cambria Math, Times New Roman, serif", UI = "IBM Plex Sans, Segoe UI, system-ui, sans-serif";
+
+  // ---------------------------------------------------------------
+  // Nombres à la française, fractions exactes
+  // ---------------------------------------------------------------
+  function fr(x, d = 2) {
+    if (Math.abs(x) < 1e-9) x = 0;
+    let s = x.toFixed(d);
+    if (s.includes(".")) s = s.replace(/0+$/, "").replace(/\.$/, "");
+    return s.replace(".", ",").replace("-", "−");
+  }
+  const pgcd = (a, b) => { a = Math.abs(a); b = Math.abs(b); while (b) [a, b] = [b, a % b]; return a || 1; };
+  function frac(p, q) {   // p/q réduite, écrite à la française
+    if (q < 0) { p = -p; q = -q; }
+    const g = pgcd(p, q); p /= g; q /= g;
+    const s = q === 1 ? String(p) : `${Math.abs(p)}/${q}`;
+    return (p < 0 && q !== 1 ? "−" : "") + s.replace("-", "−");
+  }
+  function racine(p, q) {   // √(p/q) simplifiée : k√m / q, suivie d'une valeur approchée
+    const g = pgcd(p, q); p /= g; q /= g;
+    let s = p * q, k = 1;
+    for (let f = 2; f * f <= s; f++) while (s % (f * f) === 0) { s /= f * f; k *= f; }
+    const h = pgcd(k, q), kk = k / h, qq = q / h, v = Math.sqrt(p / q);
+    if (s === 1) return frac(kk, qq);
+    const num = `${kk === 1 ? "" : kk}√${s}`;
+    return `${qq === 1 ? num : `${num}/${qq}`} ≈ ${fr(v, 2)}`;
+  }
+
+  // ---------------------------------------------------------------
+  // Vecteurs
+  // ---------------------------------------------------------------
+  const add = (a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
+  const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+  const mul = (a, k) => [a[0] * k, a[1] * k, a[2] * k];
+  const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+  const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+  const norme = a => Math.sqrt(dot(a, a));
+  const unit = a => mul(a, 1 / (norme(a) || 1));
+  const pt = p => `(${p.map(v => fr(v, 2)).join(" ; ")})`;
+  function baseDuPlan(n) {   // deux vecteurs unitaires orthogonaux dans le plan de normale n
+    const aide = Math.abs(n[2]) < 0.9 ? [0, 0, 1] : [1, 0, 0];
+    const e1 = unit(cross(n, aide)), e2 = unit(cross(n, e1));
+    return [e1, e2];
+  }
+
+  // ---------------------------------------------------------------
+  // Caméra : projection orthographique, rotation autour de l'axe vertical et élévation
+  // ---------------------------------------------------------------
+  const VUE = { az: -0.95, el: 0.42 };
+  const cam = { az: VUE.az, el: VUE.el, C: [0, 0, 0], echelle: 40, cx: 0, cy: 0 };
+  function axesCamera() {
+    const { az, el } = cam;
+    const e = [Math.cos(el) * Math.cos(az), Math.cos(el) * Math.sin(az), Math.sin(el)];
+    const r = [-Math.sin(az), Math.cos(az), 0];
+    const u = [-Math.sin(el) * Math.cos(az), -Math.sin(el) * Math.sin(az), Math.cos(el)];
+    return { e, r, u };
+  }
+  let AX = axesCamera();
+  const proj = P => { const q = sub(P, cam.C); return [cam.cx + cam.echelle * dot(q, AX.r), cam.cy - cam.echelle * dot(q, AX.u), dot(q, AX.e)]; };
+  // le rayon visuel passant par un point de l'écran
+  const rayon = (sx, sy) => ({ Q: add(cam.C, add(mul(AX.r, (sx - cam.cx) / cam.echelle), mul(AX.u, -(sy - cam.cy) / cam.echelle))), e: AX.e });
+  function rayonPlan(R, n, d) { const den = dot(n, R.e); if (Math.abs(den) < 1e-6) return null; return add(R.Q, mul(R.e, -(dot(n, R.Q) + d) / den)); }
+  function rayonDroite(R, A, w) {   // paramètre t du point de la droite A + t w le plus proche du rayon
+    const r0 = sub(A, R.Q), we = dot(w, R.e), den = dot(w, w) - we * we;
+    if (Math.abs(den) < 1e-9) return null;
+    return (we * dot(R.e, r0) - dot(w, r0)) / den;
+  }
+
+  // ---------------------------------------------------------------
+  // État de la scène
+  // ---------------------------------------------------------------
+  const etat = { sur: "plan", K: null, Kt: null };
+  const lire = ids => ids.map(id => { const v = parseFloat($(id).value); return Number.isFinite(v) ? v : 0; });
+
+  // ---------------------------------------------------------------
+  // Dessin
+  // ---------------------------------------------------------------
+  let couleurs = {};
+  function lireCouleurs() {
+    const s = getComputedStyle(document.documentElement);
+    for (const k of ["encre", "discret", "grille", "bleu", "rouge", "vert", "orange", "plan", "plan-bord", "plan2", "carte"]) couleurs[k] = s.getPropertyValue(`--${k}`).trim();
+  }
+  function trait(P, Q, coul, larg = 2, tirets = null) {
+    const a = proj(P), b = proj(Q);
+    ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]);
+    ctx.strokeStyle = coul; ctx.lineWidth = larg; ctx.setLineDash(tirets || []); ctx.stroke(); ctx.setLineDash([]);
+  }
+  function fleche(P, Q, coul, larg = 2.4) {
+    trait(P, Q, coul, larg);
+    const a = proj(P), b = proj(Q), ang = Math.atan2(b[1] - a[1], b[0] - a[0]), L = 12;
+    ctx.beginPath(); ctx.moveTo(b[0], b[1]);
+    ctx.lineTo(b[0] - L * Math.cos(ang - 0.4), b[1] - L * Math.sin(ang - 0.4));
+    ctx.lineTo(b[0] - L * Math.cos(ang + 0.4), b[1] - L * Math.sin(ang + 0.4));
+    ctx.closePath(); ctx.fillStyle = coul; ctx.fill();
+  }
+  function polygone(Ps, fond, bord) {
+    ctx.beginPath();
+    Ps.forEach((P, i) => { const a = proj(P); i ? ctx.lineTo(a[0], a[1]) : ctx.moveTo(a[0], a[1]); });
+    ctx.closePath(); ctx.fillStyle = fond; ctx.fill();
+    if (bord) { ctx.strokeStyle = bord; ctx.lineWidth = 1.2; ctx.stroke(); }
+  }
+  function point(P, coul, nom, r = 5.5, decal = [9, -9]) {
+    const a = proj(P);
+    ctx.beginPath(); ctx.arc(a[0], a[1], r, 0, 2 * Math.PI); ctx.fillStyle = coul; ctx.fill();
+    ctx.lineWidth = 2; ctx.strokeStyle = couleurs.carte; ctx.stroke();
+    if (nom) texte(nom, a[0] + decal[0], a[1] + decal[1], coul);
+  }
+  function texte(t, x, y, coul, taille = 20, italique = true) {
+    ctx.font = `${italique ? "italic " : ""}${taille}px ${MATH}`;
+    ctx.lineWidth = 4; ctx.strokeStyle = couleurs.carte; ctx.strokeText(t, x, y);
+    ctx.fillStyle = coul; ctx.fillText(t, x, y);
+  }
+  function angleDroit(H, v1, v2, taille, coul) {
+    const a = unit(v1), b = unit(v2);
+    const P1 = add(H, mul(a, taille)), P2 = add(add(H, mul(a, taille)), mul(b, taille)), P3 = add(H, mul(b, taille));
+    trait(P1, P2, coul, 1.6); trait(P2, P3, coul, 1.6);
+  }
+  function axes(L) {
+    const O = [0, 0, 0];
+    for (const [v, nom] of [[[L, 0, 0], "x"], [[0, L, 0], "y"], [[0, 0, L], "z"]]) {
+      fleche(O, v, couleurs.discret, 1.4);
+      const a = proj(v); texte(nom, a[0] + 6, a[1] - 6, couleurs.discret, 17);
+    }
+    const o = proj(O); texte("O", o[0] - 18, o[1] + 16, couleurs.discret, 16);
+  }
+  function grilleSol(n) {
+    for (let k = -n; k <= n; k++) {
+      trait([k, -n, 0], [k, n, 0], couleurs.grille, 1);
+      trait([-n, k, 0], [n, k, 0], couleurs.grille, 1);
+    }
+  }
+  function cadrer(points) {   // centre et échelle pour que la scène tienne dans la toile
+    const mins = [0, 1, 2].map(i => Math.min(...points.map(p => p[i]))), maxs = [0, 1, 2].map(i => Math.max(...points.map(p => p[i])));
+    cam.C = mins.map((m, i) => (m + maxs[i]) / 2);
+    const R = Math.max(...points.map(p => norme(sub(p, cam.C))), 1);
+    cam.echelle = Math.min(toile.clientWidth, toile.clientHeight) * 0.46 / R;
+  }
+
+  // poignées déplaçables de la scène courante : { P, test(sx, sy) → appliquer }
+  let poignees = [];
+
+  function dessiner() {
+    lireCouleurs();
+    const dpr = window.devicePixelRatio || 1, Wc = toile.clientWidth, Hc = toile.clientHeight;
+    if (toile.width !== Math.round(Wc * dpr) || toile.height !== Math.round(Hc * dpr)) { toile.width = Math.round(Wc * dpr); toile.height = Math.round(Hc * dpr); }
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, Wc, Hc);
+    cam.cx = Wc / 2; cam.cy = Hc / 2;
+    AX = axesCamera();
+    poignees = [];
+    sceneProj();
+  }
+
+  // ---------- projeté orthogonal sur un plan ou sur une droite ----------
+  function sceneProj() {
+    const M = lire(["mx", "my", "mz"]);
+    $("saisie-plan").hidden = etat.sur !== "plan";
+    $("saisie-droite").hidden = etat.sur !== "droite";
+    let H, Kpos, MH2, Hexact;
+    if (etat.sur === "plan") {
+      const [a, b, c, d] = lire(["pa", "pb", "pc", "pd"]), n = [a, b, c], nn = dot(n, n);
+      if (nn < 1e-9) { $("constat").textContent = "Le vecteur normal (a ; b ; c) ne peut pas être nul."; return; }
+      const k = dot(n, M) + d;
+      H = sub(M, mul(n, k / nn));
+      MH2 = [k * k, nn];
+      Hexact = [0, 1, 2].map(i => frac(Math.round(M[i] * nn - n[i] * k), nn));
+      const [e1, e2] = baseDuPlan(n);
+      const taille = Math.max(3.5, norme(sub(M, H)) * 0.9);
+      if (!etat.K) etat.K = add(H, add(mul(e1, taille * 0.6), mul(e2, taille * 0.35)));
+      // ramener K dans le plan si l'équation a changé
+      etat.K = sub(etat.K, mul(n, (dot(n, etat.K) + d) / nn));
+      Kpos = etat.K;
+      const S = (x, y) => add(H, add(mul(e1, x), mul(e2, y)));
+      cadrer([S(-taille, -taille), S(taille, taille), M, H, [0, 0, 0]]);
+      grilleSol(4); axes(3);
+      polygone([S(-taille, -taille), S(taille, -taille), S(taille, taille), S(-taille, taille)], couleurs.plan, couleurs["plan-bord"]);
+      const coin = proj(S(taille * 0.85, -taille * 0.85)); texte("P", coin[0], coin[1], couleurs.bleu, 24);
+      // la droite passant par M orthogonale à P
+      trait(add(M, mul(unit(n), 1.2)), sub(H, mul(unit(n), 1.5)), couleurs.discret, 1.2, [5, 5]);
+      angleDroit(H, sub(M, H), sub(Kpos, H).every(v => Math.abs(v) < 1e-9) ? e1 : sub(Kpos, H), 0.35, couleurs.vert);
+      poignees.push({ P: Kpos, deplacer: R => { const X = rayonPlan(R, n, d); if (X) etat.K = X; } });
+    } else {
+      const A = lire(["da", "db", "dc"]), u = lire(["dx", "dy", "dz"]), uu = dot(u, u);
+      if (uu < 1e-9) { $("constat").textContent = "Le vecteur u⃗ ne peut pas être nul."; return; }
+      const AM = sub(M, A), k = dot(AM, u);
+      H = add(A, mul(u, k / uu));
+      MH2 = [Math.round(dot(AM, AM) * uu - k * k), uu];
+      Hexact = [0, 1, 2].map(i => frac(Math.round(A[i] * uu + u[i] * k), uu));
+      if (etat.Kt === null) etat.Kt = k / uu + 1.2;
+      Kpos = add(A, mul(u, etat.Kt));
+      const P1 = add(H, mul(unit(u), -6)), P2 = add(H, mul(unit(u), 6));
+      cadrer([P1, P2, M, [0, 0, 0]]);
+      grilleSol(4); axes(3);
+      // le plan passant par M orthogonal à d, qui coupe d en H
+      const mh = norme(sub(M, H)), e1 = mh > 1e-9 ? unit(sub(M, H)) : baseDuPlan(u)[0], e2 = unit(cross(u, e1));
+      const S = (x, y) => add(H, add(mul(e1, x), mul(e2, y)));
+      const l0 = -0.35 * Math.max(mh, 1.5), l1 = 1.2 * Math.max(mh, 1.5), lg = 0.45 * Math.max(mh, 1.5);
+      polygone([S(l0, -lg), S(l1, -lg), S(l1, lg), S(l0, lg)], couleurs.plan2, null);
+      trait(P1, P2, couleurs.bleu, 2.6);
+      const p2 = proj(P2); texte("d", p2[0] + 8, p2[1], couleurs.bleu, 22);
+      angleDroit(H, sub(M, H), u, 0.35, couleurs.vert);
+      poignees.push({ P: Kpos, deplacer: R => { const tt = rayonDroite(R, A, u); if (tt !== null) etat.Kt = tt; } });
+    }
+    // aimanter K sur H quand on en est tout proche
+    if (norme(sub(Kpos, H)) < 0.18) { Kpos = H; if (etat.sur === "plan") etat.K = H; }
+    const MK = norme(sub(M, Kpos)), MH = Math.sqrt(MH2[0] / MH2[1]);
+    trait(M, Kpos, couleurs.orange, 2.4, [7, 5]);
+    trait(M, H, couleurs.vert, 3);
+    point(H, couleurs.vert, "H", 6, [10, 22]);
+    point(M, couleurs.encre, "M", 6.5, [10, -10]);
+    if (norme(sub(Kpos, H)) > 1e-6) point(Kpos, couleurs.orange, "K", 9, [12, -12]);
+
+    const surQuoi = etat.sur === "plan" ? "du plan <i>P</i>" : "de la droite <i>d</i>";
+    $("constat").innerHTML = norme(sub(Kpos, H)) < 1e-6
+      ? `<span class="vert"><i>K</i> = <i>H</i></span> : c'est le point ${surQuoi} le plus proche de <i>M</i>. Distance : <b class="vert">${racine(MH2[0], MH2[1])}</b>.`
+      : `Faites glisser <span class="orange"><i>K</i></span> ${etat.sur === "plan" ? "dans le plan" : "sur la droite"} : <span class="orange"><i>MK</i> ≈ <b>${fr(MK, 2)}</b></span> &gt; <span class="vert"><i>MH</i> ≈ <b>${fr(MH, 2)}</b></span>.`;
+    $("resultat-proj").innerHTML = `Projeté orthogonal : <b><i>H</i>(${Hexact.join(" ; ")})</b>, et la distance de <i>M</i> ${etat.sur === "plan" ? "au plan <i>P</i>" : "à la droite <i>d</i>"} vaut <b><i>MH</i> = ${racine(MH2[0], MH2[1])}</b>.`;
+  }
+
+  // ---------------------------------------------------------------
+  // Souris et doigt : tourner la scène, ou déplacer une poignée
+  // ---------------------------------------------------------------
+  let geste = null;
+  function sousLeDoigt(x, y) {
+    let meilleur = null, dmin = 18;
+    for (const p of poignees) { const a = proj(p.P), dd = Math.hypot(a[0] - x, a[1] - y); if (dd < dmin) { dmin = dd; meilleur = p; } }
+    return meilleur;
+  }
+  const coords = ev => { const r = toile.getBoundingClientRect(); return [ev.clientX - r.left, ev.clientY - r.top]; };
+  toile.addEventListener("pointerdown", ev => {
+    const [x, y] = coords(ev), p = sousLeDoigt(x, y);
+    toile.setPointerCapture(ev.pointerId);
+    if (p && p.clic) { p.clic(); geste = null; return; }
+    geste = p ? { poignee: p } : { x, y, az: cam.az, el: cam.el };
+    toile.classList.add("prise");
+  });
+  toile.addEventListener("pointermove", ev => {
+    const [x, y] = coords(ev);
+    if (!geste) { toile.classList.toggle("survol", !!sousLeDoigt(x, y)); return; }
+    if (geste.poignee) { geste.poignee.deplacer(rayon(x, y)); dessiner(); return; }
+    cam.az = geste.az - (x - geste.x) * 0.008;
+    cam.el = Math.max(-1.45, Math.min(1.45, geste.el + (y - geste.y) * 0.008));
+    dessiner();
+  });
+  const fin = () => { geste = null; toile.classList.remove("prise"); };
+  toile.addEventListener("pointerup", fin);
+  toile.addEventListener("pointercancel", fin);
+
+  // ---------------------------------------------------------------
+  // Commandes
+  // ---------------------------------------------------------------
+  $("chapeau").innerHTML = "Le projeté orthogonal <i>H</i> de <i>M</i> est le point le plus proche de <i>M</i>. Faites glisser <i>K</i> et regardez la distance <i>MK</i> : elle est toujours plus grande que <i>MH</i>. Faites tourner la scène pour voir l'angle droit.";
+  $("vue").addEventListener("click", () => { cam.az = VUE.az; cam.el = VUE.el; dessiner(); });
+  document.querySelectorAll("[data-sur]").forEach(b => b.addEventListener("click", () => {
+    etat.sur = b.dataset.sur; etat.K = null; etat.Kt = null;
+    document.querySelectorAll("[data-sur]").forEach(c => c.setAttribute("aria-pressed", String(c === b)));
+    dessiner();
+  }));
+  document.querySelectorAll("input[type=number]").forEach(i => i.addEventListener("input", () => { if (["mx", "my", "mz", "pa", "pb", "pc", "pd", "da", "db", "dc", "dx", "dy", "dz"].includes(i.id)) { etat.K = null; etat.Kt = null; } dessiner(); }));
+  new ResizeObserver(() => dessiner()).observe(toile);
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", dessiner);
+  new MutationObserver(dessiner).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+  dessiner();
+})();
+</script>
+
+<!-- plein-ecran : bouton commun à toutes les pages interactives -->
+<style>
+#pleinEcran { position: fixed; top: calc(10px + env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); z-index: 50; font: 500 13px var(--ui, system-ui, sans-serif); padding: 6px 12px; border-radius: 999px; border: 1px solid var(--filet, #d9dee5); background: var(--carte, #fff); color: var(--encre, #1b1f24); cursor: pointer; opacity: .9; }
+#pleinEcran:hover { opacity: 1; }
+body.plein-ecran .niveau, body.plein-ecran h1, body.plein-ecran h1 + .chapeau { display: none !important; }
+body.plein-ecran .page { max-width: none !important; min-height: 100vh; padding-top: 48px !important; align-content: start; }
+body.plein-ecran .page svg:not(.mini) { max-height: 76vh; }
+body.plein-ecran.plein-multi .page svg:not(.mini) { max-height: 46vh; }
+body.plein-ecran .constat { font-size: clamp(20px, 2.6vw, 30px); }
+</style>
+<script>
+(() => {
+  const b = document.createElement("button");
+  b.type = "button"; b.id = "pleinEcran"; document.body.appendChild(b);
+  function etat(on) { document.body.classList.toggle("plein-ecran", on); b.textContent = on ? "✕ Quitter le plein écran" : "⛶ Plein écran"; b.setAttribute("aria-pressed", on); window.dispatchEvent(new Event("resize")); }
+  b.addEventListener("click", async () => {
+    const on = !document.body.classList.contains("plein-ecran");
+    etat(on);
+    try { on ? await document.documentElement.requestFullscreen() : (document.fullscreenElement && await document.exitFullscreen()); } catch (e) {}
+  });
+  document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement && document.body.classList.contains("plein-ecran")) etat(false); });
+  window.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("plein-ecran")) etat(false); });
+  if (document.querySelectorAll(".page svg:not(.mini), .page canvas").length > 1) document.body.classList.add("plein-multi");
+  etat(location.hash === "#plein");
+})();
+</script>
+
+</body></html>

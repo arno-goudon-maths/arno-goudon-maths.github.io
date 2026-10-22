@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;box-sizing:border-box}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head><body>
+<title>La pente égale la hauteur</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Mise en page : la courbe y = eˣ en bleu (comme dans le cours). Onglet 1 : un point A qu'on fait glisser, sa tangente en rouge
+   et l'escalier « +1 horizontal, +eᵃ vertical » en orange, posé à côté de la hauteur de A (même longueur).
+   Onglet 2 : la méthode d'Euler pour f′ = f, f(0) = 1, dont la ligne brisée orange épouse la courbe quand le pas h diminue. */
+:root {
+  --papier: #f7f8fa; --carte: #ffffff; --encre: #1b1f24; --discret: #5d6672; --filet: #d9dee5; --grille: #e7eaef;
+  --courbe: #1a56db; --tangente: #d62828; --pas: #f07800;
+  --math: "STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --ui: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #252b34; --courbe: #6fa3f0; --tangente: #ff6b6b; --pas: #ffa64d; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #252b34; --courbe: #6fa3f0; --tangente: #ff6b6b; --pas: #ffa64d; color-scheme: dark; }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { background: var(--papier); color: var(--encre); font-family: var(--ui); font-size: 15px; line-height: 1.5; }
+.page { max-width: 960px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 40px; display: grid; gap: 12px; }
+.niveau { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--discret); }
+h1 { font-family: var(--math); font-weight: 600; font-size: clamp(26px, 4vw, 36px); line-height: 1.15; margin: 0; text-wrap: balance; }
+.chapeau { margin: 0; color: var(--discret); max-width: 70ch; }
+.onglets, .pas-h { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.onglets button, .pas-h button { font: 500 13px var(--ui); padding: 4px 12px; border-radius: 999px; border: 1px solid var(--filet); background: var(--carte); color: var(--encre); cursor: pointer; }
+.onglets button[aria-selected="true"] { background: var(--encre); color: var(--carte); border-color: var(--encre); }
+.pas-h button { font-family: var(--math); font-size: 16px; }
+.pas-h button[aria-pressed="true"] { border-color: var(--pas); color: var(--pas); font-weight: 600; }
+.pas-h span { font-size: 14px; color: var(--discret); }
+button:focus-visible { outline: 3px solid var(--tangente); outline-offset: 2px; }
+.figure { background: var(--carte); border: 1px solid var(--filet); border-radius: 10px; padding: 8px; }
+svg { display: block; width: 100%; height: auto; touch-action: none; user-select: none; }
+.constat { font-size: 17px; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--filet); background: var(--carte); margin: 0; }
+.constat .t { color: var(--tangente); } .constat .o { color: var(--pas); } .constat .b { color: var(--courbe); }
+details { background: var(--carte); border: 1px solid var(--filet); border-radius: 10px; padding: 10px 14px; }
+summary { cursor: pointer; font-weight: 500; }
+details p { color: var(--discret); margin: 8px 0; }
+.m { font-family: var(--math); font-style: italic; }
+</style>
+
+<div class="page">
+  <span class="niveau">Première spécialité · Chapitre 10 · Fonction exponentielle</span>
+  <h1>La pente égale la hauteur</h1>
+  <p class="chapeau" id="chapeau"></p>
+
+  <div class="onglets" role="tablist">
+    <button type="button" role="tab" id="o1" aria-selected="true">Tangente</button>
+    <button type="button" role="tab" id="o2" aria-selected="false">Méthode d'Euler</button>
+  </div>
+  <div class="pas-h" id="pasH" hidden><span>Pas <span class="m">h</span> :</span></div>
+  <div class="figure"><svg id="g" viewBox="0 0 900 560" role="img" aria-label="Courbe de la fonction exponentielle"></svg></div>
+  <p class="constat" id="constat"></p>
+
+  <details>
+    <summary>Pour aller plus loin</summary>
+    <p>La fonction exponentielle est l'unique fonction dérivable sur ℝ telle que exp′ = exp et exp(0) = 1. La tangente au point d'abscisse <span class="m">a</span> a donc pour coefficient directeur exp′(<span class="m">a</span>) = <span class="m">e</span><sup><span class="m">a</span></sup>, l'ordonnée du point : elle coupe l'axe des abscisses en <span class="m">a</span> − 1, quel que soit <span class="m">a</span>.</p>
+    <p>Méthode d'Euler : comme <span class="m">f</span>′ = <span class="m">f</span>, on approche <span class="m">f</span>(<span class="m">x</span> + <span class="m">h</span>) par <span class="m">f</span>(<span class="m">x</span>) + <span class="m">h</span> × <span class="m">f</span>(<span class="m">x</span>) = (1 + <span class="m">h</span>) <span class="m">f</span>(<span class="m">x</span>). En partant de <span class="m">f</span>(0) = 1, on obtient <span class="m">f</span>(1) ≈ (1 + <span class="m">h</span>)<sup>1/<span class="m">h</span></sup>, qui se rapproche de <span class="m">e</span> ≈ 2,718 28 quand <span class="m">h</span> diminue.</p>
+  </details>
+</div>
+
+<script>
+(() => {
+  const NS = "http://www.w3.org/2000/svg", $ = id => document.getElementById(id);
+  const fr = (x, d = 2) => { const r = Math.round(x * 10 ** d) / 10 ** d; return (Object.is(r, -0) ? 0 : r).toFixed(d).replace(/0+$/, "").replace(/[.]$/, "").replace(".", ",").replace("-", "−"); };
+  const el = (t, a, txt) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); if (txt != null) e.textContent = txt; return e; };
+  const X = [-4, 2.4], Y = [-0.6, 8.4], P = { g: 30, d: 880, h: 10, b: 540 };
+  const sx = x => P.g + (x - X[0]) / (X[1] - X[0]) * (P.d - P.g), sy = y => P.b - (y - Y[0]) / (Y[1] - Y[0]) * (P.b - P.h);
+  const ix = px => X[0] + (px - P.g) / (P.d - P.g) * (X[1] - X[0]);
+  let mode = 1, a = 1, h = 0.5;
+  const g = $("g");
+  const H = [1, 0.5, 0.25, 0.1, 0.01];
+  H.forEach(v => { const b = document.createElement("button"); b.type = "button"; b.textContent = fr(v); b.dataset.h = v; b.addEventListener("click", () => { h = v; dessiner(); }); $("pasH").appendChild(b); });
+  $("o1").addEventListener("click", () => { mode = 1; dessiner(); });
+  $("o2").addEventListener("click", () => { mode = 2; dessiner(); });
+  function point(ev) { const p = g.createSVGPoint(); p.x = ev.clientX; p.y = ev.clientY; return p.matrixTransform(g.getScreenCTM().inverse()); }
+  let tire = false;
+  g.addEventListener("pointerdown", ev => { if (mode !== 1) return; tire = true; g.setPointerCapture(ev.pointerId); bouger(ev); });
+  g.addEventListener("pointermove", ev => { if (tire) bouger(ev); });
+  g.addEventListener("pointerup", () => { tire = false; });
+  function bouger(ev) { a = Math.max(-3, Math.min(2, Math.round(ix(point(ev).x) * 20) / 20)); dessiner(); }
+
+  function repere() {
+    g.textContent = "";
+    for (let x = -4; x <= 2; x++) g.appendChild(el("line", { x1: sx(x), x2: sx(x), y1: P.h, y2: P.b, stroke: "var(--grille)" }));
+    for (let y = 0; y <= 8; y++) g.appendChild(el("line", { x1: P.g, x2: P.d, y1: sy(y), y2: sy(y), stroke: "var(--grille)" }));
+    g.appendChild(el("line", { x1: P.g, x2: P.d, y1: sy(0), y2: sy(0), stroke: "var(--encre)", "stroke-width": 1.5 }));
+    g.appendChild(el("line", { x1: sx(0), x2: sx(0), y1: P.h, y2: P.b, stroke: "var(--encre)", "stroke-width": 1.5 }));
+    for (let x = -3; x <= 2; x++) if (x) txt(sx(x), sy(0) + 20, String(x).replace("-", "−"), { "text-anchor": "middle" });
+    for (let y = 1; y <= 8; y++) txt(sx(0) - 8, sy(y) + 5, String(y), { "text-anchor": "end" });
+    txt(sx(0) - 8, sy(0) + 20, "0", { "text-anchor": "end" });
+    g.appendChild(el("clipPath", { id: "cl" })).appendChild(el("rect", { x: P.g, y: P.h, width: P.d - P.g, height: P.b - P.h }));
+  }
+  function txt(x, y, s, a = {}) { return g.appendChild(el("text", Object.assign({ x, y, "font-size": 14, fill: "var(--discret)", "font-family": "var(--ui)" }, a), s)); }
+  function courbe(opacite = 1) {
+    let d = ""; for (let i = 0; i <= 400; i++) { const x = X[0] + (X[1] - X[0]) * i / 400; d += (i ? "L" : "M") + sx(x).toFixed(1) + "," + sy(Math.min(Math.exp(x), 20)).toFixed(1); }
+    g.appendChild(el("path", { d, fill: "none", stroke: "var(--courbe)", "stroke-width": 4, opacity: opacite, "clip-path": "url(#cl)" }));
+    const l = txt(sx(1.75) - 12, sy(Math.exp(1.75)) + 6, "y = ", { fill: "var(--courbe)", "font-family": "var(--math)", "font-size": 21, "text-anchor": "end", opacity: opacite });
+    l.appendChild(el("tspan", { "font-style": "italic" }, "e")); l.appendChild(el("tspan", { dy: -9, "font-size": 14, "font-style": "italic" }, "x"));
+  }
+
+  function tangente() {
+    repere(); courbe();
+    const ya = Math.exp(a);
+    // tangente : y = e^a (x − a) + e^a, coupe l'axe en a − 1
+    const T = x => ya * (x - a) + ya;
+    g.appendChild(el("line", { x1: sx(X[0]), y1: sy(T(X[0])), x2: sx(X[1]), y2: sy(T(X[1])), stroke: "var(--tangente)", "stroke-width": 3, "clip-path": "url(#cl)" }));
+    // hauteur de A : du pied (a ; 0) à A
+    g.appendChild(el("line", { x1: sx(a), x2: sx(a), y1: sy(0), y2: sy(ya), stroke: "var(--pas)", "stroke-width": 5, opacity: 0.45 }));
+    // escalier : de (a − 1 ; 0) on avance de 1 et on monte de e^a, on arrive en A
+    g.appendChild(el("line", { x1: sx(a - 1), x2: sx(a), y1: sy(0), y2: sy(0), stroke: "var(--pas)", "stroke-width": 4 }));
+    txt((sx(a - 1) + sx(a)) / 2, sy(0) + 38, "1", { "text-anchor": "middle", fill: "var(--pas)", "font-family": "var(--math)", "font-size": 20 });
+    const lab = txt(sx(a) + 12, sy(ya / 2) + 6, "", { fill: "var(--pas)", "font-family": "var(--math)", "font-size": 20, stroke: "var(--carte)", "stroke-width": 5, "paint-order": "stroke" });
+    lab.appendChild(el("tspan", { "font-style": "italic" }, "e")); lab.appendChild(el("tspan", { dy: -9, "font-size": 14, "font-style": "italic" }, "a")); lab.appendChild(el("tspan", { dy: 9 }, " ≈ " + fr(ya)));
+    g.appendChild(el("circle", { cx: sx(a - 1), cy: sy(0), r: 6, fill: "var(--tangente)" }));
+    txt(sx(a - 1) - 10, sy(0) - 10, "a − 1", { "text-anchor": "end", fill: "var(--tangente)", "font-family": "var(--math)", "font-size": 17, "font-style": "italic", stroke: "var(--carte)", "stroke-width": 5, "paint-order": "stroke" });
+    g.appendChild(el("circle", { cx: sx(a), cy: sy(ya), r: 12, fill: "var(--tangente)", stroke: "var(--carte)", "stroke-width": 3, style: "cursor:grab" }));
+    txt(sx(a) - 16, sy(ya) - 12, "A", { "text-anchor": "end", fill: "var(--tangente)", "font-family": "var(--math)", "font-size": 22, "font-style": "italic" });
+    $("chapeau").innerHTML = "Faites glisser le point <span class=\"m\">A</span>(<span class=\"m\">a</span> ; <span class=\"m\">e</span><sup><span class=\"m\">a</span></sup>) le long de la courbe. Sous la tangente, avancez de 1 : vous montez exactement de la hauteur du point.";
+    $("constat").innerHTML = `Pour <i>a</i> = ${fr(a)} : le coefficient directeur de la tangente vaut <span class="t">exp′(${fr(a)}) = <i>e</i><sup>${fr(a)}</sup> ≈ ${fr(ya)}</span>, exactement <span class="o">l'ordonnée de <i>A</i></span>.`;
+  }
+
+  function euler() {
+    repere(); courbe(0.45);
+    // de 0 vers la droite : f(x + h) = (1 + h) f(x) ; vers la gauche : f(x − h) = (1 − h) f(x)
+    const pts = [[0, 1]];
+    let x = 0, y = 1; while (x + h <= X[1] + 1e-9) { y *= 1 + h; x += h; pts.push([x, y]); }
+    x = 0; y = 1; const gauche = []; while (x - h >= X[0] - 1e-9 && h < 1) { y *= 1 - h; x -= h; gauche.unshift([x, y]); }
+    const tous = gauche.concat(pts);
+    g.appendChild(el("polyline", { points: tous.map(([u, v]) => sx(u).toFixed(1) + "," + sy(v).toFixed(1)).join(" "), fill: "none", stroke: "var(--pas)", "stroke-width": 3, "clip-path": "url(#cl)" }));
+    if (h >= 0.1) tous.forEach(([u, v]) => g.appendChild(el("circle", { cx: sx(u), cy: sy(v), r: h >= 0.25 ? 5 : 3.5, fill: "var(--pas)", "clip-path": "url(#cl)" })));
+    // valeur en 1
+    const f1 = (1 + h) ** Math.round(1 / h);
+    g.appendChild(el("line", { x1: sx(1), x2: sx(1), y1: sy(0), y2: sy(Math.E), stroke: "var(--encre)", "stroke-width": 1, "stroke-dasharray": "4 4" }));
+    g.appendChild(el("circle", { cx: sx(1), cy: sy(f1), r: 8, fill: "var(--pas)", stroke: "var(--carte)", "stroke-width": 2.5 }));
+    g.appendChild(el("circle", { cx: sx(0), cy: sy(1), r: 7, fill: "var(--encre)", stroke: "var(--carte)", "stroke-width": 2.5 }));
+    txt(sx(0) + 10, sy(1) + 22, "f(0) = 1", { fill: "var(--encre)", "font-family": "var(--math)", "font-size": 17, "font-style": "italic" });
+    $("pasH").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", +b.dataset.h === h));
+    $("chapeau").innerHTML = "On cherche une fonction telle que <span class=\"m\">f</span>′ = <span class=\"m\">f</span> et <span class=\"m\">f</span>(0) = 1. Partant de (0 ; 1), on avance par petits pas <span class=\"m\">h</span> en suivant la pente <span class=\"m\">f</span>(<span class=\"m\">x</span>). Diminuez <span class=\"m\">h</span>.";
+    $("constat").innerHTML = `Avec <i>h</i> = ${fr(h)} : <span class="o"><i>f</i>(1) ≈ (1 + ${fr(h)})<sup>${Math.round(1 / h)}</sup> ≈ ${fr(f1, 4)}</span>, contre <span class="b"><i>e</i> ≈ 2,7183</span>.`;
+  }
+
+  function dessiner() {
+    $("o1").setAttribute("aria-selected", mode === 1); $("o2").setAttribute("aria-selected", mode === 2);
+    $("pasH").hidden = mode !== 2;
+    g.style.cursor = mode === 1 ? "grab" : "default";
+    mode === 1 ? tangente() : euler();
+  }
+  if (location.hash === "#euler") mode = 2;
+  dessiner();
+})();
+</script>
+<!-- plein-ecran : bouton commun à toutes les pages interactives -->
+<style>
+#pleinEcran { position: fixed; top: calc(10px + env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); z-index: 50; font: 500 13px var(--ui, system-ui, sans-serif); padding: 6px 12px; border-radius: 999px; border: 1px solid var(--filet, #d9dee5); background: var(--carte, #fff); color: var(--encre, #1b1f24); cursor: pointer; opacity: .9; }
+#pleinEcran:hover { opacity: 1; }
+body.plein-ecran .niveau, body.plein-ecran h1, body.plein-ecran h1 + .chapeau { display: none !important; }
+body.plein-ecran .page { max-width: none !important; min-height: 100vh; padding-top: 48px !important; align-content: start; }
+body.plein-ecran .page svg:not(.mini) { max-height: 76vh; }
+body.plein-ecran.plein-multi .page svg:not(.mini) { max-height: 46vh; }
+body.plein-ecran .constat { font-size: clamp(20px, 2.6vw, 30px); }
+</style>
+<script>
+(() => {
+  const b = document.createElement("button");
+  b.type = "button"; b.id = "pleinEcran"; document.body.appendChild(b);
+  function etat(on) { document.body.classList.toggle("plein-ecran", on); b.textContent = on ? "✕ Quitter le plein écran" : "⛶ Plein écran"; b.setAttribute("aria-pressed", on); window.dispatchEvent(new Event("resize")); }
+  b.addEventListener("click", async () => {
+    const on = !document.body.classList.contains("plein-ecran");
+    etat(on);
+    try { on ? await document.documentElement.requestFullscreen() : (document.fullscreenElement && await document.exitFullscreen()); } catch (e) {}
+  });
+  document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement && document.body.classList.contains("plein-ecran")) etat(false); });
+  window.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("plein-ecran")) etat(false); });
+  if (document.querySelectorAll(".page svg:not(.mini), .page canvas").length > 1) document.body.classList.add("plein-multi");
+  etat(location.hash === "#plein");
+})();
+</script>
+
+</body></html>

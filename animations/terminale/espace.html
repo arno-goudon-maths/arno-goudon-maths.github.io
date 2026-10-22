@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;box-sizing:border-box}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head><body>
+<title>Droites et plans dans l'espace</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Page épurée : une barre de commandes, la grande scène 3D qu'on fait tourner au centre, une ligne de constat ;
+   les coordonnées et les réglages fins repliés. Deux scènes du chapitre 4 : représentation paramétrique
+   d'une droite, positions relatives de deux droites. Le projeté orthogonal (chapitre 8) a sa propre page. */
+:root {
+  --papier: #f7f8fa;
+  --carte: #ffffff;
+  --encre: #1b1f24;
+  --discret: #5d6672;
+  --filet: #d9dee5;
+  --grille: #e3e7ec;
+  --bleu: #1f5fbf;
+  --rouge: #c62828;
+  --vert: #2e7d32;
+  --orange: #d97706;
+  --plan: rgba(31, 95, 191, 0.13);
+  --plan-bord: rgba(31, 95, 191, 0.45);
+  --plan2: rgba(46, 125, 50, 0.12);
+  --math: "STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --ui: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #2a3039;
+    --bleu: #6fa3f0; --rouge: #f07a7a; --vert: #7cc983; --orange: #f0a952;
+    --plan: rgba(111, 163, 240, 0.16); --plan-bord: rgba(111, 163, 240, 0.5); --plan2: rgba(124, 201, 131, 0.14); color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #2a3039;
+  --bleu: #6fa3f0; --rouge: #f07a7a; --vert: #7cc983; --orange: #f0a952;
+  --plan: rgba(111, 163, 240, 0.16); --plan-bord: rgba(111, 163, 240, 0.5); --plan2: rgba(124, 201, 131, 0.14); color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { background: var(--papier); color: var(--encre); font-family: var(--ui); font-size: 15px; line-height: 1.5; }
+.page { max-width: 1040px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 40px; display: grid; gap: 14px; }
+header { display: grid; gap: 4px; }
+.niveau { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--discret); }
+h1 { font-family: var(--math); font-weight: 600; font-size: clamp(26px, 4vw, 34px); line-height: 1.15; margin: 0; }
+.chapeau { margin: 0; color: var(--discret); max-width: 75ch; min-height: 3em; }
+.barre { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; min-height: 40px; }
+.reglage { display: flex; align-items: center; gap: 10px; flex: 1 1 260px; min-width: 0; }
+.reglage label { font-family: var(--math); font-style: italic; font-size: 20px; }
+.reglage output { font-family: var(--math); font-size: 20px; min-width: 3.5ch; font-variant-numeric: tabular-nums; }
+select, button, input[type="number"] { font: inherit; color: var(--encre); background: var(--carte); border: 1px solid var(--filet); border-radius: 7px; padding: 6px 10px; }
+input[type="number"] { width: 4.2em; font-family: var(--math); font-size: 17px; padding: 3px 6px; }
+button { cursor: pointer; }
+button:hover { border-color: var(--bleu); }
+:focus-visible { outline: 2px solid var(--bleu); outline-offset: 2px; }
+input[type="range"] { width: 100%; accent-color: var(--rouge); }
+.segments { display: inline-flex; border: 1px solid var(--filet); border-radius: 8px; overflow: hidden; }
+.segments button { border: 0; border-radius: 0; background: var(--carte); }
+.segments button + button { border-left: 1px solid var(--filet); }
+.segments button[aria-pressed="true"] { background: var(--encre); color: var(--carte); }
+.scene { position: relative; background: var(--carte); border: 1px solid var(--filet); border-radius: 12px; overflow: hidden; }
+canvas { display: block; width: 100%; height: min(62vh, 560px); min-height: 340px; touch-action: none; cursor: grab; }
+canvas.prise { cursor: grabbing; }
+canvas.survol { cursor: pointer; }
+.astuce { position: absolute; right: 12px; bottom: 8px; font-size: 12px; color: var(--discret); pointer-events: none; }
+.constat { font-size: 18px; text-align: center; min-height: 1.6em; }
+.constat b { font-family: var(--math); font-size: 20px; }
+.bleu { color: var(--bleu); } .rouge { color: var(--rouge); } .vert { color: var(--vert); } .orange { color: var(--orange); }
+details { background: var(--carte); border: 1px solid var(--filet); border-radius: 10px; padding: 10px 16px; }
+summary { cursor: pointer; color: var(--discret); font-weight: 500; }
+.plus { display: grid; gap: 12px; padding-top: 12px; }
+.plus p { margin: 0; }
+.saisie { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font-family: var(--math); font-size: 18px; }
+.saisie span { display: inline-flex; align-items: center; gap: 4px; }
+.systeme { font-family: var(--math); font-size: 18px; display: inline-grid; grid-template-columns: auto auto; gap: 0 6px; border-left: 2px solid var(--encre); padding-left: 10px; }
+.note { font-size: 13px; color: var(--discret); }
+.m { font-family: var(--math); }
+</style>
+
+<div class="page">
+  <header>
+    <span class="niveau">Terminale spécialité · Chapitre 4 · Géométrie dans l'espace</span>
+    <h1>Droites et plans dans l'espace</h1>
+    <p class="chapeau" id="chapeau"></p>
+  </header>
+
+  <div class="barre">
+    <select id="scene" aria-label="Scène">
+      <option value="param">Représentation paramétrique d'une droite</option>
+      <option value="cube">Positions relatives de deux droites</option>
+    </select>
+    <div class="reglage" id="zone-t">
+      <label for="tt">t</label>
+      <input type="range" id="tt" min="-3" max="3" step="0.1" value="1.5">
+      <output id="tt-sortie" for="tt"></output>
+    </div>
+    <button type="button" id="vue">Vue de départ</button>
+  </div>
+
+  <div class="scene">
+    <canvas id="toile" role="img" aria-label="Scène en trois dimensions, que l'on fait tourner en la faisant glisser"></canvas>
+    <span class="astuce">Faites glisser pour tourner</span>
+  </div>
+
+  <div class="constat" id="constat" role="status" aria-live="polite"></div>
+
+  <details>
+    <summary>Pour aller plus loin</summary>
+    <div class="plus" id="plus-param">
+      <p>La droite <i>d</i> passe par <i>A</i> et est dirigée par <span class="m"><i>u⃗</i></span>. Modifiez-les :</p>
+      <div class="saisie">
+        <span><i>A</i>(<input type="number" id="ax" value="1"> ; <input type="number" id="ay" value="-1"> ; <input type="number" id="az" value="0">)</span>
+        <span class="m"><i>u⃗</i>(<input type="number" id="ux" value="1"> ; <input type="number" id="uy" value="2"> ; <input type="number" id="uz" value="1">)</span>
+      </div>
+      <p>Un point appartient-il à <i>d</i> ? Entrez ses coordonnées : on cherche <i>t</i> avec chacune des trois équations.</p>
+      <div class="saisie">
+        <span><i>N</i>(<input type="number" id="nx" value="3"> ; <input type="number" id="ny" value="3"> ; <input type="number" id="nz" value="2">)</span>
+      </div>
+      <p id="test-N"></p>
+    </div>
+    <div class="plus" id="plus-cube">
+      <p>Deux droites de l'espace sont <b>sécantes</b> (un seul point commun), <b>parallèles</b> (strictement ou confondues) ou <b>non coplanaires</b> (aucun plan ne les contient).
+        Quand elles sont coplanaires, la scène affiche le plan qui les contient.</p>
+    </div>
+  </details>
+</div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const toile = $("toile"), ctx = toile.getContext("2d");
+  const MATH = "STIX Two Text, Cambria Math, Times New Roman, serif", UI = "IBM Plex Sans, Segoe UI, system-ui, sans-serif";
+
+  // ---------------------------------------------------------------
+  // Nombres à la française, fractions exactes
+  // ---------------------------------------------------------------
+  function fr(x, d = 2) {
+    if (Math.abs(x) < 1e-9) x = 0;
+    let s = x.toFixed(d);
+    if (s.includes(".")) s = s.replace(/0+$/, "").replace(/\.$/, "");
+    return s.replace(".", ",").replace("-", "−");
+  }
+  const pgcd = (a, b) => { a = Math.abs(a); b = Math.abs(b); while (b) [a, b] = [b, a % b]; return a || 1; };
+  function frac(p, q) {   // p/q réduite, écrite à la française
+    if (q < 0) { p = -p; q = -q; }
+    const g = pgcd(p, q); p /= g; q /= g;
+    const s = q === 1 ? String(p) : `${Math.abs(p)}/${q}`;
+    return (p < 0 && q !== 1 ? "−" : "") + s.replace("-", "−");
+  }
+  function racine(p, q) {   // √(p/q) simplifiée : k√m / q, suivie d'une valeur approchée
+    const g = pgcd(p, q); p /= g; q /= g;
+    let s = p * q, k = 1;
+    for (let f = 2; f * f <= s; f++) while (s % (f * f) === 0) { s /= f * f; k *= f; }
+    const h = pgcd(k, q), kk = k / h, qq = q / h, v = Math.sqrt(p / q);
+    if (s === 1) return frac(kk, qq);
+    const num = `${kk === 1 ? "" : kk}√${s}`;
+    return `${qq === 1 ? num : `${num}/${qq}`} ≈ ${fr(v, 2)}`;
+  }
+
+  // ---------------------------------------------------------------
+  // Vecteurs
+  // ---------------------------------------------------------------
+  const add = (a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
+  const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+  const mul = (a, k) => [a[0] * k, a[1] * k, a[2] * k];
+  const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+  const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+  const norme = a => Math.sqrt(dot(a, a));
+  const unit = a => mul(a, 1 / (norme(a) || 1));
+  const pt = p => `(${p.map(v => fr(v, 2)).join(" ; ")})`;
+  function baseDuPlan(n) {   // deux vecteurs unitaires orthogonaux dans le plan de normale n
+    const aide = Math.abs(n[2]) < 0.9 ? [0, 0, 1] : [1, 0, 0];
+    const e1 = unit(cross(n, aide)), e2 = unit(cross(n, e1));
+    return [e1, e2];
+  }
+
+  // ---------------------------------------------------------------
+  // Caméra : projection orthographique, rotation autour de l'axe vertical et élévation
+  // ---------------------------------------------------------------
+  const VUE = { az: -0.95, el: 0.42 };
+  const cam = { az: VUE.az, el: VUE.el, C: [0, 0, 0], echelle: 40, cx: 0, cy: 0 };
+  function axesCamera() {
+    const { az, el } = cam;
+    const e = [Math.cos(el) * Math.cos(az), Math.cos(el) * Math.sin(az), Math.sin(el)];
+    const r = [-Math.sin(az), Math.cos(az), 0];
+    const u = [-Math.sin(el) * Math.cos(az), -Math.sin(el) * Math.sin(az), Math.cos(el)];
+    return { e, r, u };
+  }
+  let AX = axesCamera();
+  const proj = P => { const q = sub(P, cam.C); return [cam.cx + cam.echelle * dot(q, AX.r), cam.cy - cam.echelle * dot(q, AX.u), dot(q, AX.e)]; };
+  // le rayon visuel passant par un point de l'écran
+  const rayon = (sx, sy) => ({ Q: add(cam.C, add(mul(AX.r, (sx - cam.cx) / cam.echelle), mul(AX.u, -(sy - cam.cy) / cam.echelle))), e: AX.e });
+  function rayonDroite(R, A, w) {   // paramètre t du point de la droite A + t w le plus proche du rayon
+    const r0 = sub(A, R.Q), we = dot(w, R.e), den = dot(w, w) - we * we;
+    if (Math.abs(den) < 1e-9) return null;
+    return (we * dot(R.e, r0) - dot(w, r0)) / den;
+  }
+
+  // ---------------------------------------------------------------
+  // État des deux scènes
+  // ---------------------------------------------------------------
+  const etat = { scene: "param", t: 1.5, sel: [6, 0, 1, 7] };
+  const lire = ids => ids.map(id => { const v = parseFloat($(id).value); return Number.isFinite(v) ? v : 0; });
+  const CUBE = [[0, 0, 0], [4, 0, 0], [4, 4, 0], [0, 4, 0], [0, 0, 4], [4, 0, 4], [4, 4, 4], [0, 4, 4]];
+  const NOMS = "ABCDEFGH";
+  const ARETES = [[0, 1], [1, 2], [2, 3], [3, 0], [4, 5], [5, 6], [6, 7], [7, 4], [0, 4], [1, 5], [2, 6], [3, 7]];
+
+  // ---------------------------------------------------------------
+  // Dessin
+  // ---------------------------------------------------------------
+  let couleurs = {};
+  function lireCouleurs() {
+    const s = getComputedStyle(document.documentElement);
+    for (const k of ["encre", "discret", "grille", "bleu", "rouge", "vert", "orange", "plan", "plan-bord", "plan2", "carte"]) couleurs[k] = s.getPropertyValue(`--${k}`).trim();
+  }
+  function trait(P, Q, coul, larg = 2, tirets = null) {
+    const a = proj(P), b = proj(Q);
+    ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]);
+    ctx.strokeStyle = coul; ctx.lineWidth = larg; ctx.setLineDash(tirets || []); ctx.stroke(); ctx.setLineDash([]);
+  }
+  function fleche(P, Q, coul, larg = 2.4) {
+    trait(P, Q, coul, larg);
+    const a = proj(P), b = proj(Q), ang = Math.atan2(b[1] - a[1], b[0] - a[0]), L = 12;
+    ctx.beginPath(); ctx.moveTo(b[0], b[1]);
+    ctx.lineTo(b[0] - L * Math.cos(ang - 0.4), b[1] - L * Math.sin(ang - 0.4));
+    ctx.lineTo(b[0] - L * Math.cos(ang + 0.4), b[1] - L * Math.sin(ang + 0.4));
+    ctx.closePath(); ctx.fillStyle = coul; ctx.fill();
+  }
+  function polygone(Ps, fond, bord) {
+    ctx.beginPath();
+    Ps.forEach((P, i) => { const a = proj(P); i ? ctx.lineTo(a[0], a[1]) : ctx.moveTo(a[0], a[1]); });
+    ctx.closePath(); ctx.fillStyle = fond; ctx.fill();
+    if (bord) { ctx.strokeStyle = bord; ctx.lineWidth = 1.2; ctx.stroke(); }
+  }
+  function point(P, coul, nom, r = 5.5, decal = [9, -9]) {
+    const a = proj(P);
+    ctx.beginPath(); ctx.arc(a[0], a[1], r, 0, 2 * Math.PI); ctx.fillStyle = coul; ctx.fill();
+    ctx.lineWidth = 2; ctx.strokeStyle = couleurs.carte; ctx.stroke();
+    if (nom) texte(nom, a[0] + decal[0], a[1] + decal[1], coul);
+  }
+  function texte(t, x, y, coul, taille = 20, italique = true) {
+    ctx.font = `${italique ? "italic " : ""}${taille}px ${MATH}`;
+    ctx.lineWidth = 4; ctx.strokeStyle = couleurs.carte; ctx.strokeText(t, x, y);
+    ctx.fillStyle = coul; ctx.fillText(t, x, y);
+  }
+  function angleDroit(H, v1, v2, taille, coul) {
+    const a = unit(v1), b = unit(v2);
+    const P1 = add(H, mul(a, taille)), P2 = add(add(H, mul(a, taille)), mul(b, taille)), P3 = add(H, mul(b, taille));
+    trait(P1, P2, coul, 1.6); trait(P2, P3, coul, 1.6);
+  }
+  function axes(L) {
+    const O = [0, 0, 0];
+    for (const [v, nom] of [[[L, 0, 0], "x"], [[0, L, 0], "y"], [[0, 0, L], "z"]]) {
+      fleche(O, v, couleurs.discret, 1.4);
+      const a = proj(v); texte(nom, a[0] + 6, a[1] - 6, couleurs.discret, 17);
+    }
+    const o = proj(O); texte("O", o[0] - 18, o[1] + 16, couleurs.discret, 16);
+  }
+  function grilleSol(n) {
+    for (let k = -n; k <= n; k++) {
+      trait([k, -n, 0], [k, n, 0], couleurs.grille, 1);
+      trait([-n, k, 0], [n, k, 0], couleurs.grille, 1);
+    }
+  }
+  function cadrer(points) {   // centre et échelle pour que la scène tienne dans la toile
+    const mins = [0, 1, 2].map(i => Math.min(...points.map(p => p[i]))), maxs = [0, 1, 2].map(i => Math.max(...points.map(p => p[i])));
+    cam.C = mins.map((m, i) => (m + maxs[i]) / 2);
+    const R = Math.max(...points.map(p => norme(sub(p, cam.C))), 1);
+    cam.echelle = Math.min(toile.clientWidth, toile.clientHeight) * 0.46 / R;
+  }
+
+  // poignées déplaçables de la scène courante : { P, test(sx, sy) → appliquer }
+  let poignees = [];
+
+  function dessiner() {
+    lireCouleurs();
+    const dpr = window.devicePixelRatio || 1, Wc = toile.clientWidth, Hc = toile.clientHeight;
+    if (toile.width !== Math.round(Wc * dpr) || toile.height !== Math.round(Hc * dpr)) { toile.width = Math.round(Wc * dpr); toile.height = Math.round(Hc * dpr); }
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, Wc, Hc);
+    cam.cx = Wc / 2; cam.cy = Hc / 2;
+    AX = axesCamera();
+    poignees = [];
+    ({ param: sceneParam, cube: sceneCube })[etat.scene]();
+  }
+
+  // ---------- scène 1 : représentation paramétrique ----------
+  function sceneParam() {
+    const A = lire(["ax", "ay", "az"]), u = lire(["ux", "uy", "uz"]), t = etat.t;
+    if (norme(u) < 1e-9) { $("constat").textContent = "Le vecteur u⃗ ne peut pas être nul."; return; }
+    const M = add(A, mul(u, t));
+    const P1 = add(A, mul(u, -4)), P2 = add(A, mul(u, 4));
+    cadrer([add(A, mul(u, -3)), add(A, mul(u, 3)), [0, 0, 0]]);
+    grilleSol(4); axes(3.5);
+    trait(P1, P2, couleurs.bleu, 2.6);
+    const a2 = proj(P2); texte("d", a2[0] + 8, a2[1], couleurs.bleu, 22);
+    // le vecteur t·u⃗ de A vers M, puis u⃗ lui-même
+    if (Math.abs(t) > 0.05) fleche(A, M, couleurs.orange, 3.2);
+    fleche(A, add(A, u), couleurs.vert, 3);
+    const mu = proj(add(A, mul(u, 0.5))); texte("u⃗", mu[0] + 10, mu[1] + 22, couleurs.vert, 22);
+    point(A, couleurs.encre, "A", 5.5, [-22, 20]);
+    point(M, couleurs.rouge, "M", 8, [12, -12]);
+    poignees.push({ P: M, deplacer: R => { const tt = rayonDroite(R, A, u); if (tt !== null) { etat.t = Math.max(-3, Math.min(3, Math.round(tt * 10) / 10)); } } });
+
+    $("tt-sortie").textContent = fr(t, 1);
+    const ligne = (c, i) => `${["x", "y", "z"][i]} = ${fr(A[i], 2)} ${u[i] < 0 ? "−" : "+"} ${fr(Math.abs(u[i]), 2)} × ${t < 0 ? `(${fr(t, 1)})` : fr(t, 1)} = <b>${fr(M[i], 2)}</b>`;
+    $("constat").innerHTML = `<span class="rouge"><i>M</i></span> = <i>A</i> + <span class="orange m"><i>t</i> <i>u⃗</i></span> : &nbsp; ${[0, 1, 2].map(i => ligne(null, i)).join(" &nbsp;·&nbsp; ")}`;
+
+    // pour aller plus loin : le point N appartient-il à d ?
+    const N = lire(["nx", "ny", "nz"]);
+    const ts = [0, 1, 2].map(i => Math.abs(u[i]) < 1e-12 ? (Math.abs(N[i] - A[i]) < 1e-9 ? "tout t" : "aucun t") : (N[i] - A[i]) / u[i]);
+    const nums = ts.filter(x => typeof x === "number");
+    const ok = !ts.includes("aucun t") && nums.every(x => Math.abs(x - nums[0]) < 1e-9);
+    $("test-N").innerHTML = ["x", "y", "z"].map((c, i) => `avec ${c} : ${typeof ts[i] === "number" ? `<i>t</i> = ${fr(ts[i], 3)}` : ts[i]}`).join(" ; ")
+      + ` → ${ok ? `<b class="vert">N ∈ d</b> (pour <i>t</i> = ${fr(nums[0] ?? 0, 3)})` : `<b class="rouge">N ∉ d</b> : les trois équations ne donnent pas le même <i>t</i>.`}`;
+  }
+
+  // ---------- scène 2 : positions relatives de deux droites dans le cube ----------
+  function sceneCube() {
+    cadrer(CUBE.concat([[-1, -1, -1], [5, 5, 5]]));
+    // le cube
+    for (const [i, j] of ARETES) trait(CUBE[i], CUBE[j], couleurs.discret, 1.4);
+    const sel = etat.sel;
+    const droites = [];
+    if (sel.length >= 2 && sel[0] !== sel[1]) droites.push({ P: CUBE[sel[0]], w: sub(CUBE[sel[1]], CUBE[sel[0]]), coul: couleurs.bleu, nom: `(${NOMS[sel[0]]}${NOMS[sel[1]]})` });
+    if (sel.length >= 4 && sel[2] !== sel[3]) droites.push({ P: CUBE[sel[2]], w: sub(CUBE[sel[3]], CUBE[sel[2]]), coul: couleurs.rouge, nom: `(${NOMS[sel[2]]}${NOMS[sel[3]]})` });
+    const bout = (D, s) => add(D.P, mul(D.w, s));
+    let message = "";
+    if (droites.length === 2) {
+      const [D1, D2] = droites, c = cross(D1.w, D2.w), PQ = sub(D2.P, D1.P);
+      const echelleL = Math.max(norme(D1.w), norme(D2.w));
+      let plan = null, I = null;
+      if (norme(c) < 1e-9) {
+        const confondues = norme(cross(PQ, D1.w)) < 1e-9;
+        message = confondues ? `${D1.nom} et ${D2.nom} sont <b>confondues</b>.` : `${D1.nom} et ${D2.nom} sont <b>strictement parallèles</b> : elles sont coplanaires, sans point commun.`;
+        if (!confondues) plan = unit(cross(D1.w, PQ));
+      } else if (Math.abs(dot(PQ, c)) < 1e-9) {
+        // point d'intersection : D1.P + s D1.w = D2.P + r D2.w
+        const a = dot(D1.w, D1.w), b = dot(D1.w, D2.w), cc = dot(D2.w, D2.w), d1 = dot(PQ, D1.w), d2 = dot(PQ, D2.w);
+        const s = (d1 * cc - d2 * b) / (a * cc - b * b);
+        I = bout(D1, s); plan = unit(c);
+        message = `${D1.nom} et ${D2.nom} sont <b>sécantes</b> : elles sont coplanaires et se coupent en un point.`;
+      } else {
+        message = `${D1.nom} et ${D2.nom} sont <b>non coplanaires</b> : aucun plan ne les contient. Faites tourner le cube : elles ne se coupent jamais.`;
+      }
+      // le plan qui contient les deux droites
+      if (plan) {
+        const [e1, e2] = baseDuPlan(plan), O = D1.P;
+        const pts = [bout(D1, -0.3), bout(D1, 1.3), bout(D2, -0.3), bout(D2, 1.3)].concat(I ? [I] : []);
+        const co = pts.map(P => [dot(sub(P, O), e1), dot(sub(P, O), e2)]);
+        const m = 0.6, a0 = Math.min(...co.map(c => c[0])) - m, a1 = Math.max(...co.map(c => c[0])) + m, b0 = Math.min(...co.map(c => c[1])) - m, b1 = Math.max(...co.map(c => c[1])) + m;
+        const S = (x, y) => add(O, add(mul(e1, x), mul(e2, y)));
+        polygone([S(a0, b0), S(a1, b0), S(a1, b1), S(a0, b1)], couleurs.plan2, couleurs.vert);
+      }
+      for (const D of droites) trait(bout(D, -0.6), bout(D, 1.6), D.coul, 3);
+      if (I) point(I, couleurs.vert, "I", 6.5, [10, 20]);
+      void echelleL;
+    } else if (droites.length === 1) {
+      const D = droites[0];
+      trait(bout(D, -0.6), bout(D, 1.6), D.coul, 3);
+      message = `Droite bleue : ${D.nom}. Cliquez deux sommets pour la droite rouge.`;
+    } else {
+      message = "Cliquez deux sommets pour tracer la droite bleue.";
+    }
+    // les sommets, cliquables
+    CUBE.forEach((P, i) => {
+      const choisi = sel.indexOf(i), coul = choisi === -1 ? couleurs.encre : choisi < 2 ? couleurs.bleu : couleurs.rouge;
+      const a = proj(P), dc = sub(P, [2, 2, 2]);
+      const off = [dot(dc, AX.r) >= 0 ? 10 : -24, dot(dc, AX.u) >= 0 ? -10 : 24];
+      point(P, coul, NOMS[i], choisi === -1 ? 5 : 7, off);
+      poignees.push({ P, clic: () => choisirSommet(i) });
+      void a;
+    });
+    $("constat").innerHTML = message;
+  }
+  function choisirSommet(i) {
+    const sel = etat.sel.length >= 4 ? [] : etat.sel.slice();
+    sel.push(i);
+    etat.sel = sel;
+    dessiner();
+  }
+
+  // ---------------------------------------------------------------
+  // Souris et doigt : tourner la scène, ou déplacer une poignée
+  // ---------------------------------------------------------------
+  let geste = null;
+  function sousLeDoigt(x, y) {
+    let meilleur = null, dmin = 18;
+    for (const p of poignees) { const a = proj(p.P), dd = Math.hypot(a[0] - x, a[1] - y); if (dd < dmin) { dmin = dd; meilleur = p; } }
+    return meilleur;
+  }
+  const coords = ev => { const r = toile.getBoundingClientRect(); return [ev.clientX - r.left, ev.clientY - r.top]; };
+  toile.addEventListener("pointerdown", ev => {
+    const [x, y] = coords(ev), p = sousLeDoigt(x, y);
+    toile.setPointerCapture(ev.pointerId);
+    if (p && p.clic) { p.clic(); geste = null; return; }
+    geste = p ? { poignee: p } : { x, y, az: cam.az, el: cam.el };
+    toile.classList.add("prise");
+  });
+  toile.addEventListener("pointermove", ev => {
+    const [x, y] = coords(ev);
+    if (!geste) { toile.classList.toggle("survol", !!sousLeDoigt(x, y)); return; }
+    if (geste.poignee) { geste.poignee.deplacer(rayon(x, y)); $("tt").value = etat.t; dessiner(); return; }
+    cam.az = geste.az - (x - geste.x) * 0.008;
+    cam.el = Math.max(-1.45, Math.min(1.45, geste.el + (y - geste.y) * 0.008));
+    dessiner();
+  });
+  const fin = () => { geste = null; toile.classList.remove("prise"); };
+  toile.addEventListener("pointerup", fin);
+  toile.addEventListener("pointercancel", fin);
+
+  // ---------------------------------------------------------------
+  // Commandes
+  // ---------------------------------------------------------------
+  const CHAPEAUX = {
+    param: "Faites glisser le point <i>M</i> sur la droite <i>d</i>, ou le curseur <i>t</i> : chaque valeur de <i>t</i> donne un point de <i>d</i>, et réciproquement. Faites tourner la scène pour la voir sous tous les angles.",
+    cube: "Cliquez deux sommets du cube pour tracer une droite, puis deux autres pour une seconde droite. Faites tourner le cube : deux droites qui semblent se couper peuvent n'avoir aucun point commun.",
+  };
+  function changerScene() {
+    const s = etat.scene;
+    $("chapeau").innerHTML = CHAPEAUX[s];
+    $("zone-t").hidden = s !== "param";
+    $("plus-param").hidden = s !== "param";
+    $("plus-cube").hidden = s !== "cube";
+    cam.az = VUE.az; cam.el = VUE.el;
+    dessiner();
+  }
+  $("scene").addEventListener("change", e => { etat.scene = e.target.value; changerScene(); });
+  $("tt").addEventListener("input", e => { etat.t = parseFloat(e.target.value); dessiner(); });
+  $("vue").addEventListener("click", () => { cam.az = VUE.az; cam.el = VUE.el; dessiner(); });
+  document.querySelectorAll("input[type=number]").forEach(i => i.addEventListener("input", () => dessiner()));
+  new ResizeObserver(() => dessiner()).observe(toile);
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", dessiner);
+  new MutationObserver(dessiner).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+  changerScene();
+})();
+</script>
+
+<!-- plein-ecran : bouton commun à toutes les pages interactives -->
+<style>
+#pleinEcran { position: fixed; top: calc(10px + env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); z-index: 50; font: 500 13px var(--ui, system-ui, sans-serif); padding: 6px 12px; border-radius: 999px; border: 1px solid var(--filet, #d9dee5); background: var(--carte, #fff); color: var(--encre, #1b1f24); cursor: pointer; opacity: .9; }
+#pleinEcran:hover { opacity: 1; }
+body.plein-ecran .niveau, body.plein-ecran h1, body.plein-ecran h1 + .chapeau { display: none !important; }
+body.plein-ecran .page { max-width: none !important; min-height: 100vh; padding-top: 48px !important; align-content: start; }
+body.plein-ecran .page svg:not(.mini) { max-height: 76vh; }
+body.plein-ecran.plein-multi .page svg:not(.mini) { max-height: 46vh; }
+body.plein-ecran .constat { font-size: clamp(20px, 2.6vw, 30px); }
+</style>
+<script>
+(() => {
+  const b = document.createElement("button");
+  b.type = "button"; b.id = "pleinEcran"; document.body.appendChild(b);
+  function etat(on) { document.body.classList.toggle("plein-ecran", on); b.textContent = on ? "✕ Quitter le plein écran" : "⛶ Plein écran"; b.setAttribute("aria-pressed", on); window.dispatchEvent(new Event("resize")); }
+  b.addEventListener("click", async () => {
+    const on = !document.body.classList.contains("plein-ecran");
+    etat(on);
+    try { on ? await document.documentElement.requestFullscreen() : (document.fullscreenElement && await document.exitFullscreen()); } catch (e) {}
+  });
+  document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement && document.body.classList.contains("plein-ecran")) etat(false); });
+  window.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("plein-ecran")) etat(false); });
+  if (document.querySelectorAll(".page svg:not(.mini), .page canvas").length > 1) document.body.classList.add("plein-multi");
+  etat(location.hash === "#plein");
+})();
+</script>
+
+</body></html>

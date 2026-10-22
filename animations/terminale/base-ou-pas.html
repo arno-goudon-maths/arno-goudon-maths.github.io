@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;box-sizing:border-box}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head><body>
+<title>Base de l'espace ou pas</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Mise en page : la scène 3D en grand ; sous elle, les trois commandes utiles et une ligne de constat.
+   Mêmes conventions que le cours 4 : vecteurs u = AB, v = AC, w = AD en bleu, plan (A ; u, v) en bleu clair. */
+:root {
+  --papier: #f7f8fa; --carte: #ffffff; --encre: #1b1f24; --discret: #5d6672; --filet: #d9dee5;
+  --vecteur: #1f5fbf; --plan: rgba(31, 95, 191, 0.13); --plan-bord: rgba(31, 95, 191, 0.45);
+  --oui: #2e7d32; --non: #c62828; --axe: #c3c9d2; --boite: #6a4bb5;
+  --math: "STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --ui: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844;
+    --vecteur: #6fa3f0; --plan: rgba(111, 163, 240, 0.16); --plan-bord: rgba(111, 163, 240, 0.5);
+    --oui: #6fcf7a; --non: #f07a7a; --axe: #3a414c; --boite: #b39cf0; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844;
+  --vecteur: #6fa3f0; --plan: rgba(111, 163, 240, 0.16); --plan-bord: rgba(111, 163, 240, 0.5);
+  --oui: #6fcf7a; --non: #f07a7a; --axe: #3a414c; --boite: #b39cf0; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--papier); color: var(--encre); font-family: var(--ui); font-size: 15px; line-height: 1.5; }
+.page { max-width: 1000px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 40px; display: grid; gap: 14px; }
+.niveau { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--discret); }
+h1 { font-family: var(--math); font-weight: 600; font-size: clamp(26px, 4vw, 36px); line-height: 1.15; margin: 0; text-wrap: balance; }
+.chapeau { margin: 0; color: var(--discret); max-width: 70ch; }
+.m { font-family: var(--math); font-style: italic; }
+.scene { background: var(--carte); border: 1px solid var(--filet); border-radius: 10px; position: relative; touch-action: none; }
+canvas { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; cursor: grab; }
+canvas:active { cursor: grabbing; }
+.aide { position: absolute; left: 12px; bottom: 8px; font-size: 12px; color: var(--discret); pointer-events: none; }
+.commandes { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px 20px; align-items: end; }
+label { display: block; font-size: 14px; }
+label input { display: block; margin-top: 6px; }
+input[type=range] { width: 100%; accent-color: var(--vecteur); }
+.boutons { display: flex; flex-wrap: wrap; gap: 10px; }
+button { font: inherit; font-weight: 500; border-radius: 8px; padding: 8px 14px; cursor: pointer; border: 1px solid var(--vecteur); background: transparent; color: var(--vecteur); }
+button.principal { background: var(--vecteur); color: var(--carte); }
+button:focus-visible, input:focus-visible, summary:focus-visible { outline: 3px solid var(--boite); outline-offset: 2px; }
+.constat { font-size: 16px; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--filet); background: var(--carte); }
+.constat strong.oui { color: var(--oui); } .constat strong.non { color: var(--non); }
+details { background: var(--carte); border: 1px solid var(--filet); border-radius: 10px; padding: 10px 14px; }
+summary { cursor: pointer; font-weight: 500; }
+details p { color: var(--discret); margin: 8px 0; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="page">
+  <span class="niveau">Terminale spécialité · Chapitre 4 · Géométrie dans l'espace</span>
+  <h1>Base de l'espace ou pas ?</h1>
+  <p class="chapeau">Les vecteurs <span class="m">u</span> = <span class="m">AB</span>, <span class="m">v</span> = <span class="m">AC</span> et <span class="m">w</span> = <span class="m">AD</span> partent du même point <span class="m">A</span>. Faites tourner la scène et déplacez <span class="m">D</span> : les trois vecteurs sont-ils dans un même plan ?</p>
+
+  <div class="scene">
+    <canvas id="c" width="1600" height="1000" aria-label="Scène 3D : trois vecteurs issus du point A"></canvas>
+    <span class="aide">Glisser pour tourner la scène</span>
+  </div>
+
+  <div class="commandes">
+    <label for="sa">Composante de <span class="m">w</span> selon <span class="m">u</span> : <span id="va" class="m">0,6</span>
+      <input id="sa" type="range" min="-1.5" max="1.5" step="0.05" value="0.6"></label>
+    <label for="sb">Composante de <span class="m">w</span> selon <span class="m">v</span> : <span id="vb" class="m">0,8</span>
+      <input id="sb" type="range" min="-1.5" max="1.5" step="0.05" value="0.8"></label>
+    <label for="sc">Hauteur de <span class="m">D</span> au-dessus du plan (<span class="m">A</span> ; <span class="m">u</span>, <span class="m">v</span>) : <span id="vc" class="m">1,2</span>
+      <input id="sc" type="range" min="-1.5" max="1.5" step="0.05" value="1.2"></label>
+    <div class="boutons">
+      <button id="tranche" class="principal" type="button">Vue par la tranche du plan</button>
+      <button id="plat" type="button">Mettre <span class="m">D</span> dans le plan</button>
+    </div>
+  </div>
+
+  <p class="constat" id="constat"></p>
+
+  <details>
+    <summary>Pour aller plus loin</summary>
+    <p>Le plan bleu est le plan (<span class="m">A</span> ; <span class="m">u</span>, <span class="m">v</span>). Quand <span class="m">D</span> est dans ce plan, il existe deux réels <span class="m">a</span> et <span class="m">b</span> tels que <span class="m">w</span> = <span class="m">a u</span> + <span class="m">b v</span> : les trois vecteurs sont coplanaires et ne forment pas une base.</p>
+    <p>Sinon, (<span class="m">u</span>, <span class="m">v</span>, <span class="m">w</span>) est une base de l'espace : tout vecteur s'écrit de façon unique <span class="m">x u</span> + <span class="m">y v</span> + <span class="m">z w</span>. Le parallélépipède violet est construit sur les trois vecteurs ; il s'aplatit quand ils deviennent coplanaires.</p>
+  </details>
+</div>
+
+<script>
+(() => {
+  const cv = document.getElementById("c"), ctx = cv.getContext("2d");
+  const $ = id => document.getElementById(id);
+  const fr = x => (Math.round(x * 100) / 100).toString().replace(".", ",").replace("-", "−");
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  const U = [2.2, -0.5, 0.2], V = [0.3, 2.0, 0.3];
+  const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+  const norm = a => Math.hypot(...a);
+  let N = cross(U, V); const nN = norm(N); N = N.map(x => x / nN);
+  let yaw = -0.9, pitch = 0.45, anim = null;
+
+  function W() {
+    const a = +$("sa").value, b = +$("sb").value, c = +$("sc").value;
+    return [0, 1, 2].map(i => a * U[i] + b * V[i] + c * N[i]);
+  }
+  function proj(p) {
+    const cy = Math.cos(yaw), sy = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
+    const x1 = p[0] * cy - p[1] * sy, y1 = p[0] * sy + p[1] * cy, z1 = p[2];
+    const y2 = y1 * cp - z1 * sp, z2 = y1 * sp + z1 * cp;     // profondeur y2
+    const s = cv.width / 11, d = 12 / (12 + y2);
+    return { x: cv.width * 0.45 + x1 * s * d, y: cv.height * 0.6 - z2 * s * d, depth: y2 };
+  }
+  function ligne(a, b, col, w, dash) {
+    const p = proj(a), q = proj(b);
+    ctx.beginPath(); ctx.setLineDash(dash || []); ctx.strokeStyle = col; ctx.lineWidth = w;
+    ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke(); ctx.setLineDash([]);
+  }
+  function fleche(a, b, col, nom, lettre) {
+    const p = proj(a), q = proj(b);
+    ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = 6; ctx.lineCap = "round";
+    const ang = Math.atan2(q.y - p.y, q.x - p.x), L = Math.hypot(q.x - p.x, q.y - p.y);
+    const h = Math.min(30, L * 0.35);
+    ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x - h * 0.8 * Math.cos(ang), q.y - h * 0.8 * Math.sin(ang)); ctx.stroke();
+    if (L > 4) {
+      ctx.beginPath(); ctx.moveTo(q.x, q.y);
+      ctx.lineTo(q.x - h * Math.cos(ang - 0.42), q.y - h * Math.sin(ang - 0.42));
+      ctx.lineTo(q.x - h * Math.cos(ang + 0.42), q.y - h * Math.sin(ang + 0.42)); ctx.closePath(); ctx.fill();
+    }
+    // noms : vecteur au milieu, point au bout
+    const m = proj(b.map((x, i) => (a[i] + x) / 2));
+    texte("→", m.x + 14, m.y - 34, col, 26, "ui");
+    texte(nom, m.x + 14, m.y - 14, col, 40, "math");
+    texte(lettre, q.x + 16 * Math.cos(ang), q.y + 16 * Math.sin(ang) + 12, css("--encre"), 36, "math");
+  }
+  function texte(s, x, y, col, taille, police) {
+    ctx.font = (police === "math" ? "italic " : "") + taille + "px " + (police === "math" ? css("--math") : css("--ui"));
+    ctx.fillStyle = col; ctx.textAlign = "center"; ctx.fillText(s, x, y);
+  }
+  function poly(pts, fill, stroke) {
+    const P = pts.map(proj);
+    ctx.beginPath(); P.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)); ctx.closePath();
+    if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+    if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 2; ctx.stroke(); }
+  }
+  function dessiner() {
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    const w = W(), c = +$("sc").value;
+    // axes discrets
+    [[[-3, 0, 0], [3.2, 0, 0]], [[0, -3, 0], [0, 3.2, 0]], [[0, 0, -2], [0, 0, 2.8]]].forEach(([a, b]) => ligne(a, b, css("--axe"), 2));
+    // plan (A ; u, v)
+    const k = 1.15;
+    const coins = [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([s, t]) => [0, 1, 2].map(i => k * (s * U[i] + t * V[i]) * 0.9));
+    poly(coins, css("--plan"), css("--plan-bord"));
+    // projection de D sur le plan et hauteur
+    const a = +$("sa").value, b = +$("sb").value;
+    const H = [0, 1, 2].map(i => a * U[i] + b * V[i]);
+    if (Math.abs(c) > 0.001) ligne(H, w, css("--discret"), 2, [10, 8]);
+    ligne([0, 0, 0], H, css("--plan-bord"), 1.5, [6, 6]);
+    // parallélépipède construit sur u, v, w
+    const S = (i, j, l) => [0, 1, 2].map(m => i * U[m] + j * V[m] + l * w[m]);
+    const ar = [];
+    for (const i of [0, 1]) for (const j of [0, 1]) for (const l of [0, 1]) {
+      if (i < 1) ar.push([S(i, j, l), S(1, j, l)]);
+      if (j < 1) ar.push([S(i, j, l), S(i, 1, l)]);
+      if (l < 1) ar.push([S(i, j, l), S(i, j, 1)]);
+    }
+    ctx.globalAlpha = 0.55; ar.forEach(([p, q]) => ligne(p, q, css("--boite"), 1.6)); ctx.globalAlpha = 1;
+    // vecteurs, du plus loin au plus près
+    const vecs = [[U, "u", "B"], [V, "v", "C"], [w, "w", "D"]].sort((x, y) => proj(y[0]).depth - proj(x[0]).depth);
+    vecs.forEach(([p, n, l]) => fleche([0, 0, 0], p, css("--vecteur"), n, l));
+    const A = proj([0, 0, 0]);
+    ctx.fillStyle = css("--encre"); ctx.beginPath(); ctx.arc(A.x, A.y, 7, 0, 7); ctx.fill();
+    texte("A", A.x - 26, A.y + 30, css("--encre"), 36, "math");
+    // constat
+    const plat = Math.abs(c) < 0.001;
+    $("constat").innerHTML = plat
+      ? `<strong class="non">Coplanaires.</strong> <span class="m">D</span> est dans le plan (<span class="m">A</span> ; <span class="m">u</span>, <span class="m">v</span>) : <span class="m">w</span> = ${fr(a)} <span class="m">u</span> + ${fr(b)} <span class="m">v</span>. Ce triplet n'est pas une base de l'espace.`
+      : `<strong class="oui">Non coplanaires.</strong> <span class="m">D</span> n'est pas dans le plan (<span class="m">A</span> ; <span class="m">u</span>, <span class="m">v</span>) : (<span class="m">u</span>, <span class="m">v</span>, <span class="m">w</span>) est une base de l'espace.`;
+    $("va").textContent = fr(a); $("vb").textContent = fr(b); $("vc").textContent = fr(c);
+  }
+
+  // rotation à la souris / au doigt
+  let drag = null;
+  cv.addEventListener("pointerdown", e => { drag = { x: e.clientX, y: e.clientY, yaw, pitch }; cv.setPointerCapture(e.pointerId); if (anim) cancelAnimationFrame(anim); });
+  cv.addEventListener("pointermove", e => {
+    if (!drag) return;
+    yaw = drag.yaw + (e.clientX - drag.x) * 0.008;
+    pitch = Math.max(-1.45, Math.min(1.45, drag.pitch + (e.clientY - drag.y) * 0.008));
+    dessiner();
+  });
+  cv.addEventListener("pointerup", () => drag = null);
+  ["sa", "sb", "sc"].forEach(id => $(id).addEventListener("input", dessiner));
+  $("plat").addEventListener("click", () => { $("sc").value = 0; dessiner(); });
+
+  // vue par la tranche : on aligne la direction de vue sur le plan (A ; u, v)
+  $("tranche").addEventListener("click", () => {
+    // la profondeur est l'axe y2 ; on cherche yaw, pitch tels que N soit perpendiculaire à la direction de vue,
+    // c'est-à-dire tels que N ait une composante de profondeur nulle et apparaisse vertical à l'écran
+    const cible = { yaw: Math.atan2(-N[0], N[1]) + 0 , pitch: 0 };
+    // N après lacet : (x1, y1) ; on choisit le lacet qui annule la composante de profondeur de N
+    cible.yaw = Math.atan2(-N[1], N[0]);
+    const a0 = { yaw, pitch }, t0 = performance.now(), D = 1600;
+    let dy = cible.yaw - a0.yaw; dy = Math.atan2(Math.sin(dy), Math.cos(dy));
+    function pas(t) {
+      const s = Math.min(1, (t - t0) / D), e = s < .5 ? 2 * s * s : 1 - Math.pow(-2 * s + 2, 2) / 2;
+      yaw = a0.yaw + dy * e; pitch = a0.pitch + (cible.pitch - a0.pitch) * e;
+      dessiner(); if (s < 1) anim = requestAnimationFrame(pas);
+    }
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { yaw = a0.yaw + dy; pitch = cible.pitch; dessiner(); }
+    else anim = requestAnimationFrame(pas);
+  });
+
+  // une rotation lente au départ, pour faire voir la profondeur
+  const t0 = performance.now();
+  function intro(t) {
+    if (drag) return;
+    yaw = -0.9 + Math.sin((t - t0) / 1800) * 0.35;
+    dessiner();
+    if (t - t0 < 5600) anim = requestAnimationFrame(intro);
+  }
+  dessiner();
+  if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) anim = requestAnimationFrame(intro);
+})();
+</script>
+
+<!-- plein-ecran : bouton commun à toutes les pages interactives -->
+<style>
+#pleinEcran { position: fixed; top: calc(10px + env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); z-index: 50; font: 500 13px var(--ui, system-ui, sans-serif); padding: 6px 12px; border-radius: 999px; border: 1px solid var(--filet, #d9dee5); background: var(--carte, #fff); color: var(--encre, #1b1f24); cursor: pointer; opacity: .9; }
+#pleinEcran:hover { opacity: 1; }
+body.plein-ecran .niveau, body.plein-ecran h1, body.plein-ecran h1 + .chapeau { display: none !important; }
+body.plein-ecran .page { max-width: none !important; min-height: 100vh; padding-top: 48px !important; align-content: start; }
+body.plein-ecran .page svg:not(.mini) { max-height: 76vh; }
+body.plein-ecran.plein-multi .page svg:not(.mini) { max-height: 46vh; }
+body.plein-ecran .constat { font-size: clamp(20px, 2.6vw, 30px); }
+</style>
+<script>
+(() => {
+  const b = document.createElement("button");
+  b.type = "button"; b.id = "pleinEcran"; document.body.appendChild(b);
+  function etat(on) { document.body.classList.toggle("plein-ecran", on); b.textContent = on ? "✕ Quitter le plein écran" : "⛶ Plein écran"; b.setAttribute("aria-pressed", on); window.dispatchEvent(new Event("resize")); }
+  b.addEventListener("click", async () => {
+    const on = !document.body.classList.contains("plein-ecran");
+    etat(on);
+    try { on ? await document.documentElement.requestFullscreen() : (document.fullscreenElement && await document.exitFullscreen()); } catch (e) {}
+  });
+  document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement && document.body.classList.contains("plein-ecran")) etat(false); });
+  window.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("plein-ecran")) etat(false); });
+  if (document.querySelectorAll(".page svg:not(.mini), .page canvas").length > 1) document.body.classList.add("plein-multi");
+  etat(location.hash === "#plein");
+})();
+</script>
+
+</body></html>

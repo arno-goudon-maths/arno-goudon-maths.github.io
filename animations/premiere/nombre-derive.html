@@ -1,0 +1,640 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;box-sizing:border-box}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head><body>
+<title>Nombre dérivé en un point</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [["\\(", "\\)"]], displayMath: [["\\[", "\\]"]] },
+    svg: { fontCache: "global" }
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js" async></script>
+<style>
+/* Mise en page : la figure du cours à gauche, le tableau de bord à droite ; une colonne sur téléphone. */
+:root {
+  --papier: #f7f8fa;
+  --carte: #ffffff;
+  --encre: #1b1f24;
+  --discret: #5d6672;
+  --filet: #d9dee5;
+  --grille: #e7eaef;
+  --axes: #1b1f24;
+  --courbe: #1b1f24;
+  --secante: #1f5fbf;
+  --tangente: #c62828;
+  --secante-fond: #e8f0fb;
+  --tangente-fond: #fbeaea;
+  --attention: #9a5b00;
+  --math: "STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --ui: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1;
+    --filet: #313844; --grille: #252b34; --axes: #c9cfd8; --courbe: #f1f3f6;
+    --secante: #6fa3f0; --tangente: #f07a7a; --secante-fond: #1d2a3d; --tangente-fond: #3a2124;
+    --attention: #e0a64a; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1;
+  --filet: #313844; --grille: #252b34; --axes: #c9cfd8; --courbe: #f1f3f6;
+  --secante: #6fa3f0; --tangente: #f07a7a; --secante-fond: #1d2a3d; --tangente-fond: #3a2124;
+  --attention: #e0a64a; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--papier); color: var(--encre);
+  font-family: var(--ui); font-size: 15px; line-height: 1.5;
+}
+.page { max-width: 1180px; margin: 0 auto; padding-inline: 16px; padding-block: 20px 40px; }
+header { display: grid; gap: 4px; margin-bottom: 18px; }
+.niveau { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--discret); }
+h1 { font-family: var(--math); font-weight: 600; font-size: clamp(26px, 4vw, 36px); line-height: 1.15; margin: 0; text-wrap: balance; }
+.chapeau { margin: 0; color: var(--discret); max-width: 68ch; }
+.grille { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+@media (max-width: 860px) { .grille { grid-template-columns: minmax(0, 1fr); } }
+.figure { background: var(--carte); border: 1px solid var(--filet); border-radius: 10px; padding: 10px; position: relative; }
+@media (min-width: 861px) { .figure { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 12px); } }
+.figure svg { display: block; width: 100%; height: auto; touch-action: none; }
+.badge-zoom { position: absolute; top: 16px; left: 18px; font-size: 12px; color: var(--discret); background: var(--papier); border: 1px solid var(--filet); border-radius: 999px; padding: 2px 10px; }
+.commandes { display: grid; gap: 14px; min-width: 0; }
+.bloc { background: var(--carte); border: 1px solid var(--filet); border-radius: 10px; padding: 14px 16px; display: grid; gap: 10px; min-width: 0; }
+/* pas de capitales : elles changeraient f, a, h en F, A, H */
+.bloc h2 { margin: 0; font-size: 15px; color: var(--discret); font-weight: 600; }
+.bloc h2 i { font-family: var(--math); font-size: 17px; }
+.ligne { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+label { font-weight: 500; }
+select, button, input[type="number"] {
+  font: inherit; color: var(--encre); background: var(--papier);
+  border: 1px solid var(--filet); border-radius: 7px; padding: 6px 10px;
+}
+button { cursor: pointer; }
+button:hover { border-color: var(--secante); }
+button.principal { background: var(--secante); border-color: var(--secante); color: var(--carte); font-weight: 600; }
+button.principal:hover { filter: brightness(1.08); }
+:focus-visible { outline: 2px solid var(--secante); outline-offset: 2px; }
+.curseur { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; }
+.curseur output { font-family: var(--math); font-size: 18px; min-width: 7ch; text-align: right; font-variant-numeric: tabular-nums; }
+input[type="range"] { width: 100%; accent-color: var(--secante); }
+.var { font-family: var(--math); font-style: italic; font-size: 18px; }
+.m { font-family: var(--math); font-size: 18px; }
+.m i { font-style: italic; }
+.frac { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; margin-inline: 3px; }
+.frac > span:first-child { border-bottom: 1.5px solid currentColor; padding-inline: 4px; }
+.frac > span { line-height: 1.25; }
+.taux { background: var(--secante-fond); border-radius: 8px; padding: 10px 12px; color: var(--encre); overflow-x: auto; }
+.taux .valeur { color: var(--secante); font-weight: 600; }
+.tangente-bloc { background: var(--tangente-fond); border-radius: 8px; padding: 10px 12px; overflow-x: auto; }
+.tangente-bloc .valeur { color: var(--tangente); font-weight: 600; }
+.alerte { color: var(--attention); font-weight: 500; }
+.pas-defini { color: var(--attention); }
+table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+.tableau { overflow-x: auto; }
+th, td { border-bottom: 1px solid var(--filet); padding: 5px 8px; text-align: right; font-family: var(--math); font-size: 16px; }
+th { font-family: var(--ui); font-size: 12px; font-weight: 600; color: var(--discret); text-align: right; }
+tbody tr { cursor: pointer; }
+tbody tr:hover td { background: var(--secante-fond); }
+tbody tr.actif td { background: var(--secante-fond); }
+.case { display: inline-flex; gap: 8px; align-items: center; font-weight: 500; }
+.case input { width: 18px; height: 18px; accent-color: var(--tangente); }
+.segments { display: inline-flex; border: 1px solid var(--filet); border-radius: 8px; overflow: hidden; }
+.segments button { border: 0; border-radius: 0; background: transparent; padding: 5px 12px; }
+.segments button[aria-pressed="true"] { background: var(--secante); color: var(--carte); font-weight: 600; }
+.note { font-size: 13px; color: var(--discret); margin: 0; }
+.definition { font-size: 15px; overflow-x: auto; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="page">
+  <header>
+    <span class="niveau">Première spécialité · Chapitre 6 · Dérivation</span>
+    <h1>Nombre dérivé en un point</h1>
+    <p class="chapeau">Faites tendre <span class="var">h</span> vers 0 : le point <span class="m">B</span> se rapproche
+      du point <span class="m">A</span>, et la droite <span class="m">(AB)</span> se rapproche de la tangente
+      <span class="m">(T)</span> à la courbe au point d'abscisse <span class="var">a</span>.</p>
+  </header>
+
+  <div class="grille">
+    <div class="figure">
+      <span class="badge-zoom" id="badge-zoom" hidden>Zoom ×4 autour de A</span>
+      <svg id="graphe" viewBox="0 0 640 540" role="img" aria-label="Courbe de f, points A et B, sécante (AB) et tangente (T)"></svg>
+    </div>
+
+    <div class="commandes">
+      <section class="bloc" aria-labelledby="t-fonction">
+        <h2 id="t-fonction">La fonction <i>f</i> et le point A</h2>
+        <div class="ligne">
+          <label for="fonction">Fonction</label>
+          <select id="fonction">
+            <option value="carre">f(x) = x²  (exemple du cours)</option>
+            <option value="cube">f(x) = x³</option>
+            <option value="inverse">f(x) = 1/x</option>
+            <option value="racine">f(x) = √x</option>
+          </select>
+        </div>
+        <div class="curseur">
+          <label for="a" class="var">a</label>
+          <input type="range" id="a" min="-2" max="2" step="0.05" value="1">
+          <output id="a-sortie" for="a">1</output>
+        </div>
+      </section>
+
+      <section class="bloc" aria-labelledby="t-h">
+        <h2 id="t-h">L'accroissement <i>h</i></h2>
+        <div class="curseur">
+          <label for="p" class="var">h</label>
+          <input type="range" id="p" min="-1" max="1" step="0.001" value="0.7937">
+          <output id="h-sortie" for="p">1</output>
+        </div>
+        <p class="note">Le curseur est plus fin près de 0, pour approcher <span class="var">h</span> = 0 de très près.</p>
+        <div class="ligne">
+          <button class="principal" id="tendre" type="button">Faire tendre h vers 0</button>
+          <button id="h-plus" type="button">h = 1</button>
+          <button id="h-moins" type="button">h = −1</button>
+        </div>
+        <div class="ligne">
+          <span class="note">Affichage</span>
+          <div class="segments" role="group" aria-label="Zoom">
+            <button type="button" id="zoom1" aria-pressed="true">Vue d'ensemble</button>
+            <button type="button" id="zoom4" aria-pressed="false">Zoom sur A</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="bloc" aria-labelledby="t-taux">
+        <h2 id="t-taux">Taux d'accroissement de <i>f</i> entre <i>a</i> et <i>a</i> + <i>h</i></h2>
+        <div class="taux" id="taux"></div>
+        <div id="simplification" class="m"></div>
+      </section>
+
+      <section class="bloc" aria-labelledby="t-tableau">
+        <h2 id="t-tableau">Quand <i>h</i> tend vers 0</h2>
+        <div class="tableau">
+          <table>
+            <thead><tr><th><i>h</i></th><th>taux pour <i>h</i></th><th>taux pour −<i>h</i></th></tr></thead>
+            <tbody id="corps-tableau"></tbody>
+          </table>
+        </div>
+        <p class="note">Cliquez sur une ligne pour placer B.</p>
+      </section>
+
+      <section class="bloc" aria-labelledby="t-tangente">
+        <h2 id="t-tangente">Nombre dérivé et tangente</h2>
+        <label class="case"><input type="checkbox" id="voir-tangente"> Afficher la tangente (T)</label>
+        <div class="definition">\[ f'(a)=\lim_{h\to0}\ \dfrac{f(a+h)-f(a)}{h} \]</div>
+        <div class="tangente-bloc" id="tangente" hidden></div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  // ---------------------------------------------------------------
+  // Les fonctions proposées : expression, dérivée, fenêtre, domaine
+  // ---------------------------------------------------------------
+  const FONCTIONS = {
+    carre: {
+      f: x => x * x, d: a => 2 * a,
+      fenetre: [-3.5, 3.5, -1, 6.5], a: [-2, 2, 1], hmax: 2,
+      borne: null,
+      simplifie: (a) => `${monome(2 * a, "", true)}${monome(1, "<i>h</i>")}`,
+      generique: "2<i>a</i> + <i>h</i>", derivee: "2<i>a</i>"
+    },
+    cube: {
+      f: x => x * x * x, d: a => 3 * a * a,
+      fenetre: [-2.6, 2.6, -5, 5], a: [-1.8, 1.8, 1], hmax: 1.5,
+      borne: null,
+      simplifie: (a) => `${monome(3 * a * a, "", true)}${monome(3 * a, "<i>h</i>")}${monome(1, "<i>h</i>²")}`,
+      generique: "3<i>a</i>² + 3<i>ah</i> + <i>h</i>²", derivee: "3<i>a</i>²"
+    },
+    inverse: {
+      f: x => 1 / x, d: a => -1 / (a * a),
+      fenetre: [-1, 5, -1, 4], a: [0.4, 3.5, 1], hmax: 2.5,
+      borne: { min: 0, strict: true },
+      simplifie: (a) => `<span class="frac"><span>−1</span><span>${nb(a)}(${nb(a)} + <i>h</i>)</span></span>`,
+      generique: `<span class="frac"><span>−1</span><span><i>a</i>(<i>a</i> + <i>h</i>)</span></span>`,
+      derivee: `<span class="frac"><span>−1</span><span><i>a</i>²</span></span>`
+    },
+    racine: {
+      f: x => Math.sqrt(x), d: a => (a > 0 ? 1 / (2 * Math.sqrt(a)) : Infinity),
+      fenetre: [-0.6, 6, -0.6, 3], a: [0, 5, 1], hmax: 2.5,
+      borne: { min: 0, strict: false },
+      simplifie: (a) => (a === 0 ? `<span class="frac"><span>1</span><span>√<i>h</i></span></span>` : `<span class="frac"><span>1</span><span>√(${nb(a)} + <i>h</i>) + √${nb(a)}</span></span>`),
+      generique: `<span class="frac"><span>1</span><span>√(<i>a</i> + <i>h</i>) + √<i>a</i></span></span>`,
+      derivee: `<span class="frac"><span>1</span><span>2√<i>a</i></span></span>`
+    }
+  };
+
+  // ---------------------------------------------------------------
+  // Écriture des nombres à la française
+  // ---------------------------------------------------------------
+  function nb(x, chiffres = 4) {
+    if (!isFinite(x)) return "∞";
+    const arrondi = Math.round(x * 10 ** chiffres) / 10 ** chiffres;
+    const s = (Object.is(arrondi, -0) ? 0 : arrondi).toLocaleString("fr-FR", { maximumFractionDigits: chiffres });
+    return s.replace("-", "−");
+  }
+  function nbH(h) {                       // h peut être très petit : assez de chiffres
+    const abs = Math.abs(h);
+    const chiffres = abs >= 0.1 ? 3 : abs >= 0.001 ? 4 : 6;
+    return nb(h, chiffres);
+  }
+  function paren(x, f = nb) { return x < 0 ? `(${f(x)})` : f(x); }
+  // Un terme c·lettre, avec son signe : « + 3h », « − 2h », rien si c = 0
+  function monome(c, lettre, premier = false) {
+    const r = Math.round(c * 10000) / 10000;
+    if (r === 0) return premier && !lettre ? "0" : "";
+    const signe = r < 0 ? "−" : "+";
+    const coeff = Math.abs(r) === 1 && lettre ? "" : nb(Math.abs(r));
+    if (premier) return (r < 0 ? "−" : "") + coeff + lettre;
+    return ` ${signe} ${coeff}${lettre}`;
+  }
+
+  // ---------------------------------------------------------------
+  // État
+  // ---------------------------------------------------------------
+  const etat = { cle: "carre", a: 1, h: 1, zoom: 1, tangente: false, anim: null };
+  const $ = id => document.getElementById(id);
+  const svg = $("graphe");
+  const W = 640, H = 540;
+  const NS = "http://www.w3.org/2000/svg";
+
+  const curseurA = $("a"), curseurP = $("p");
+  const pDeH = (h, hmax) => Math.cbrt(h / hmax);
+  const hDeP = (p, hmax) => hmax * p * p * p;
+
+  function fonction() { return FONCTIONS[etat.cle]; }
+
+  // h admissible : a + h dans le domaine de f
+  function borneH(h) {
+    const F = fonction();
+    if (!F.borne) return h;
+    const minimum = F.borne.min - etat.a + (F.borne.strict ? 0.02 : 0);
+    return Math.max(h, minimum);
+  }
+
+  // ---------------------------------------------------------------
+  // Fenêtre et changement de repère
+  // ---------------------------------------------------------------
+  function fenetre() {
+    const [x0, x1, y0, y1] = fonction().fenetre;
+    if (etat.zoom === 1) return { x0, x1, y0, y1 };
+    const F = fonction();
+    const cx = etat.a, cy = F.f(etat.a);
+    const lx = (x1 - x0) / 8, ly = (y1 - y0) / 8;
+    return { x0: cx - lx, x1: cx + lx, y0: cy - ly, y1: cy + ly };
+  }
+  let V;
+  const X = x => (x - V.x0) / (V.x1 - V.x0) * W;
+  const Y = y => H - (y - V.y0) / (V.y1 - V.y0) * H;
+
+  function el(nom, attributs, parent = svg) {
+    const e = document.createElementNS(NS, nom);
+    for (const [k, v] of Object.entries(attributs)) e.setAttribute(k, v);
+    parent.appendChild(e);
+    return e;
+  }
+  function texte(contenu, x, y, attributs = {}) {
+    const t = el("text", { x, y, "font-family": "STIX Two Text, Times New Roman, serif", "font-size": 19, ...attributs });
+    t.innerHTML = contenu;
+    return t;
+  }
+  function pasGrille(etendue) {
+    const brut = etendue / 10;
+    const p = 10 ** Math.floor(Math.log10(brut));
+    for (const m of [1, 2, 5, 10]) if (m * p >= brut) return m * p;
+    return 10 * p;
+  }
+
+  // Droite passant par (xa, ya) de coefficient directeur m, coupée à la fenêtre
+  function droite(xa, ya, m, couleur, largeur, nom, place = 0.9) {
+    const g = el("g", { "clip-path": "url(#cadre)" });
+    if (!isFinite(m)) {
+      el("line", { x1: X(xa), y1: 0, x2: X(xa), y2: H, stroke: couleur, "stroke-width": largeur }, g);
+      texte(nom, X(xa) + 8, 26, { fill: couleur, "font-size": 20 });
+      return;
+    }
+    el("line", { x1: X(V.x0), y1: Y(ya + m * (V.x0 - xa)), x2: X(V.x1), y2: Y(ya + m * (V.x1 - xa)),
+                 stroke: couleur, "stroke-width": largeur, "stroke-linecap": "round" }, g);
+    // étiquette près du bord droit, à l'intérieur de la fenêtre
+    let xe = V.x0 + place * (V.x1 - V.x0), ye = ya + m * (xe - xa);
+    const marge = 0.07 * (V.y1 - V.y0);
+    if (ye > V.y1 - marge) { ye = V.y1 - marge; xe = xa + (ye - ya) / m; }
+    if (ye < V.y0 + marge) { ye = V.y0 + marge; xe = xa + (ye - ya) / m; }
+    const decal = m >= 0 ? 22 : -10;
+    texte(nom, X(xe) + 8, Y(ye) + decal, { fill: couleur, "font-size": 20, "paint-order": "stroke", stroke: "var(--carte)", "stroke-width": 4 });
+  }
+
+  // ---------------------------------------------------------------
+  // Dessin de la figure
+  // ---------------------------------------------------------------
+  function dessiner() {
+    const F = fonction();
+    V = fenetre();
+    svg.innerHTML = "";
+    const defs = el("defs", {});
+    const clip = el("clipPath", { id: "cadre" }, defs);
+    el("rect", { x: 0, y: 0, width: W, height: H }, clip);
+    const fleche = el("marker", { id: "fleche", viewBox: "0 0 10 10", refX: 9, refY: 5, markerWidth: 7, markerHeight: 7, orient: "auto-start-reverse" }, defs);
+    el("path", { d: "M0,0 L10,5 L0,10 z", fill: "var(--axes)" }, fleche);
+    const pointe = el("marker", { id: "pointe", viewBox: "0 0 10 10", refX: 9, refY: 5, markerWidth: 6, markerHeight: 6, orient: "auto-start-reverse" }, defs);
+    el("path", { d: "M0,1 L9,5 L0,9", fill: "none", stroke: "var(--encre)", "stroke-width": 1.5 }, pointe);
+
+    // grille
+    const pas = pasGrille(V.x1 - V.x0);
+    const g = el("g", { stroke: "var(--grille)", "stroke-width": 1 });
+    for (let x = Math.ceil(V.x0 / pas) * pas; x <= V.x1; x += pas) el("line", { x1: X(x), y1: 0, x2: X(x), y2: H }, g);
+    for (let y = Math.ceil(V.y0 / pas) * pas; y <= V.y1; y += pas) el("line", { x1: 0, y1: Y(y), x2: W, y2: Y(y) }, g);
+
+    // axes (s'ils sont dans la fenêtre)
+    const axeX = V.y0 < 0 && V.y1 > 0, axeY = V.x0 < 0 && V.x1 > 0;
+    if (axeX) el("line", { x1: 0, y1: Y(0), x2: W - 2, y2: Y(0), stroke: "var(--axes)", "stroke-width": 1.6, "marker-end": "url(#fleche)" });
+    if (axeY) el("line", { x1: X(0), y1: H, x2: X(0), y2: 2, stroke: "var(--axes)", "stroke-width": 1.6, "marker-end": "url(#fleche)" });
+    if (axeX && axeY) texte("O", X(0) - 18, Y(0) + 20, { fill: "var(--encre)" });
+    if (etat.zoom === 1) {
+      const gt = el("g", { fill: "var(--discret)", "font-size": 14, "font-family": "IBM Plex Sans, sans-serif" });
+      if (axeX) for (let x = Math.ceil(V.x0); x <= Math.floor(V.x1); x++) {
+        // pas de graduation sous les étiquettes a et a + h
+        if (x === 0 || Math.abs(X(x) - X(etat.a)) < 30 || Math.abs(X(x) - X(etat.a + etat.h)) < 36) continue;
+        el("line", { x1: X(x), y1: Y(0) - 4, x2: X(x), y2: Y(0) + 4, stroke: "var(--axes)" });
+        const t = el("text", { x: X(x), y: Y(0) + 18, "text-anchor": "middle" }, gt); t.textContent = nb(x);
+      }
+      if (axeY) for (let y = Math.ceil(V.y0); y <= Math.floor(V.y1); y++) {
+        const F0 = fonction();
+        if (y === 0 || Math.abs(Y(y) - Y(F0.f(etat.a))) < 16 || Math.abs(Y(y) - Y(F0.f(etat.a + etat.h))) < 16) continue;
+        el("line", { x1: X(0) - 4, y1: Y(y), x2: X(0) + 4, y2: Y(y), stroke: "var(--axes)" });
+        const t = el("text", { x: X(0) - 8, y: Y(y) + 5, "text-anchor": "end" }, gt); t.textContent = nb(y);
+      }
+    }
+
+    // courbe (coupée aux points hors domaine)
+    let d = "", ouvert = false;
+    const N = 700;
+    for (let i = 0; i <= N; i++) {
+      const x = V.x0 + (V.x1 - V.x0) * i / N;
+      const dedans = !F.borne || (F.borne.strict ? x > F.borne.min : x >= F.borne.min);
+      const y = dedans ? F.f(x) : NaN;
+      if (!isFinite(y) || y > V.y1 + 50 * (V.y1 - V.y0) || y < V.y0 - 50 * (V.y1 - V.y0)) { ouvert = false; continue; }
+      d += (ouvert ? "L" : "M") + X(x).toFixed(2) + "," + Y(y).toFixed(2);
+      ouvert = true;
+    }
+    el("path", { d, fill: "none", stroke: "var(--courbe)", "stroke-width": 3, "clip-path": "url(#cadre)" });
+    // nom de la courbe
+    // nom de la courbe : à l'endroit visible le plus loin de A et de B
+    let xc = NaN, yc = NaN, meilleur = -1;
+    for (const r of [0.12, 0.2, 0.3, 0.7, 0.8, 0.88]) {
+      const xx = V.x0 + r * (V.x1 - V.x0), yy = F.f(xx);
+      if (!isFinite(yy) || yy > V.y1 - 0.08 * (V.y1 - V.y0) || yy < V.y0 + 0.08 * (V.y1 - V.y0)) continue;
+      const loin = Math.min(Math.abs(xx - etat.a), Math.abs(xx - etat.a - etat.h));
+      if (loin > meilleur) { meilleur = loin; xc = xx; yc = yy; }
+    }
+    if (isFinite(yc) && yc < V.y1 && yc > V.y0)
+      texte("𝒞<tspan baseline-shift='sub' font-size='13'>f</tspan>", X(xc) - 34, Y(yc) - 10, { fill: "var(--courbe)", "font-size": 21 });
+
+    const a = etat.a, h = etat.h, fa = F.f(a), fb = F.f(a + h);
+    const hNul = Math.abs(h) < 1e-12;
+
+    // pointillés de lecture, comme sur la figure du cours
+    const yBas = axeX ? Y(0) : H, xGauche = axeY ? X(0) : 0;
+    const pointilles = { stroke: "var(--discret)", "stroke-width": 1.2, "stroke-dasharray": "5 5" };
+    el("line", { x1: X(a), y1: Y(fa), x2: X(a), y2: yBas, ...pointilles });
+    el("line", { x1: X(a), y1: Y(fa), x2: xGauche, y2: Y(fa), ...pointilles });
+    if (!hNul) {
+      el("line", { x1: X(a + h), y1: Y(fb), x2: X(a + h), y2: yBas, ...pointilles });
+      el("line", { x1: X(a + h), y1: Y(fb), x2: xGauche, y2: Y(fb), ...pointilles });
+    }
+
+    // tangente (T), en rouge, sous la sécante
+    if (etat.tangente) droite(a, fa, F.d(a), "var(--tangente)", 2.5, "(T)", 0.7);
+    // sécante (AB), en bleu
+    if (!hNul) droite(a, fa, (fb - fa) / h, "var(--secante)", 2.5, "(AB)");
+
+    // étiquettes des axes : a, a + h, f(a), f(a + h)
+    const halo = { "paint-order": "stroke", stroke: "var(--carte)", "stroke-width": 5, fill: "var(--encre)" };
+    const ecartPx = Math.abs(X(a + h) - X(a));
+    const yEtiq = Math.min(yBas + 22, H - 6);
+    const xEtiq = axeY ? xGauche - 6 : 6, ancre = axeY ? "end" : "start";
+    if (Math.abs(a) > 1e-9 || !axeY) texte("<tspan font-style='italic'>a</tspan>", X(a), yEtiq, { "text-anchor": "middle", ...halo });
+    if (!hNul && ecartPx > 38)
+      texte("<tspan font-style='italic'>a</tspan> + <tspan font-style='italic'>h</tspan>", X(a + h), yEtiq, { "text-anchor": "middle", ...halo });
+    if (Math.abs(fa) > 1e-9 || !axeX) texte("<tspan font-style='italic'>f</tspan>(<tspan font-style='italic'>a</tspan>)", xEtiq, Y(fa) + 6, { "text-anchor": ancre, ...halo });
+    if (!hNul && Math.abs(Y(fb) - Y(fa)) > 20)
+      texte("<tspan font-style='italic'>f</tspan>(<tspan font-style='italic'>a</tspan> + <tspan font-style='italic'>h</tspan>)", xEtiq, Y(fb) + 6, { "text-anchor": ancre, ...halo });
+
+    // la flèche h entre a et a + h, sous l'axe
+    if (!hNul && ecartPx > 14) {
+      const yh = Math.min(yBas + 42, H - 26);
+      el("line", { x1: X(a), y1: yh, x2: X(a + h), y2: yh, stroke: "var(--encre)", "stroke-width": 1.4,
+                   "marker-start": "url(#pointe)", "marker-end": "url(#pointe)" });
+      texte("<tspan font-style='italic'>h</tspan>", (X(a) + X(a + h)) / 2, yh + 20, { "text-anchor": "middle", ...halo });
+    }
+
+    // points A et B
+    el("circle", { cx: X(a), cy: Y(fa), r: 5.5, fill: "var(--encre)" });
+    texte("A", X(a) - 22, Y(fa) - 10, { ...halo });
+    if (!hNul) {
+      el("circle", { cx: X(a + h), cy: Y(fb), r: 5.5, fill: "var(--secante)" });
+      texte("B", X(a + h) + (h > 0 ? -6 : -24), Y(fb) - 12, { ...halo, fill: "var(--secante)" });
+    }
+  }
+
+  // ---------------------------------------------------------------
+  // Tableau de bord
+  // ---------------------------------------------------------------
+  function frac(haut, bas) { return `<span class="frac"><span>${haut}</span><span>${bas}</span></span>`; }
+
+  function ecrireTaux() {
+    const F = fonction(), a = etat.a, h = etat.h;
+    const fa = F.f(a), fb = F.f(a + h);
+    const def = frac("<i>f</i>(<i>a</i> + <i>h</i>) − <i>f</i>(<i>a</i>)", "<i>h</i>");
+    if (Math.abs(h) < 1e-12) {
+      $("taux").innerHTML = `<span class="m">${def}</span><p class="pas-defini">Pour <i>h</i> = 0, les points A et B sont confondus : le taux n'est pas défini (division par 0).</p>`;
+      return;
+    }
+    const t = (fb - fa) / h;
+    $("taux").innerHTML =
+      `<span class="m">${def} = ${frac(`<i>f</i>(${nb(a + h, 4)}) − <i>f</i>(${nb(a)})`, nbH(h))}` +
+      ` = ${frac(`${nb(fb)} − ${paren(fa)}`, nbH(h))} ≈ <span class="valeur">${nb(t)}</span></span>` +
+      `<p class="note">C'est le coefficient directeur de la droite (AB), avec A(${nb(a)} ; ${nb(fa)}) et B(${nb(a + h, 4)} ; ${nb(fb)}).</p>`;
+  }
+
+  function ecrireSimplification() {
+    const F = fonction(), a = etat.a;
+    let s = `<p class="note">Pour <i>h</i> ≠ 0, le calcul algébrique donne :</p>` +
+      `<div>${frac("<i>f</i>(<i>a</i> + <i>h</i>) − <i>f</i>(<i>a</i>)", "<i>h</i>")} = ${F.generique}` +
+      ` &nbsp;; ici <i>a</i> = ${nb(a)} : &nbsp;${F.simplifie(a)}</div>`;
+    $("simplification").innerHTML = s;
+  }
+
+  const VALEURS_H = [1, 0.1, 0.01, 0.001, 0.0001];
+  function ecrireTableau() {
+    const F = fonction(), a = etat.a;
+    const lignes = VALEURS_H.map(h => {
+      const cellule = (hh) => {
+        if (F.borne && (F.borne.strict ? a + hh <= F.borne.min : a + hh < F.borne.min)) return "<span class='note'>non défini</span>";
+        return nb((F.f(a + hh) - F.f(a)) / hh, 5);
+      };
+      const actif = Math.abs(Math.abs(etat.h) - h) < 1e-9 ? " class='actif'" : "";
+      return `<tr data-h="${h}"${actif}><td>${nbH(h)}</td><td>${cellule(h)}</td><td>${cellule(-h)}</td></tr>`;
+    });
+    $("corps-tableau").innerHTML = lignes.join("");
+  }
+
+  function ecrireTangente() {
+    const bloc = $("tangente");
+    bloc.hidden = !etat.tangente;
+    if (!etat.tangente) return;
+    const F = fonction(), a = etat.a, fa = F.f(a), m = F.d(a);
+    if (!isFinite(m)) {
+      bloc.innerHTML = `<p class="alerte">En <i>a</i> = 0, le taux ${frac("1", "√<i>h</i>")} devient aussi grand que l'on veut quand <i>h</i> tend vers 0 :` +
+        ` il n'a pas de limite finie. La fonction racine carrée n'est pas dérivable en 0 ; la tangente (T) est verticale.</p>`;
+      return;
+    }
+    const b = fa - m * a;
+    bloc.innerHTML =
+      `<div class="m">Quand <i>h</i> tend vers 0, le taux tend vers ${F.derivee} : &nbsp;<i>f</i> ′(${nb(a)}) = <span class="valeur">${nb(m)}</span></div>` +
+      `<p class="note">(T) passe par A et a pour coefficient directeur <i>f</i> ′(<i>a</i>). Son équation réduite :</p>` +
+      `<div class="m"><i>y</i> = <i>f</i> ′(<i>a</i>)(<i>x</i> − <i>a</i>) + <i>f</i>(<i>a</i>) &nbsp; soit &nbsp; ` +
+      `<i>y</i> = ${nb(m)}(<i>x</i> − ${paren(a)}) + ${paren(fa)} = ${equationReduite(m, b)}</div>`;
+  }
+  function equationReduite(m, b) {
+    const mx = monome(m, "<i>x</i>", true);
+    const r = Math.round(b * 10000) / 10000;
+    if (mx === "") return nb(b);
+    if (r === 0) return mx;
+    return `${mx} ${r < 0 ? "−" : "+"} ${nb(Math.abs(r))}`;
+  }
+
+  // ---------------------------------------------------------------
+  // Mise à jour globale
+  // ---------------------------------------------------------------
+  function tout() {
+    $("a-sortie").textContent = nb(etat.a, 2);
+    $("h-sortie").textContent = Math.abs(etat.h) < 1e-12 ? "0" : nbH(etat.h);
+    $("badge-zoom").hidden = etat.zoom === 1;
+    dessiner();
+    ecrireTaux();
+    ecrireSimplification();
+    ecrireTableau();
+    ecrireTangente();
+  }
+
+  function fixerH(h, majCurseur = true) {
+    const F = fonction();
+    etat.h = borneH(Math.max(-F.hmax, Math.min(F.hmax, h)));
+    if (majCurseur) curseurP.value = pDeH(etat.h, F.hmax);
+    tout();
+  }
+
+  function arreter() {
+    if (etat.anim) cancelAnimationFrame(etat.anim);
+    etat.anim = null;
+    $("tendre").textContent = "Faire tendre h vers 0";
+  }
+
+  // h est divisé par un facteur constant à chaque image : B glisse vers A
+  function tendreVersZero() {
+    if (etat.anim) { arreter(); return; }
+    if (Math.abs(etat.h) < 0.0011) fixerH(etat.h < 0 ? -1 : 1);
+    const reduit = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    $("tendre").textContent = "Arrêter";
+    let dernier = performance.now();
+    const pas = (t) => {
+      const dt = Math.min(64, t - dernier); dernier = t;
+      const facteur = reduit ? 0.5 : Math.pow(0.35, dt / 1000);
+      const h = etat.h * facteur;
+      if (Math.abs(h) <= 0.001) { fixerH(Math.sign(h) * 0.001); arreter(); return; }
+      fixerH(h);
+      etat.anim = requestAnimationFrame(reduit ? (tt) => setTimeout(() => pas(performance.now()), 400) : pas);
+    };
+    etat.anim = requestAnimationFrame(pas);
+  }
+
+  // ---------------------------------------------------------------
+  // Commandes
+  // ---------------------------------------------------------------
+  function choisirFonction(cle) {
+    arreter();
+    etat.cle = cle;
+    const F = fonction();
+    const [amin, amax, a0] = F.a;
+    curseurA.min = amin; curseurA.max = amax; curseurA.value = a0;
+    etat.a = a0;
+    fixerH(1);
+  }
+
+  $("fonction").addEventListener("change", e => choisirFonction(e.target.value));
+  curseurA.addEventListener("input", e => { etat.a = parseFloat(e.target.value); fixerH(etat.h); });
+  curseurP.addEventListener("input", e => { arreter(); fixerH(hDeP(parseFloat(e.target.value), fonction().hmax), false); });
+  $("tendre").addEventListener("click", tendreVersZero);
+  $("h-plus").addEventListener("click", () => { arreter(); fixerH(1); });
+  $("h-moins").addEventListener("click", () => { arreter(); fixerH(-1); });
+  $("voir-tangente").addEventListener("change", e => { etat.tangente = e.target.checked; tout(); });
+  $("corps-tableau").addEventListener("click", e => {
+    const tr = e.target.closest("tr"); if (!tr) return;
+    arreter();
+    const h = parseFloat(tr.dataset.h);
+    fixerH(etat.h < 0 ? -h : h);
+  });
+  function zoom(z) {
+    etat.zoom = z;
+    $("zoom1").setAttribute("aria-pressed", z === 1);
+    $("zoom4").setAttribute("aria-pressed", z !== 1);
+    tout();
+  }
+  $("zoom1").addEventListener("click", () => zoom(1));
+  $("zoom4").addEventListener("click", () => zoom(4));
+
+  // On peut aussi attraper B à la souris ou au doigt
+  let saisi = false;
+  function abscisseSouris(ev) {
+    const r = svg.getBoundingClientRect();
+    return V.x0 + (ev.clientX - r.left) / r.width * (V.x1 - V.x0);
+  }
+  svg.addEventListener("pointerdown", ev => {
+    const F = fonction();
+    const r = svg.getBoundingClientRect();
+    const bx = X(etat.a + etat.h) / W * r.width + r.left, by = Y(F.f(etat.a + etat.h)) / H * r.height + r.top;
+    if (Math.hypot(ev.clientX - bx, ev.clientY - by) < 28) { saisi = true; arreter(); svg.setPointerCapture(ev.pointerId); }
+  });
+  svg.addEventListener("pointermove", ev => { if (saisi) fixerH(abscisseSouris(ev) - etat.a); });
+  svg.addEventListener("pointerup", () => { saisi = false; });
+
+  choisirFonction("carre");
+})();
+</script>
+
+<!-- plein-ecran : bouton commun à toutes les pages interactives -->
+<style>
+#pleinEcran { position: fixed; top: calc(10px + env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); z-index: 50; font: 500 13px var(--ui, system-ui, sans-serif); padding: 6px 12px; border-radius: 999px; border: 1px solid var(--filet, #d9dee5); background: var(--carte, #fff); color: var(--encre, #1b1f24); cursor: pointer; opacity: .9; }
+#pleinEcran:hover { opacity: 1; }
+body.plein-ecran .niveau, body.plein-ecran h1, body.plein-ecran h1 + .chapeau { display: none !important; }
+body.plein-ecran .page { max-width: none !important; min-height: 100vh; padding-top: 48px !important; align-content: start; }
+body.plein-ecran .page svg:not(.mini) { max-height: 76vh; }
+body.plein-ecran.plein-multi .page svg:not(.mini) { max-height: 46vh; }
+body.plein-ecran .constat { font-size: clamp(20px, 2.6vw, 30px); }
+</style>
+<script>
+(() => {
+  const b = document.createElement("button");
+  b.type = "button"; b.id = "pleinEcran"; document.body.appendChild(b);
+  function etat(on) { document.body.classList.toggle("plein-ecran", on); b.textContent = on ? "✕ Quitter le plein écran" : "⛶ Plein écran"; b.setAttribute("aria-pressed", on); window.dispatchEvent(new Event("resize")); }
+  b.addEventListener("click", async () => {
+    const on = !document.body.classList.contains("plein-ecran");
+    etat(on);
+    try { on ? await document.documentElement.requestFullscreen() : (document.fullscreenElement && await document.exitFullscreen()); } catch (e) {}
+  });
+  document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement && document.body.classList.contains("plein-ecran")) etat(false); });
+  window.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("plein-ecran")) etat(false); });
+  if (document.querySelectorAll(".page svg:not(.mini), .page canvas").length > 1) document.body.classList.add("plein-multi");
+  etat(location.hash === "#plein");
+})();
+</script>
+
+</body></html>

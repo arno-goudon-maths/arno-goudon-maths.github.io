@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;box-sizing:border-box}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head><body>
+<title>X, le compteur de succès</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Mise en page : la scène (roue de loterie, X, frise des lancers) en grand à gauche,
+   l'histogramme des valeurs de X à droite ; une colonne sur téléphone.
+   Mêmes polices et conventions que les autres pages : bleu = succès S, rouge = échec S̄. */
+:root {
+  --papier: #f7f8fa;
+  --carte: #ffffff;
+  --encre: #1b1f24;
+  --discret: #5d6672;
+  --filet: #d9dee5;
+  --grille: #e7eaef;
+  --succes: #1f5fbf;
+  --echec: #c62828;
+  --succes-fond: #cfe0f7;
+  --echec-fond: #f6d2d2;
+  --corps: #22395c;
+  --oeil: #ffffff;
+  --theorie: #9a5b00;
+  --math: "STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --ui: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1;
+    --filet: #313844; --grille: #252b34; --succes: #6fa3f0; --echec: #f07a7a;
+    --succes-fond: #1d2a3d; --echec-fond: #3a2124; --corps: #8fb0e0; --oeil: #f4f6f9;
+    --theorie: #e0a64a; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1;
+  --filet: #313844; --grille: #252b34; --succes: #6fa3f0; --echec: #f07a7a;
+  --succes-fond: #1d2a3d; --echec-fond: #3a2124; --corps: #8fb0e0; --oeil: #f4f6f9;
+  --theorie: #e0a64a; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--papier); color: var(--encre); font-family: var(--ui); font-size: 15px; line-height: 1.5; }
+.page { max-width: 1180px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 40px; }
+header { display: grid; gap: 4px; margin-bottom: 16px; }
+.niveau { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--discret); }
+h1 { font-family: var(--math); font-weight: 600; font-size: clamp(26px, 4vw, 36px); line-height: 1.15; margin: 0; text-wrap: balance; }
+.chapeau { margin: 0; color: var(--discret); max-width: 70ch; }
+.grille { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+@media (max-width: 860px) { .grille { grid-template-columns: minmax(0, 1fr); } }
+.carte { background: var(--carte); border: 1px solid var(--filet); border-radius: 10px; padding: 10px; min-width: 0; }
+.carte svg { display: block; width: 100%; height: auto; }
+.boutons { display: flex; flex-wrap: wrap; gap: 10px; padding: 10px 4px 4px; }
+button { font: inherit; font-weight: 500; border-radius: 8px; padding: 9px 16px; cursor: pointer; border: 1px solid var(--succes); }
+button.principal { background: var(--succes); color: var(--carte); }
+button.second { background: transparent; color: var(--succes); }
+button:disabled { opacity: .5; cursor: default; }
+button:focus-visible, input:focus-visible, summary:focus-visible { outline: 3px solid var(--theorie); outline-offset: 2px; }
+.droite { display: grid; gap: 14px; min-width: 0; }
+.constat { font-size: 15px; margin: 4px 6px 2px; }
+.constat strong { font-family: var(--math); font-size: 17px; }
+.math { font-family: var(--math); font-style: italic; }
+.chiffres { font-variant-numeric: tabular-nums; }
+details { background: var(--carte); border: 1px solid var(--filet); border-radius: 10px; padding: 10px 14px; }
+summary { cursor: pointer; font-weight: 500; }
+details p { margin: 8px 0; color: var(--discret); }
+label.case { display: flex; gap: 8px; align-items: center; margin: 8px 0; }
+.tableau { overflow-x: auto; }
+table { border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: 14px; }
+td, th { border: 1px solid var(--filet); padding: 4px 9px; text-align: center; }
+th { font-family: var(--math); font-weight: 400; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="page">
+  <header>
+    <span class="niveau">Terminale spécialité · Chapitre 6 · Loi binomiale</span>
+    <h1>X, le compteur de succès</h1>
+    <p class="chapeau">Une roue de loterie tourne cinq fois : c'est un schéma de Bernoulli. <span class="math">X</span> compte les succès. Relancez plusieurs fois et regardez si <span class="math">X</span> donne toujours le même nombre.</p>
+  </header>
+
+  <div class="grille">
+    <div class="carte">
+      <svg id="scene" viewBox="0 0 900 500" role="img" aria-label="Roue de loterie, personnage X et frise des lancers">
+        <!-- roue de loterie : quart bleu (succès), reste rouge -->
+        <g id="roue" transform="translate(190 200)">
+          <circle r="140" fill="var(--echec-fond)" stroke="var(--echec)" stroke-width="3"/>
+          <path d="M0 0 L140 0 A140 140 0 0 0 -113.26 -82.29 Z" fill="var(--succes-fond)"/>
+          <path d="M140 0 A140 140 0 0 0 -113.26 -82.29" fill="none" stroke="var(--succes)" stroke-width="4"/>
+          <line x1="0" y1="0" x2="140" y2="0" stroke="var(--echec)" stroke-width="3"/>
+          <line x1="0" y1="0" x2="-113.26" y2="-82.29" stroke="var(--echec)" stroke-width="3"/>
+          <text x="25" y="-70" text-anchor="middle" font-family="var(--ui)" font-weight="600" font-size="22" fill="var(--succes)">bleu</text>
+          <text x="-25" y="84" text-anchor="middle" font-family="var(--ui)" font-weight="600" font-size="22" fill="var(--echec)">rouge</text>
+          <g id="fleche">
+            <line x1="0" y1="0" x2="104" y2="0" stroke="var(--encre)" stroke-width="7" stroke-linecap="round"/>
+            <path d="M122 0 L98 -12 L98 12 Z" fill="var(--encre)"/>
+          </g>
+          <circle r="7" fill="var(--encre)"/>
+        </g>
+        <text x="190" y="372" text-anchor="middle" font-family="var(--ui)" font-size="16" fill="var(--discret)">succès <tspan font-family="var(--math)" font-style="italic">S</tspan> : bleu, <tspan font-family="var(--math)" font-style="italic">p</tspan> = 0,4</text>
+
+        <!-- le personnage X -->
+        <g id="perso" transform="translate(705 270)">
+          <line x1="-82" y1="-108" x2="82" y2="108" stroke="var(--corps)" stroke-width="44" stroke-linecap="round"/>
+          <line x1="82" y1="-108" x2="-82" y2="108" stroke="var(--corps)" stroke-width="44" stroke-linecap="round"/>
+          <path id="sourcils" d="M-50 -82 Q-36 -92 -22 -82 M22 -82 Q36 -92 50 -82" fill="none" stroke="var(--encre)" stroke-width="5" stroke-linecap="round"/>
+          <g id="yeux">
+            <circle cx="-34" cy="-52" r="22" fill="var(--oeil)" stroke="var(--encre)" stroke-width="3"/>
+            <circle cx="34" cy="-52" r="22" fill="var(--oeil)" stroke="var(--encre)" stroke-width="3"/>
+            <circle id="pupG" cx="-34" cy="-52" r="9" fill="#1b1f24"/>
+            <circle id="pupD" cx="34" cy="-52" r="9" fill="#1b1f24"/>
+          </g>
+          <path d="M-16 -14 Q0 2 16 -14" fill="none" stroke="var(--oeil)" stroke-width="5" stroke-linecap="round"/>
+        </g>
+        <text id="compteur" x="705" y="430" text-anchor="middle" font-family="var(--math)" font-style="italic" font-size="34" fill="var(--corps)">X = 0</text>
+        <text id="plus" x="705" y="128" text-anchor="middle" font-family="var(--math)" font-size="34" fill="var(--succes)" opacity="0">+1</text>
+
+        <!-- bulle de bande dessinée -->
+        <g id="bulle">
+          <path id="bulleForme" d="" fill="var(--carte)" stroke="var(--encre)" stroke-width="2.5" stroke-linejoin="round"/>
+          <text id="bulleTexte" font-family="var(--ui)" font-size="18" fill="var(--encre)"></text>
+        </g>
+
+        <!-- frise du schéma de Bernoulli -->
+        <text x="30" y="420" font-family="var(--ui)" font-size="16" fill="var(--discret)">Schéma de Bernoulli de taille <tspan font-family="var(--math)" font-style="italic">n</tspan> = 5 :</text>
+        <g id="frise"></g>
+      </svg>
+      <div class="boutons">
+        <button id="lancer" class="principal" type="button">Lancer les 5 épreuves</button>
+        <button id="dix" class="second" type="button">Rejouer 10 fois, en accéléré</button>
+        <button id="raz" class="second" type="button">Tout effacer</button>
+      </div>
+    </div>
+
+    <div class="droite">
+      <div class="carte">
+        <svg id="histo" viewBox="0 0 420 280" role="img" aria-label="Histogramme des valeurs de X obtenues"></svg>
+        <p class="constat" id="constat">Aucune répétition pour l'instant.</p>
+      </div>
+      <details>
+        <summary>Pour aller plus loin</summary>
+        <p>Sur une seule répétition, <span class="math">X</span> peut prendre les valeurs 0, 1, 2, 3, 4 ou 5. Sa loi est la loi binomiale 𝓑(5 ; 0,4) : <span class="math">P</span>(<span class="math">X</span> = <span class="math">k</span>) = (<span class="math">k</span> parmi 5) × 0,4<sup><span class="math">k</span></sup> × 0,6<sup>5 − <span class="math">k</span></sup>.</p>
+        <label class="case"><input type="checkbox" id="theorie"> Comparer les fréquences aux probabilités de 𝓑(5 ; 0,4)</label>
+        <div class="tableau"><table id="table"></table></div>
+      </details>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const P = 0.4, N = 5;
+  const BINOM = [1, 5, 10, 10, 5, 1].map((c, k) => c * Math.pow(P, k) * Math.pow(1 - P, N - k));
+  const fr = (x, d = 2) => x.toFixed(d).replace(".", ",");
+  const reduit = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const $ = id => document.getElementById(id);
+  const svgNS = "http://www.w3.org/2000/svg";
+  const RC = { x: 190, y: 200 }, PERSO = { x: 705, y: 270 };
+  const comptes = [0, 0, 0, 0, 0, 0];
+  let angle = 0.35, occupe = false, repetitions = 0, derniere = null;
+
+  // ---- regard : les pupilles suivent un point ----
+  function regarder(px, py) {
+    [["pupG", -34], ["pupD", 34]].forEach(([id, dx]) => {
+      const ex = PERSO.x + dx, ey = PERSO.y - 52;
+      const vx = px - ex, vy = py - ey, n = Math.hypot(vx, vy) || 1;
+      $(id).setAttribute("cx", dx + vx / n * 10);
+      $(id).setAttribute("cy", -52 + vy / n * 10);
+    });
+  }
+  function bout() { return { x: RC.x + 122 * Math.cos(angle), y: RC.y - 122 * Math.sin(angle) }; }
+  function dessinerFleche() {
+    $("fleche").setAttribute("transform", `rotate(${-angle * 180 / Math.PI})`);
+    const b = bout(); regarder(b.x, b.y);
+  }
+
+  // ---- bulle de bande dessinée ----
+  function dire(lignes) {
+    const t = $("bulleTexte");
+    t.textContent = "";
+    lignes.forEach((l, i) => {
+      const s = document.createElementNS(svgNS, "tspan");
+      s.setAttribute("x", 0); s.setAttribute("dy", i ? "1.35em" : "0");
+      s.textContent = l; t.appendChild(s);
+    });
+    const w = Math.max(...lignes.map(l => l.length)) * 9.2 + 40, h = lignes.length * 24 + 26;
+    const x0 = Math.min(880 - w, Math.max(400, PERSO.x - w + 60)), y0 = 14;
+    t.setAttribute("transform", `translate(${x0 + 20} ${y0 + 31})`);
+    const r = 16, bx = PERSO.x - 40, by = y0 + h;
+    $("bulleForme").setAttribute("d",
+      `M${x0 + r} ${y0} H${x0 + w - r} Q${x0 + w} ${y0} ${x0 + w} ${y0 + r} V${by - r} Q${x0 + w} ${by} ${x0 + w - r} ${by}` +
+      ` H${bx + 26} L${PERSO.x - 22} ${PERSO.y - 118} L${bx} ${by} H${x0 + r} Q${x0} ${by} ${x0} ${by - r} V${y0 + r} Q${x0} ${y0} ${x0 + r} ${y0} Z`);
+  }
+
+  // ---- frise ----
+  function viderFrise() { $("frise").textContent = ""; }
+  function ajouterCase(i, succes) {
+    const g = document.createElementNS(svgNS, "g");
+    const x = 40 + i * 66, y = 440;
+    g.innerHTML = `<rect x="${x}" y="${y}" width="50" height="50" rx="5" fill="var(${succes ? "--succes-fond" : "--echec-fond"})" stroke="var(${succes ? "--succes" : "--echec"})" stroke-width="2.5"/>` +
+      `<text x="${x + 25}" y="${y + 35}" text-anchor="middle" font-family="var(--math)" font-style="italic" font-size="28" fill="var(${succes ? "--succes" : "--echec"})">S</text>` +
+      (succes ? "" : `<line x1="${x + 16}" y1="${y + 11}" x2="${x + 34}" y2="${y + 11}" stroke="var(--echec)" stroke-width="2.2"/>`);
+    $("frise").appendChild(g);
+    return { x: x + 25, y: y + 25 };
+  }
+
+  // ---- un lancer de la roue ----
+  function tourner(duree) {
+    return new Promise(resolve => {
+      const cible = Math.random() * 2 * Math.PI;
+      const depart = angle, total = 4 * Math.PI + ((cible - depart) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
+      if (reduit || duree === 0) { angle = (depart + total) % (2 * Math.PI); dessinerFleche(); return resolve(); }
+      const t0 = performance.now();
+      function pas(t) {
+        const u = Math.min(1, (t - t0) / duree), e = 1 - Math.pow(1 - u, 3);
+        angle = (depart + total * e) % (2 * Math.PI);
+        dessinerFleche();
+        if (u < 1) requestAnimationFrame(pas); else resolve();
+      }
+      requestAnimationFrame(pas);
+    });
+  }
+  const pause = ms => new Promise(r => setTimeout(r, reduit ? Math.min(ms, 120) : ms));
+
+  function plusUn() {
+    const p = $("plus");
+    if (reduit) return;
+    p.animate([{ opacity: 0, transform: "translateY(10px)" }, { opacity: 1, transform: "translateY(0)" }, { opacity: 0, transform: "translateY(-26px)" }],
+      { duration: 800, easing: "ease-out" });
+    $("sourcils").animate([{ transform: "translateY(0)" }, { transform: "translateY(-8px)" }, { transform: "translateY(0)" }], { duration: 600 });
+  }
+
+  async function schema(rapide) {
+    viderFrise();
+    let x = 0;
+    $("compteur").textContent = "X = 0";
+    for (let i = 0; i < N; i++) {
+      await tourner(rapide ? 260 : 1300);
+      const succes = angle > 0 && angle < 0.8 * Math.PI;
+      const c = ajouterCase(i, succes);
+      regarder(c.x, c.y);
+      if (succes) { x++; $("compteur").textContent = "X = " + x; plusUn(); }
+      if (!rapide) {
+        if (i === 0 && repetitions === 0) dire(succes ? ["Bleu : un succès !", "Je compte + 1."] : ["Rouge : un échec.", "Je ne compte rien."]);
+        else if (i === 2 && repetitions === 0) dire(["La roue n'a pas de mémoire :", "chaque lancer recommence à zéro."]);
+        await pause(650);
+      } else await pause(90);
+    }
+    return x;
+  }
+
+  async function repetition(rapide) {
+    const x = await schema(rapide);
+    repetitions++;
+    comptes[x]++;
+    if (!rapide) {
+      if (derniere !== null && x !== derniere) dire([`Cette fois, ${x} succès : X = ${x}.`, "Je ne donne pas toujours le même nombre !"]);
+      else if (derniere !== null) dire([`Encore X = ${x}…`, "relancez pour voir si ça change."]);
+      else dire([`5 lancers, ${x} succès :`, `pour cette répétition, X = ${x}.`]);
+    }
+    derniere = x;
+    dessinerHisto();
+    return x;
+  }
+
+  async function verrou(f) {
+    if (occupe) return;
+    occupe = true;
+    ["lancer", "dix", "raz"].forEach(id => $(id).disabled = true);
+    try { await f(); } finally {
+      occupe = false;
+      ["lancer", "dix", "raz"].forEach(id => $(id).disabled = false);
+    }
+  }
+
+  $("lancer").addEventListener("click", () => verrou(() => repetition(false)));
+  $("dix").addEventListener("click", () => verrou(async () => {
+    dire(["Dix répétitions d'affilée…", "regardez mes réponses."]);
+    for (let k = 0; k < 10; k++) await repetition(true);
+    const differentes = comptes.filter(c => c > 0).length;
+    dire([`Après ${repetitions} répétitions : ${differentes} valeurs différentes.`, "Je suis une variable aléatoire : X ∼ 𝓑(5 ; 0,4)."]);
+  }));
+  $("raz").addEventListener("click", () => {
+    if (occupe) return;
+    comptes.fill(0); repetitions = 0; derniere = null;
+    viderFrise(); $("compteur").textContent = "X = 0";
+    dire(["Bonjour ! Je suis X.", "Je compte les succès : bleu = succès."]);
+    dessinerHisto();
+  });
+  $("theorie").addEventListener("change", dessinerHisto);
+
+  // ---- histogramme des valeurs de X ----
+  function dessinerHisto() {
+    const h = $("histo");
+    const G = 46, D = 404, B = 228, H = 196;
+    const freq = comptes.map(c => repetitions ? c / repetitions : 0);
+    const theo = $("theorie").checked;
+    const max = Math.max(0.5, ...freq, ...(theo ? BINOM : [0]));
+    const ech = H / max, larg = (D - G) / 6;
+    let s = `<text x="${G - 36}" y="16" font-family="var(--ui)" font-size="13" fill="var(--discret)">fréquence</text>`;
+    for (let v = 0; v <= max + 1e-9; v += 0.1) {
+      const y = B - v * ech;
+      s += `<line x1="${G}" y1="${y}" x2="${D}" y2="${y}" stroke="var(--grille)"/>`;
+      s += `<text x="${G - 8}" y="${y + 4}" text-anchor="end" font-family="var(--ui)" font-size="12" fill="var(--discret)" class="chiffres">${fr(v, 1)}</text>`;
+    }
+    freq.forEach((f, k) => {
+      const x = G + k * larg + larg * 0.18, w = larg * 0.64, hh = f * ech;
+      s += `<rect x="${x}" y="${B - hh}" width="${w}" height="${hh}" fill="var(--corps)" opacity="0.85" rx="2"/>`;
+      if (comptes[k]) s += `<text x="${x + w / 2}" y="${B - hh - 6}" text-anchor="middle" font-family="var(--ui)" font-size="12" fill="var(--encre)">${comptes[k]}</text>`;
+      if (theo) {
+        const yt = B - BINOM[k] * ech;
+        s += `<line x1="${x - 4}" y1="${yt}" x2="${x + w + 4}" y2="${yt}" stroke="var(--theorie)" stroke-width="3"/>`;
+      }
+      s += `<text x="${x + w / 2}" y="${B + 20}" text-anchor="middle" font-family="var(--math)" font-size="17" fill="var(--encre)">${k}</text>`;
+    });
+    s += `<line x1="${G}" y1="${B}" x2="${D}" y2="${B}" stroke="var(--encre)" stroke-width="1.5"/>`;
+    s += `<text x="${(G + D) / 2}" y="${B + 44}" text-anchor="middle" font-family="var(--ui)" font-size="13" fill="var(--discret)">valeurs de X obtenues</text>`;
+    h.innerHTML = s;
+    const differentes = comptes.filter(c => c > 0).length;
+    $("constat").innerHTML = repetitions === 0 ? "Aucune répétition pour l'instant." :
+      `Sur <strong class="chiffres">${repetitions}</strong> répétition${repetitions > 1 ? "s" : ""}, <span class="math">X</span> a pris <strong class="chiffres">${differentes}</strong> valeur${differentes > 1 ? "s" : ""} différente${differentes > 1 ? "s" : ""}.`;
+    let t = "<tr><th>k</th>" + [0, 1, 2, 3, 4, 5].map(k => `<td>${k}</td>`).join("") + "</tr>";
+    t += "<tr><th>fréquence</th>" + freq.map(f => `<td>${repetitions ? fr(f, 3) : "–"}</td>`).join("") + "</tr>";
+    t += "<tr><th>P(X = k)</th>" + BINOM.map(p => `<td>${fr(p, 3)}</td>`).join("") + "</tr>";
+    $("table").innerHTML = t;
+  }
+
+  // état de départ : un exemple déjà affiché
+  dessinerFleche();
+  dire(["Bonjour ! Je suis X.", "Je compte les succès : bleu = succès."]);
+  [false, true, true, false, true].forEach((s, i) => ajouterCase(i, s));
+  $("compteur").textContent = "X = 3";
+  comptes[3] = 1; repetitions = 1; derniere = 3;
+  dessinerHisto();
+})();
+</script>
+
+<!-- plein-ecran : bouton commun à toutes les pages interactives -->
+<style>
+#pleinEcran { position: fixed; top: calc(10px + env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); z-index: 50; font: 500 13px var(--ui, system-ui, sans-serif); padding: 6px 12px; border-radius: 999px; border: 1px solid var(--filet, #d9dee5); background: var(--carte, #fff); color: var(--encre, #1b1f24); cursor: pointer; opacity: .9; }
+#pleinEcran:hover { opacity: 1; }
+body.plein-ecran .niveau, body.plein-ecran h1, body.plein-ecran h1 + .chapeau { display: none !important; }
+body.plein-ecran .page { max-width: none !important; min-height: 100vh; padding-top: 48px !important; align-content: start; }
+body.plein-ecran .page svg:not(.mini) { max-height: 76vh; }
+body.plein-ecran.plein-multi .page svg:not(.mini) { max-height: 46vh; }
+body.plein-ecran .constat { font-size: clamp(20px, 2.6vw, 30px); }
+</style>
+<script>
+(() => {
+  const b = document.createElement("button");
+  b.type = "button"; b.id = "pleinEcran"; document.body.appendChild(b);
+  function etat(on) { document.body.classList.toggle("plein-ecran", on); b.textContent = on ? "✕ Quitter le plein écran" : "⛶ Plein écran"; b.setAttribute("aria-pressed", on); window.dispatchEvent(new Event("resize")); }
+  b.addEventListener("click", async () => {
+    const on = !document.body.classList.contains("plein-ecran");
+    etat(on);
+    try { on ? await document.documentElement.requestFullscreen() : (document.fullscreenElement && await document.exitFullscreen()); } catch (e) {}
+  });
+  document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement && document.body.classList.contains("plein-ecran")) etat(false); });
+  window.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("plein-ecran")) etat(false); });
+  if (document.querySelectorAll(".page svg:not(.mini), .page canvas").length > 1) document.body.classList.add("plein-multi");
+  etat(location.hash === "#plein");
+})();
+</script>
+
+</body></html>

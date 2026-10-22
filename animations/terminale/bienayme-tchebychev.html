@@ -1,0 +1,669 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;box-sizing:border-box}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head><body>
+<title>Inégalité de Bienaymé-Tchebychev</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Mise en page : le diagramme de la loi de X à gauche, le tableau de bord à droite ; une colonne sur téléphone.
+   Mêmes polices et mêmes conventions que la page « Nombre dérivé » : en rouge l'événement |X − E[X]| ≥ δ,
+   en bleu son contraire |X − E[X]| < δ. */
+:root {
+  --papier: #f7f8fa;
+  --carte: #ffffff;
+  --encre: #1b1f24;
+  --discret: #5d6672;
+  --filet: #d9dee5;
+  --grille: #e7eaef;
+  --axes: #1b1f24;
+  --dedans: #1f5fbf;
+  --dehors: #c62828;
+  --dedans-fond: #e8f0fb;
+  --dehors-fond: #fbeaea;
+  --borne: #6a4bb5;
+  --borne-fond: #efeaf9;
+  --attention: #9a5b00;
+  --math: "STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --ui: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1;
+    --filet: #313844; --grille: #252b34; --axes: #c9cfd8;
+    --dedans: #6fa3f0; --dehors: #f07a7a; --dedans-fond: #1d2a3d; --dehors-fond: #3a2124;
+    --borne: #b39cf0; --borne-fond: #2a2440; --attention: #e0a64a; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1;
+  --filet: #313844; --grille: #252b34; --axes: #c9cfd8;
+  --dedans: #6fa3f0; --dehors: #f07a7a; --dedans-fond: #1d2a3d; --dehors-fond: #3a2124;
+  --borne: #b39cf0; --borne-fond: #2a2440; --attention: #e0a64a; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--papier); color: var(--encre); font-family: var(--ui); font-size: 15px; line-height: 1.5; }
+.page { max-width: 1180px; margin: 0 auto; padding-inline: 16px; padding-block: 20px 40px; }
+header { display: grid; gap: 4px; margin-bottom: 18px; }
+.niveau { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--discret); }
+h1 { font-family: var(--math); font-weight: 600; font-size: clamp(26px, 4vw, 36px); line-height: 1.15; margin: 0; text-wrap: balance; }
+.chapeau { margin: 0; color: var(--discret); max-width: 70ch; }
+.grille { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+@media (max-width: 860px) { .grille { grid-template-columns: minmax(0, 1fr); } }
+.gauche { display: grid; gap: 14px; min-width: 0; }
+@media (min-width: 861px) { .gauche { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 12px); } }
+.figure { background: var(--carte); border: 1px solid var(--filet); border-radius: 10px; padding: 10px; }
+.figure svg { display: block; width: 100%; height: auto; }
+.legende { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--discret); padding: 4px 6px 0; }
+.legende span { display: inline-flex; align-items: center; gap: 6px; }
+.pastille { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.theoreme { background: var(--carte); border: 1px solid var(--filet); border-left: 4px solid var(--borne); border-radius: 10px; padding: 12px 16px; display: grid; gap: 4px; min-width: 0; overflow-x: auto; }
+.theoreme p { margin: 0; }
+.commandes { display: grid; gap: 14px; min-width: 0; }
+.bloc { background: var(--carte); border: 1px solid var(--filet); border-radius: 10px; padding: 14px 16px; display: grid; gap: 10px; min-width: 0; }
+/* pas de capitales : elles changeraient X en x, δ en Δ */
+.bloc h2 { margin: 0; font-size: 15px; color: var(--discret); font-weight: 600; }
+.bloc h2 i, .m i { font-family: var(--math); }
+.ligne { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+select, button { font: inherit; color: var(--encre); background: var(--papier); border: 1px solid var(--filet); border-radius: 7px; padding: 6px 10px; }
+button { cursor: pointer; }
+button:hover { border-color: var(--dedans); }
+button.principal { background: var(--dedans); border-color: var(--dedans); color: var(--carte); font-weight: 600; }
+button.principal:hover { filter: brightness(1.08); }
+:focus-visible { outline: 2px solid var(--dedans); outline-offset: 2px; }
+.curseur { display: grid; grid-template-columns: 2.2em 1fr auto; gap: 10px; align-items: center; }
+.curseur output { font-family: var(--math); font-size: 18px; min-width: 6ch; text-align: right; font-variant-numeric: tabular-nums; }
+input[type="range"] { width: 100%; accent-color: var(--dedans); }
+.var { font-family: var(--math); font-style: italic; font-size: 18px; }
+.m { font-family: var(--math); font-size: 18px; }
+.frac { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; margin-inline: 3px; }
+.frac > span:first-child { border-bottom: 1.5px solid currentColor; padding-inline: 4px; }
+.frac > span { line-height: 1.25; }
+.carac { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.carac div { background: var(--papier); border-radius: 8px; padding: 8px 10px; display: grid; gap: 2px; min-width: 0; }
+.carac .nom { font-size: 12px; color: var(--discret); }
+.carac .val { font-family: var(--math); font-size: 19px; font-variant-numeric: tabular-nums; }
+.comparaison { display: grid; gap: 10px; }
+.mesure { display: grid; gap: 4px; }
+.mesure .titre { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; align-items: baseline; }
+.mesure .chiffre { font-family: var(--math); font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.jauge { position: relative; height: 14px; border-radius: 7px; background: var(--grille); overflow: hidden; }
+.jauge .rempli { position: absolute; inset: 0 auto 0 0; border-radius: 7px; }
+.mesure.vraie .chiffre { color: var(--dehors); }
+.mesure.vraie .rempli { background: var(--dehors); }
+.mesure.majorant .chiffre { color: var(--borne); }
+.mesure.majorant .rempli { background: repeating-linear-gradient(135deg, var(--borne) 0 6px, var(--borne-fond) 6px 10px); }
+.verdict { background: var(--borne-fond); border-radius: 8px; padding: 10px 12px; overflow-x: auto; }
+.minoration { background: var(--dedans-fond); border-radius: 8px; padding: 10px 12px; overflow-x: auto; }
+.alerte { color: var(--attention); font-weight: 500; }
+.segments { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--filet); border-radius: 8px; overflow: hidden; }
+.segments button { border: 0; border-radius: 0; background: transparent; padding: 5px 11px; }
+.segments button + button { border-left: 1px solid var(--filet); }
+.segments button[aria-pressed="true"] { background: var(--dedans); color: var(--carte); font-weight: 600; }
+.note { font-size: 13px; color: var(--discret); margin: 0; }
+.parametres { display: grid; gap: 8px; }
+[hidden] { display: none !important; }
+.page { display: grid; gap: 14px; max-width: 1080px; }
+header { margin-bottom: 0; }
+.barre { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; }
+.barre .parametres { display: flex; flex-wrap: wrap; gap: 6px 18px; }
+.barre .parametres .note { display: none; }
+.barre .curseur { width: 210px; }
+.barre .curseur.large { flex: 1 1 240px; width: auto; }
+.scene { background: var(--carte); border: 1px solid var(--filet); border-radius: 12px; padding: 8px; }
+.scene svg { display: block; width: 100%; height: auto; }
+.constat { font-size: 19px; text-align: center; min-height: 1.6em; }
+.constat b { font-family: var(--math); font-size: 22px; }
+.rouge { color: var(--dehors); }
+.bleu { color: var(--dedans); }
+.violet { color: var(--borne); }
+.theoreme-ligne { font-family: var(--math); font-size: 21px; text-align: center; }
+details { background: var(--carte); border: 1px solid var(--filet); border-radius: 10px; padding: 10px 16px; }
+summary { cursor: pointer; color: var(--discret); font-weight: 500; }
+.plus { display: grid; gap: 14px; padding-top: 12px; }
+.deux { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+@media (max-width: 860px) { .deux { grid-template-columns: minmax(0, 1fr); } }
+.colonne { display: grid; gap: 10px; min-width: 0; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="page">
+  <header>
+    <span class="niveau">Terminale spécialité · Chapitre 12 · Variables aléatoires et loi des grands nombres</span>
+    <h1>Inégalité de Bienaymé-Tchebychev</h1>
+    <p class="chapeau">Chaque bille est une réalisation de <i>X</i> : elle tombe dans la colonne de sa valeur,
+      <span class="bleu">bleue</span> si elle reste à moins de <i>δ</i> de l'espérance, <span class="rouge">rouge</span> sinon. Lancez, et comptez les rouges.</p>
+  </header>
+
+  <div class="barre">
+    <select id="loi" aria-label="Loi de X">
+      <option value="binom">Loi binomiale ℬ(n ; p)</option>
+      <option value="de">Lancer d'un dé équilibré</option>
+      <option value="deuxdes">Somme de deux dés équilibrés</option>
+      <option value="egalite">Loi à trois valeurs (cas d'égalité)</option>
+    </select>
+    <div class="parametres" id="parametres"></div>
+    <div class="curseur large">
+      <label for="delta" class="var">δ</label>
+      <input type="range" id="delta" min="0.1" max="10" step="0.05" value="2">
+      <output id="delta-sortie" for="delta"></output>
+    </div>
+  </div>
+
+  <div class="barre">
+    <button class="principal" type="button" id="continu">Lancer en continu</button>
+    <span class="segments" role="group" aria-label="Ajouter des réalisations d'un coup">
+      <button type="button" data-ajout="50">+ 50</button>
+      <button type="button" data-ajout="100">+ 100</button>
+      <button type="button" data-ajout="1000">+ 1 000</button>
+    </span>
+    <button type="button" id="effacer">Effacer</button>
+  </div>
+
+  <div class="scene">
+    <svg id="tas" viewBox="0 0 1000 470" role="img" aria-label="Réalisations de X empilées au-dessus de leur valeur">
+      <g id="tas-fond"></g><g id="tas-vol"></g>
+    </svg>
+  </div>
+
+  <div class="constat" id="constat" role="status" aria-live="polite"></div>
+  <div class="theoreme-ligne">
+    P(|<i>X</i> − E[<i>X</i>]| ≥ <i>δ</i>) ≤ <span class="frac"><span>V(<i>X</i>)</span><span><i>δ</i>²</span></span>
+  </div>
+
+  <details>
+    <summary>Pour aller plus loin</summary>
+    <div class="plus">
+      <div class="ligne">
+        <button type="button" id="une">Une réalisation</button>
+        <label for="vitesse" class="note">Vitesse</label>
+        <select id="vitesse">
+          <option value="lent">lente</option>
+          <option value="moyen" selected>moyenne</option>
+          <option value="rapide">rapide</option>
+        </select>
+        <span class="note">δ en écarts-types :</span>
+        <div class="segments" role="group" aria-label="δ en écarts-types">
+          <button type="button" data-k="1" aria-pressed="false"><i>δ</i> = <i>σ</i></button>
+          <button type="button" data-k="2" aria-pressed="false"><i>δ</i> = 2<i>σ</i></button>
+          <button type="button" data-k="3" aria-pressed="false"><i>δ</i> = 3<i>σ</i></button>
+        </div>
+      </div>
+      <div class="deux">
+        <div class="figure">
+          <svg id="graphe" viewBox="0 0 720 440" role="img" aria-label="Diagramme en bâtons de la loi de X, espérance et intervalle de rayon delta"></svg>
+          <div class="legende">
+            <span><i class="pastille" style="background: var(--dehors)"></i><span>|<i>k</i> − E[<i>X</i>]| ≥ <i>δ</i></span></span>
+            <span><i class="pastille" style="background: var(--dedans)"></i><span>|<i>k</i> − E[<i>X</i>]| &lt; <i>δ</i></span></span>
+          </div>
+        </div>
+        <div class="colonne">
+          <div class="carac">
+            <div><span class="nom">Espérance</span><span class="val" id="E"></span></div>
+            <div><span class="nom">Variance</span><span class="val" id="V"></span></div>
+            <div><span class="nom">Écart-type</span><span class="val" id="sigma"></span></div>
+          </div>
+          <div class="comparaison">
+            <div class="mesure vraie">
+              <div class="titre"><span class="m">P(|<i>X</i> − E[<i>X</i>]| ≥ <i>δ</i>)</span><span class="chiffre" id="proba"></span></div>
+              <div class="jauge"><div class="rempli" id="jauge-proba"></div></div>
+            </div>
+            <div class="mesure majorant">
+              <div class="titre"><span class="m"><span class="frac"><span>V(<i>X</i>)</span><span><i>δ</i>²</span></span></span><span class="chiffre" id="borne"></span></div>
+              <div class="jauge"><div class="rempli" id="jauge-borne"></div></div>
+            </div>
+          </div>
+          <div class="verdict m" id="verdict"></div>
+          <p class="note" id="commentaire"></p>
+          <div class="minoration m" id="minoration"></div>
+        </div>
+      </div>
+    </div>
+  </details>
+</div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const svg = $("graphe");
+  const W = 720, H = 440, G = 52, D = 26, HAUT = 26, BAS = 92;
+  const NS = "http://www.w3.org/2000/svg";
+
+  // ---------------------------------------------------------------
+  // Écriture des nombres à la française
+  // ---------------------------------------------------------------
+  function fr(x, d = 3) {
+    if (Math.abs(x) < 1e-12) x = 0;
+    let s = x.toFixed(d);
+    if (s.includes(".")) s = s.replace(/0+$/, "").replace(/\.$/, "");
+    return s.replace(".", ",").replace("-", "−");
+  }
+
+  // ---------------------------------------------------------------
+  // Les lois proposées : valeurs k et probabilités P(X = k)
+  // ---------------------------------------------------------------
+  const etat = { loi: "binom", n: 20, p: 0.3, a: 3, q: 0.4, delta: 2 };
+
+  function binomiale(n, p) {
+    const lignes = [];
+    let c = 1;
+    for (let k = 0; k <= n; k++) {
+      if (k > 0) c = c * (n - k + 1) / k;
+      lignes.push({ k, p: c * Math.pow(p, k) * Math.pow(1 - p, n - k) });
+    }
+    return lignes;
+  }
+  function loi() {
+    switch (etat.loi) {
+      case "binom": return binomiale(etat.n, etat.p);
+      case "de": return [1, 2, 3, 4, 5, 6].map(k => ({ k, p: 1 / 6 }));
+      case "deuxdes": {
+        const l = [];
+        for (let s = 2; s <= 12; s++) l.push({ k: s, p: (6 - Math.abs(s - 7)) / 36 });
+        return l;
+      }
+      case "egalite": {
+        const a = etat.a, q = etat.q;
+        return [{ k: -a, p: q / 2 }, { k: 0, p: 1 - q }, { k: a, p: q / 2 }];
+      }
+    }
+  }
+  function caracteristiques(l) {
+    const E = l.reduce((s, r) => s + r.k * r.p, 0);
+    const V = l.reduce((s, r) => s + (r.k - E) ** 2 * r.p, 0);
+    return { E, V, sigma: Math.sqrt(V) };
+  }
+  const horsIntervalle = (k, E, d) => Math.abs(k - E) >= d - 1e-9;
+
+  // ---------------------------------------------------------------
+  // Paramètres de chaque loi
+  // ---------------------------------------------------------------
+  function curseur(id, lettre, min, max, pas, valeur, aff) {
+    return `<div class="curseur"><label for="${id}" class="var">${lettre}</label>
+      <input type="range" id="${id}" min="${min}" max="${max}" step="${pas}" value="${valeur}">
+      <output id="${id}-sortie" for="${id}">${aff(valeur)}</output></div>`;
+  }
+  function parametres() {
+    const zone = $("parametres");
+    if (etat.loi === "binom") {
+      zone.innerHTML = curseur("n", "n", 1, 60, 1, etat.n, v => v)
+        + curseur("pp", "p", 0.05, 0.95, 0.05, etat.p, v => fr(+v, 2))
+        + `<p class="note">E[<i>X</i>] = <i>np</i> et V(<i>X</i>) = <i>np</i>(1 − <i>p</i>).</p>`;
+      lier("n", v => { etat.n = Math.round(v); $("n-sortie").textContent = etat.n; });
+      lier("pp", v => { etat.p = v; $("pp-sortie").textContent = fr(v, 2); });
+    } else if (etat.loi === "egalite") {
+      zone.innerHTML = curseur("aa", "a", 1, 6, 1, etat.a, v => v)
+        + curseur("qq", "q", 0.05, 1, 0.05, etat.q, v => fr(+v, 2))
+        + `<p class="note"><i>X</i> prend les valeurs −<i>a</i>, 0 et <i>a</i> avec les probabilités
+           <i>q</i>/2, 1 − <i>q</i> et <i>q</i>/2. Placez <i>δ</i> = <i>a</i> : l'inégalité devient une égalité.</p>`;
+      lier("aa", v => { etat.a = Math.round(v); $("aa-sortie").textContent = etat.a; });
+      lier("qq", v => { etat.q = v; $("qq-sortie").textContent = fr(v, 2); });
+    } else if (etat.loi === "de") {
+      zone.innerHTML = `<p class="note"><i>X</i> prend chacune des valeurs 1, 2, 3, 4, 5, 6 avec la probabilité 1/6.</p>`;
+    } else {
+      zone.innerHTML = `<p class="note"><i>X</i> est la somme des faces de deux dés équilibrés lancés indépendamment.</p>`;
+    }
+  }
+  function lier(id, f) {
+    $(id).addEventListener("input", e => { f(parseFloat(e.target.value)); tas.effacer(); reglerDelta(false); tout(); });
+  }
+
+  // ---------------------------------------------------------------
+  // Le curseur δ : sa plage dépend de la loi
+  // ---------------------------------------------------------------
+  function reglerDelta(remettre) {
+    const l = loi(), { E, sigma } = caracteristiques(l);
+    const ecartMax = Math.max(...l.map(r => Math.abs(r.k - E)));
+    const max = Math.max(1, Math.ceil(ecartMax + 1));
+    const pas = max > 20 ? 0.1 : 0.05;
+    const c = $("delta");
+    c.max = max; c.step = pas; c.min = pas;
+    if (remettre) etat.delta = Math.max(pas, Math.round(2 * sigma / pas) * pas);
+    etat.delta = Math.min(Math.max(etat.delta, pas), max);
+    c.value = etat.delta;
+  }
+  $("delta").addEventListener("input", e => { etat.delta = parseFloat(e.target.value); tout(); });
+  document.querySelectorAll("[data-k]").forEach(b => b.addEventListener("click", () => {
+    const { sigma } = caracteristiques(loi());
+    etat.delta = +b.dataset.k * sigma;
+    const c = $("delta");
+    if (etat.delta > +c.max) c.max = Math.ceil(etat.delta + 1);
+    c.value = etat.delta;
+    etat.kSigma = +b.dataset.k;
+    tout(true);
+  }));
+  $("loi").addEventListener("change", e => { etat.loi = e.target.value; parametres(); tas.effacer(); reglerDelta(true); tout(); });
+
+  // ---------------------------------------------------------------
+  // Le diagramme en bâtons
+  // ---------------------------------------------------------------
+  function el(nom, attrs, texte, parent = svg) {
+    const e = document.createElementNS(NS, nom);
+    for (const [c, v] of Object.entries(attrs)) e.setAttribute(c, v);
+    if (texte !== undefined) e.textContent = texte;
+    parent.appendChild(e);
+    return e;
+  }
+  // même fenêtre en abscisse pour le diagramme et pour l'empilement
+  function etendueK(l, E, d) {
+    const kmin = Math.min(...l.map(r => r.k)), kmax = Math.max(...l.map(r => r.k));
+    return { x0: Math.min(kmin, E - d) - 1, x1: Math.max(kmax, E + d) + 1 };
+  }
+  function dessiner(l, E, sigma) {
+    svg.replaceChildren();
+    const d = etat.delta;
+    const { x0, x1 } = etendueK(l, E, d);
+    const pmax = Math.max(...l.map(r => r.p));
+    const yHaut = Math.max(0.05, Math.ceil(pmax * 20 * 1.12) / 20);
+    const X = x => G + (x - x0) / (x1 - x0) * (W - G - D);
+    const yb = H - BAS;
+    const Y = p => yb - p / yHaut * (yb - HAUT);
+
+    // quadrillage horizontal et graduations des probabilités
+    const pasP = yHaut <= 0.1 ? 0.02 : yHaut <= 0.25 ? 0.05 : 0.1;
+    for (let p = pasP; p <= yHaut + 1e-9; p += pasP) {
+      el("line", { x1: G, x2: W - D, y1: Y(p), y2: Y(p), stroke: "var(--grille)", "stroke-width": 1 });
+      el("text", { x: G - 8, y: Y(p) + 4, "text-anchor": "end", "font-size": 12, fill: "var(--discret)", "font-family": "IBM Plex Sans, Segoe UI, system-ui, sans-serif" }, fr(p, 2));
+    }
+    el("text", { x: G - 8, y: HAUT - 10, "text-anchor": "end", "font-size": 13, fill: "var(--discret)", "font-family": "STIX Two Text, Cambria Math, Times New Roman, serif", "font-style": "italic" }, "P(X = k)");
+
+    // zone de l'intervalle ]E[X] − δ ; E[X] + δ[
+    el("rect", { x: X(E - d), y: HAUT, width: Math.max(0, X(E + d) - X(E - d)), height: yb - HAUT, fill: "var(--dedans-fond)" });
+
+    // bâtons
+    const largeur = Math.max(3, Math.min(26, 0.62 * (X(1) - X(0)) * (etat.loi === "egalite" ? 0.35 : 1)));
+    for (const r of l) {
+      const dehors = horsIntervalle(r.k, E, d);
+      el("rect", { x: X(r.k) - largeur / 2, y: Y(r.p), width: largeur, height: Math.max(0, yb - Y(r.p)),
+        fill: dehors ? "var(--dehors)" : "var(--dedans)", rx: 2 });
+    }
+
+    // axe des abscisses et graduations
+    el("line", { x1: G, x2: W - D + 8, y1: yb, y2: yb, stroke: "var(--axes)", "stroke-width": 1.5 });
+    el("path", { d: `M ${W - D + 8} ${yb} l -8 -4 v 8 z`, fill: "var(--axes)" });
+    const etendue = x1 - x0;
+    const pasK = etendue <= 16 ? 1 : etendue <= 40 ? 2 : 5;
+    for (let k = Math.ceil(x0 / pasK) * pasK; k <= x1; k += pasK) {
+      el("line", { x1: X(k), x2: X(k), y1: yb, y2: yb + 5, stroke: "var(--axes)", "stroke-width": 1 });
+      el("text", { x: X(k), y: yb + 19, "text-anchor": "middle", "font-size": 12, fill: "var(--discret)", "font-family": "IBM Plex Sans, Segoe UI, system-ui, sans-serif" }, fr(k, 0));
+    }
+    el("text", { x: W - D + 4, y: yb + 19, "text-anchor": "end", "font-size": 14, fill: "var(--discret)", "font-family": "STIX Two Text, Cambria Math, Times New Roman, serif", "font-style": "italic" }, "k");
+
+    // la droite de l'événement |X − E[X]| ≥ δ, comme dans le cours : ]−∞ ; E[X] − δ] ∪ [E[X] + δ ; +∞[
+    const yd = yb + 46;
+    el("line", { x1: G, x2: W - D, y1: yd, y2: yd, stroke: "var(--discret)", "stroke-width": 1 });
+    const g = X(E - d), dr = X(E + d), ep = 4, cr = 9, ail = 7;
+    el("line", { x1: G, x2: g, y1: yd, y2: yd, stroke: "var(--dehors)", "stroke-width": ep });
+    el("line", { x1: dr, x2: W - D, y1: yd, y2: yd, stroke: "var(--dehors)", "stroke-width": ep });
+    // ] en E[X] − δ : empattements vers la gauche ; [ en E[X] + δ : empattements vers la droite
+    el("path", { d: `M ${g - ail} ${yd - cr} H ${g} V ${yd + cr} H ${g - ail}`, fill: "none", stroke: "var(--dehors)", "stroke-width": 3 });
+    el("path", { d: `M ${dr + ail} ${yd - cr} H ${dr} V ${yd + cr} H ${dr + ail}`, fill: "none", stroke: "var(--dehors)", "stroke-width": 3 });
+    el("text", { x: X(E), y: yd + 5, "text-anchor": "middle", "font-size": 16, fill: "var(--encre)", "font-family": "STIX Two Text, Cambria Math, Times New Roman, serif" }, "×");
+    const etiq = (x, t, ancre) => el("text", { x, y: yd + 28, "text-anchor": ancre, "font-size": 13, fill: "var(--encre)", "font-family": "STIX Two Text, Cambria Math, Times New Roman, serif" }, t);
+    const proche = dr - g < 150;
+    etiq(g, "E[X] − δ", proche ? "end" : "middle");
+    etiq(X(E), "E[X]", "middle");
+    etiq(dr, "E[X] + δ", proche ? "start" : "middle");
+
+    // l'espérance sur le diagramme
+    el("line", { x1: X(E), x2: X(E), y1: HAUT, y2: yb, stroke: "var(--encre)", "stroke-width": 1.2, "stroke-dasharray": "5 4" });
+    el("text", { x: X(E), y: HAUT - 8, "text-anchor": "middle", "font-size": 13, fill: "var(--encre)", "font-family": "STIX Two Text, Cambria Math, Times New Roman, serif" }, `E[X] = ${fr(E, 2)}`);
+    // la flèche δ
+    const ya = HAUT + 16;
+    if (dr - X(E) > 24) {
+      el("line", { x1: X(E) + 2, x2: dr - 2, y1: ya, y2: ya, stroke: "var(--borne)", "stroke-width": 1.5, "marker-end": "" });
+      el("path", { d: `M ${dr - 2} ${ya} l -7 -4 v 8 z`, fill: "var(--borne)" });
+      el("text", { x: (X(E) + dr) / 2, y: ya - 6, "text-anchor": "middle", "font-size": 15, fill: "var(--borne)", "font-family": "STIX Two Text, Cambria Math, Times New Roman, serif", "font-style": "italic" }, "δ");
+    }
+  }
+
+  // ---------------------------------------------------------------
+  // Le tableau de bord
+  // ---------------------------------------------------------------
+  function tout(depuisSigma) {
+    const l = loi(), { E, V, sigma } = caracteristiques(l);
+    const d = etat.delta;
+    if (!depuisSigma) etat.kSigma = null;
+    document.querySelectorAll("[data-k]").forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.k === etat.kSigma)));
+
+    $("E").textContent = fr(E, 3);
+    $("V").textContent = fr(V, 3);
+    $("sigma").textContent = fr(sigma, 3);
+    $("delta-sortie").textContent = etat.kSigma ? `${etat.kSigma === 1 ? "" : etat.kSigma}σ ≈ ${fr(d, 2)}` : fr(d, 2);
+
+    const proba = l.filter(r => horsIntervalle(r.k, E, d)).reduce((s, r) => s + r.p, 0);
+    const borne = V / (d * d);
+    $("proba").textContent = fr(proba, 4);
+    $("borne").textContent = fr(borne, 4);
+    $("jauge-proba").style.width = `${Math.min(1, proba) * 100}%`;
+    $("jauge-borne").style.width = `${Math.min(1, borne) * 100}%`;
+
+    const egal = Math.abs(proba - borne) < 1e-9;
+    $("verdict").innerHTML = `${fr(proba, 4)} ${egal ? "=" : "≤"} ${fr(borne, 4)}`
+      + (etat.kSigma ? `&nbsp;&nbsp;<span class="note">(avec <i>δ</i> = ${etat.kSigma === 1 ? "" : etat.kSigma}<i>σ</i>, la majoration vaut 1/${etat.kSigma * etat.kSigma})</span>` : "");
+
+    let c;
+    if (borne >= 1) c = `<span class="alerte">Ici V(X)/δ² ≥ 1 : la majoration est vraie mais n'apporte rien, puisqu'une probabilité est toujours inférieure ou égale à 1. Augmentez δ.</span>`;
+    else if (egal && proba > 0) c = "La probabilité est exactement égale à la majoration : l'inégalité ne peut pas être améliorée en général.";
+    else if (borne > 0 && proba / borne < 0.4) c = `La majoration est environ ${fr(borne / Math.max(proba, 1e-9), 0)} fois plus grande que la probabilité exacte : l'inégalité n'est en général pas optimale.`;
+    else c = "La probabilité exacte reste sous la majoration, quelle que soit la valeur de δ.";
+    if (proba === 0 && borne < 1) c = "Aucune valeur de X ne s'écarte d'au moins δ de E[X] : la probabilité est nulle, et la majoration reste vraie.";
+    $("commentaire").innerHTML = c;
+
+    $("minoration").innerHTML = `P(|<i>X</i> − E[<i>X</i>]| &lt; <i>δ</i>) = 1 − P(|<i>X</i> − E[<i>X</i>]| ≥ <i>δ</i>) ≥ 1 − <span class="frac"><span>V(<i>X</i>)</span><span><i>δ</i>²</span></span>`
+      + ` = <b>${fr(1 - borne, 4)}</b><br><span class="note">Valeur exacte : ${fr(1 - proba, 4)}${borne >= 1 ? " ; la minoration est négative, donc sans intérêt." : "."}</span>`;
+
+    dessiner(l, E, sigma);
+    tas.redessiner();
+  }
+
+
+  // ---------------------------------------------------------------
+  // Simulation : les réalisations de X tombent et s'empilent
+  // ---------------------------------------------------------------
+  const tas = (() => {
+    const fond = $("tas-fond"), vol = $("tas-vol");
+    const TW = 1000, TH = 470, TG = 30, TD = 30, THAUT = 20, TBAS = 96;
+    const tb = TH - TBAS;   // ligne sur laquelle se posent les billes
+    const UI = "IBM Plex Sans, Segoe UI, system-ui, sans-serif", MATH = "STIX Two Text, Cambria Math, Times New Roman, serif";
+    // débit en réalisations par seconde, durée de chute en millisecondes
+    const VITESSES = { lent: { debit: 1.2, chute: 1100 }, moyen: { debit: 5, chute: 700 }, rapide: { debit: 30, chute: 380 } };
+    const sansMouvement = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const s = { effectifs: new Map(), total: 0, enVol: [], eclats: [], continu: false, reste: 0, avant: 0, anime: false };
+    const entier = n => n.toLocaleString("fr-FR");
+
+    function tirer(l) {
+      let u = Math.random();
+      for (const r of l) { if (u < r.p) return r.k; u -= r.p; }
+      return l[l.length - 1].k;
+    }
+    function geometrie() {
+      const l = loi(), { E, V } = caracteristiques(l), d = etat.delta;
+      const { x0, x1 } = etendueK(l, E, d);
+      const X = x => TG + (x - x0) / (x1 - x0) * (TW - TG - TD);
+      const diam = Math.max(5, Math.min(22, 0.84 * (X(1) - X(0))));
+      const maxEff = Math.max(1, ...s.effectifs.values());
+      // les colonnes se tassent pour tenir dans la figure
+      const pasV = Math.min(diam, (tb - THAUT - 24) / maxEff);
+      return { l, E, V, d, x0, x1, X, diam, pasV };
+    }
+
+    function redessiner() {
+      fond.replaceChildren();
+      const { l, E, V, d, x0, x1, X, diam, pasV } = geometrie();
+      const f = (nom, attrs, texte) => el(nom, attrs, texte, fond);
+      const g = X(E - d), dr = X(E + d);
+
+      // fonds : rouge pâle hors de l'intervalle, bleu pâle dedans
+      f("rect", { x: TG, y: THAUT, width: Math.max(0, g - TG), height: tb - THAUT, fill: "var(--dehors-fond)" });
+      f("rect", { x: dr, y: THAUT, width: Math.max(0, TW - TD - dr), height: tb - THAUT, fill: "var(--dehors-fond)" });
+      f("rect", { x: g, y: THAUT, width: Math.max(0, dr - g), height: tb - THAUT, fill: "var(--dedans-fond)" });
+      for (const x of [g, dr]) f("line", { x1: x, x2: x, y1: THAUT, y2: tb, stroke: "var(--dehors)", "stroke-width": 1.5, "stroke-dasharray": "4 4" });
+      f("line", { x1: X(E), x2: X(E), y1: THAUT, y2: tb, stroke: "var(--encre)", "stroke-width": 1.2, "stroke-dasharray": "5 4" });
+
+      // les colonnes de billes
+      for (const [k, n] of s.effectifs) {
+        const coul = horsIntervalle(k, E, d) ? "var(--dehors)" : "var(--dedans)", x = X(k);
+        if (pasV >= diam * 0.95) {
+          for (let i = 0; i < n; i++) f("circle", { cx: x, cy: tb - (i + 0.5) * pasV, r: diam / 2 - 0.6, fill: coul });
+        } else if (pasV >= 3) {
+          for (let i = 0; i < n; i++) f("rect", { x: x - diam / 2, y: tb - (i + 1) * pasV + 0.4, width: diam, height: pasV - 0.8, rx: 1.5, fill: coul });
+        } else {
+          f("rect", { x: x - diam / 2, y: tb - n * pasV, width: diam, height: n * pasV, rx: 2, fill: coul });
+        }
+        if (diam >= 11) f("text", { x, y: tb - n * pasV - 5, "text-anchor": "middle", "font-size": 11, fill: "var(--discret)", "font-family": UI,
+          stroke: "var(--carte)", "stroke-width": 3, "paint-order": "stroke" }, entier(n));
+      }
+
+      // axe des valeurs k
+      f("line", { x1: TG, x2: TW - TD + 8, y1: tb, y2: tb, stroke: "var(--axes)", "stroke-width": 1.5 });
+      f("path", { d: `M ${TW - TD + 8} ${tb} l -8 -4 v 8 z`, fill: "var(--axes)" });
+      const etendue = x1 - x0, pasK = etendue <= 24 ? 1 : etendue <= 50 ? 2 : 5;
+      for (let k = Math.ceil(x0 / pasK) * pasK; k <= x1; k += pasK) {
+        f("line", { x1: X(k), x2: X(k), y1: tb, y2: tb + 5, stroke: "var(--axes)", "stroke-width": 1 });
+        f("text", { x: X(k), y: tb + 21, "text-anchor": "middle", "font-size": 15, fill: "var(--discret)", "font-family": UI }, fr(k, 0));
+      }
+
+      // la droite de l'événement |X − E[X]| ≥ δ, comme sur le diagramme
+      const yd = tb + 46, cr = 9, ail = 7;
+      f("line", { x1: TG, x2: TW - TD, y1: yd, y2: yd, stroke: "var(--discret)", "stroke-width": 1 });
+      f("line", { x1: TG, x2: g, y1: yd, y2: yd, stroke: "var(--dehors)", "stroke-width": 4 });
+      f("line", { x1: dr, x2: TW - TD, y1: yd, y2: yd, stroke: "var(--dehors)", "stroke-width": 4 });
+      f("path", { d: `M ${g - ail} ${yd - cr} H ${g} V ${yd + cr} H ${g - ail}`, fill: "none", stroke: "var(--dehors)", "stroke-width": 3 });
+      f("path", { d: `M ${dr + ail} ${yd - cr} H ${dr} V ${yd + cr} H ${dr + ail}`, fill: "none", stroke: "var(--dehors)", "stroke-width": 3 });
+      f("text", { x: X(E), y: yd + 5, "text-anchor": "middle", "font-size": 16, fill: "var(--encre)", "font-family": MATH }, "×");
+      const proche = dr - g < 150;
+      const etiq = (x, t, ancre) => f("text", { x, y: yd + 30, "text-anchor": ancre, "font-size": 17, fill: "var(--encre)", "font-family": MATH }, t);
+      etiq(g, "E[X] − δ", proche ? "end" : "middle");
+      etiq(X(E), "E[X]", "middle");
+      etiq(dr, "E[X] + δ", proche ? "start" : "middle");
+
+      // les compteurs
+      let dehors = 0;
+      for (const [k, n] of s.effectifs) if (horsIntervalle(k, E, d)) dehors += n;
+      const borne = V / (d * d);
+      $("constat").innerHTML = s.total
+        ? `<b class="rouge">${entier(dehors)}</b> bille${dehors > 1 ? "s" : ""} rouge${dehors > 1 ? "s" : ""} sur ${entier(s.total)} : fréquence <b>${fr(dehors / s.total, 3)}</b>.
+           L'inégalité garantit au plus <b class="violet">${fr(borne, 3)}</b>.` + (borne >= 1 ? ` <span class="note">(V(<i>X</i>)/<i>δ</i>² ≥ 1 n'apprend rien : augmentez <i>δ</i>.)</span>` : "")
+        : `Lancez : presque toutes les billes tomberont dans ]E[<i>X</i>] − <i>δ</i> ; E[<i>X</i>] + <i>δ</i>[.`;
+    }
+
+    function dessinerVol(t) {
+      vol.replaceChildren();
+      const { E, d, X, diam, pasV } = geometrie();
+      const v = (nom, attrs, texte) => el(nom, attrs, texte, vol);
+      for (const b of s.enVol) {
+        if (t < b.t0) continue;   // bille d'une averse pas encore lâchée
+        const u =Math.min(1, Math.max(0, (t - b.t0) / b.duree));
+        const yFin = tb - (s.effectifs.get(b.k) || 0) * pasV - diam / 2;
+        const y0 = 6 + diam / 2;
+        v("circle", { cx: X(b.k), cy: y0 + (yFin - y0) * u * u, r: diam / 2, fill: horsIntervalle(b.k, E, d) ? "var(--dehors)" : "var(--dedans)", stroke: "var(--carte)", "stroke-width": 1 });
+      }
+      // la valeur qui vient de tomber ; un cercle s'élargit autour d'une bille rouge
+      const lent = VITESSES[$("vitesse").value].debit <= 5;
+      for (const e of s.eclats) {
+        const age = (t - e.t0) / 900, y = tb - (s.effectifs.get(e.k) || 0) * pasV;
+        if (e.dehors) v("circle", { cx: X(e.k), cy: y - diam / 2, r: diam / 2 + 22 * age, fill: "none", stroke: "var(--dehors)", "stroke-width": 2.5, opacity: 1 - age });
+        if (lent || e.dehors) v("text", { x: X(e.k), y: y - 18 - 10 * age, "text-anchor": "middle", "font-size": 15, "font-weight": 600,
+          fill: e.dehors ? "var(--dehors)" : "var(--dedans)", "font-family": MATH, opacity: 1 - age }, `X = ${fr(e.k, 0)}`);
+      }
+    }
+
+    function poser(k, t, discret) {
+      s.effectifs.set(k, (s.effectifs.get(k) || 0) + 1);
+      s.total++;
+      if (discret === true) return;
+      const dehors = horsIntervalle(k, caracteristiques(loi()).E, etat.delta);
+      // pendant une averse, seules les billes rouges sont signalées
+      if (dehors || discret !== "averse") s.eclats.push({ k, t0: t, dehors });
+    }
+    function lancer(t) {
+      const k = tirer(loi());
+      if (sansMouvement) { poser(k, t); redessiner(); return; }
+      s.enVol.push({ k, t0: t, duree: VITESSES[$("vitesse").value].chute });
+    }
+    function image(t) {
+      const dt = s.avant ? Math.min(100, t - s.avant) : 0;
+      s.avant = t;
+      if (s.continu) {
+        s.reste += dt / 1000 * VITESSES[$("vitesse").value].debit;
+        while (s.reste >= 1) { s.reste -= 1; lancer(t); }
+      }
+      let pose = false;
+      s.enVol = s.enVol.filter(b => (t - b.t0 >= b.duree) ? (poser(b.k, t, b.averse && "averse"), pose = true, false) : true);
+      s.eclats = s.eclats.filter(e => t - e.t0 < 900);
+      if (pose) redessiner();
+      dessinerVol(t);
+      if (s.continu || s.enVol.length || s.eclats.length) requestAnimationFrame(image);
+      else { s.anime = false; s.avant = 0; }
+    }
+    function demarrer() {
+      if (s.anime) return;
+      s.anime = true; s.avant = 0;
+      requestAnimationFrame(image);
+    }
+    function effacer() {
+      s.effectifs.clear(); s.total = 0; s.enVol = []; s.eclats = []; s.reste = 0;
+      vol.replaceChildren();
+      redessiner();
+    }
+
+    $("continu").addEventListener("click", () => {
+      s.continu = !s.continu;
+      $("continu").textContent = s.continu ? "Pause" : "Lancer en continu";
+      s.reste = 1;   // une première bille tout de suite
+      demarrer();
+    });
+    $("une").addEventListener("click", () => { lancer(performance.now()); demarrer(); });
+    // + 50 et + 100 tombent en averse ; + 1 000 se pose d'un coup
+    document.querySelectorAll("[data-ajout]").forEach(bouton => bouton.addEventListener("click", () => {
+      const n = +bouton.dataset.ajout, l = loi(), t = performance.now();
+      if (n >= 1000 || sansMouvement) {
+        for (let i = 0; i < n; i++) poser(tirer(l), t, true);
+        redessiner();
+        return;
+      }
+      const etalement = n <= 50 ? 1500 : 2200;
+      for (let i = 0; i < n; i++) s.enVol.push({ k: tirer(l), t0: t + i * etalement / n, duree: 600, averse: true });
+      demarrer();
+    }));
+    $("effacer").addEventListener("click", effacer);
+
+    return { redessiner, effacer };
+  })();
+
+  parametres();
+  reglerDelta(true);
+  tout();
+})();
+</script>
+
+<!-- plein-ecran : bouton commun à toutes les pages interactives -->
+<style>
+#pleinEcran { position: fixed; top: calc(10px + env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); z-index: 50; font: 500 13px var(--ui, system-ui, sans-serif); padding: 6px 12px; border-radius: 999px; border: 1px solid var(--filet, #d9dee5); background: var(--carte, #fff); color: var(--encre, #1b1f24); cursor: pointer; opacity: .9; }
+#pleinEcran:hover { opacity: 1; }
+body.plein-ecran .niveau, body.plein-ecran h1, body.plein-ecran h1 + .chapeau { display: none !important; }
+body.plein-ecran .page { max-width: none !important; min-height: 100vh; padding-top: 48px !important; align-content: start; }
+body.plein-ecran .page svg:not(.mini) { max-height: 76vh; }
+body.plein-ecran.plein-multi .page svg:not(.mini) { max-height: 46vh; }
+body.plein-ecran .constat { font-size: clamp(20px, 2.6vw, 30px); }
+</style>
+<script>
+(() => {
+  const b = document.createElement("button");
+  b.type = "button"; b.id = "pleinEcran"; document.body.appendChild(b);
+  function etat(on) { document.body.classList.toggle("plein-ecran", on); b.textContent = on ? "✕ Quitter le plein écran" : "⛶ Plein écran"; b.setAttribute("aria-pressed", on); window.dispatchEvent(new Event("resize")); }
+  b.addEventListener("click", async () => {
+    const on = !document.body.classList.contains("plein-ecran");
+    etat(on);
+    try { on ? await document.documentElement.requestFullscreen() : (document.fullscreenElement && await document.exitFullscreen()); } catch (e) {}
+  });
+  document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement && document.body.classList.contains("plein-ecran")) etat(false); });
+  window.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("plein-ecran")) etat(false); });
+  if (document.querySelectorAll(".page svg:not(.mini), .page canvas").length > 1) document.body.classList.add("plein-multi");
+  etat(location.hash === "#plein");
+})();
+</script>
+
+</body></html>

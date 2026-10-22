@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;box-sizing:border-box}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head><body>
+<title>Forfait A ou forfait B</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* TD2 de 1re spécifique, exercice 5 : f(x) = 2x + 50 (forfait A), g(x) = 4x + 10 (forfait B),
+   x le nombre d'entrées. Forfait A en bleu, forfait B en orange. */
+:root {
+  --papier: #f7f8fa; --carte: #ffffff; --encre: #1b1f24; --discret: #5d6672; --filet: #d9dee5; --grille: #e4e8ee;
+  --a: #1a56db; --a-fond: rgba(26, 86, 219, 0.08); --b: #f07800; --b-fond: rgba(240, 120, 0, 0.09); --egal: #7c3aed;
+  --math: "STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --ui: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #262c35; --a: #6fa3f0; --a-fond: rgba(111, 163, 240, 0.10); --b: #ff9a3c; --b-fond: rgba(255, 154, 60, 0.10); --egal: #b48cff; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #262c35; --a: #6fa3f0; --a-fond: rgba(111, 163, 240, 0.10); --b: #ff9a3c; --b-fond: rgba(255, 154, 60, 0.10); --egal: #b48cff; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--papier); color: var(--encre); font-family: var(--ui); font-size: 15px; line-height: 1.5; margin: 0; }
+.page { max-width: 920px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 40px; display: grid; gap: 14px; }
+.niveau { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--discret); }
+h1 { font-family: var(--math); font-weight: 600; font-size: clamp(26px, 4vw, 36px); line-height: 1.15; margin: 0; text-wrap: balance; }
+.chapeau { margin: 0; color: var(--discret); max-width: 70ch; }
+.chapeau .a { color: var(--a); font-weight: 600; } .chapeau .b { color: var(--b); font-weight: 600; }
+.figure { background: var(--carte); border: 1px solid var(--filet); border-radius: 10px; padding: 6px; touch-action: none; }
+svg { display: block; width: 100%; height: auto; user-select: none; -webkit-user-select: none; }
+.poignee { cursor: ew-resize; }
+.constat { font-size: clamp(16px, 2.2vw, 20px); text-align: center; margin: 0; padding: 10px 14px; border-radius: 10px; border: 1.5px solid var(--filet); background: var(--carte); }
+.constat .a { color: var(--a); font-weight: 600; } .constat .b { color: var(--b); font-weight: 600; } .constat .e { color: var(--egal); font-weight: 600; }
+</style>
+
+<div class="page">
+  <span class="niveau">Première spécifique · Chapitre 2 · Fonctions affines</span>
+  <h1>Forfait A ou forfait B ?</h1>
+  <p class="chapeau"><span class="a">Forfait A</span> : 50 € d'inscription, puis 2 € par entrée, soit <i>f</i>(<i>x</i>) = 2<i>x</i> + 50. <span class="b">Forfait B</span> : 10 € d'inscription, puis 4 € par entrée, soit <i>g</i>(<i>x</i>) = 4<i>x</i> + 10. Faites glisser le curseur pour choisir le nombre d'entrées <i>x</i>.</p>
+  <div class="figure"><svg id="g" viewBox="0 0 900 540" role="img" aria-label="Coût des forfaits A et B selon le nombre d'entrées"></svg></div>
+  <p class="constat" id="constat" aria-live="polite"></p>
+</div>
+
+<script>
+(() => {
+  const NS = "http://www.w3.org/2000/svg", $ = id => document.getElementById(id);
+  const el = (t, a, txt) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); if (txt != null) e.textContent = txt; return e; };
+  const X0 = 80, Y0 = 470, KX = 19, KY = 2.2;           // 1 entrée = 19 px ; 1 € = 2,2 px
+  const px = x => X0 + x * KX, py = y => Y0 - y * KY;
+  const f = x => 2 * x + 50, g = x => 4 * x + 10, XMAX = 40, YMAX = 190;
+  const svg = $("g");
+  let x = 12;
+
+  function dessin() {
+    svg.textContent = "";
+    // zones : B moins cher avant 20, A moins cher après
+    svg.appendChild(el("rect", { x: px(0), y: py(YMAX), width: px(20) - px(0), height: Y0 - py(YMAX), fill: "var(--b-fond)" }));
+    svg.appendChild(el("rect", { x: px(20), y: py(YMAX), width: px(XMAX) - px(20), height: Y0 - py(YMAX), fill: "var(--a-fond)" }));
+    for (let k = 0; k <= XMAX; k += 2) svg.appendChild(el("line", { x1: px(k), y1: Y0, x2: px(k), y2: py(YMAX), stroke: "var(--grille)" }));
+    for (let v = 0; v <= YMAX; v += 10) svg.appendChild(el("line", { x1: px(0), y1: py(v), x2: px(XMAX), y2: py(v), stroke: "var(--grille)" }));
+    svg.appendChild(el("line", { x1: px(0), y1: Y0, x2: px(XMAX) + 10, y2: Y0, stroke: "var(--encre)", "stroke-width": 1.6 }));
+    svg.appendChild(el("line", { x1: px(0), y1: Y0, x2: px(0), y2: py(YMAX) - 10, stroke: "var(--encre)", "stroke-width": 1.6 }));
+    for (let k = 0; k <= XMAX; k += 5) svg.appendChild(el("text", { x: px(k), y: Y0 + 20, "text-anchor": "middle", "font-size": 13, fill: "var(--discret)" }, k));
+    for (let v = 0; v <= YMAX; v += 20) svg.appendChild(el("text", { x: px(0) - 8, y: py(v) + 4, "text-anchor": "end", "font-size": 13, fill: "var(--discret)" }, v));
+    svg.appendChild(el("text", { x: px(XMAX), y: Y0 + 42, "text-anchor": "end", "font-size": 13, fill: "var(--discret)" }, "nombre d'entrées x"));
+    svg.appendChild(el("text", { x: px(0) + 8, y: py(YMAX) - 2, "font-size": 13, fill: "var(--discret)" }, "coût en €"));
+    // droites
+    svg.appendChild(el("line", { x1: px(0), y1: py(f(0)), x2: px(XMAX), y2: py(f(XMAX)), stroke: "var(--a)", "stroke-width": 4 }));
+    svg.appendChild(el("line", { x1: px(0), y1: py(g(0)), x2: px(XMAX), y2: py(g(XMAX)), stroke: "var(--b)", "stroke-width": 4 }));
+    svg.appendChild(el("text", { x: px(XMAX) - 4, y: py(f(XMAX)) + 26, "text-anchor": "end", "font-weight": 600, "font-size": 16, fill: "var(--a)" }, "Forfait A"));
+    svg.appendChild(el("text", { x: px(XMAX) - 4, y: py(g(XMAX)) - 10, "text-anchor": "end", "font-weight": 600, "font-size": 16, fill: "var(--b)" }, "Forfait B"));
+    // point d'intersection
+    svg.appendChild(el("circle", { cx: px(20), cy: py(90), r: 5, fill: "var(--egal)" }));
+    svg.appendChild(el("line", { x1: px(20), y1: py(90), x2: px(20), y2: Y0, stroke: "var(--egal)", "stroke-width": 1.2, "stroke-dasharray": "4 4" }));
+    // curseur
+    svg.appendChild(el("line", { x1: px(x), y1: Y0, x2: px(x), y2: py(YMAX), stroke: "var(--encre)", "stroke-width": 1.5, opacity: 0.6 }));
+    [[f(x), "var(--a)"], [g(x), "var(--b)"]].forEach(([v, c]) => {
+      if (v <= YMAX) {
+        svg.appendChild(el("circle", { cx: px(x), cy: py(v), r: 7, fill: c }));
+        svg.appendChild(el("text", { x: px(x) + (x > 30 ? -12 : 12), y: py(v) + (c === "var(--a)" ? (f(x) >= g(x) ? -10 : 22) : (g(x) > f(x) ? -10 : 22)), "text-anchor": x > 30 ? "end" : "start", "font-family": "var(--math)", "font-size": 19, fill: c }, v + " €"));
+      }
+    });
+    const h = el("rect", { x: px(x) - 16, y: Y0 - 14, width: 32, height: 28, rx: 14, fill: "var(--encre)", class: "poignee" });
+    svg.appendChild(h);
+    svg.appendChild(el("text", { x: px(x), y: Y0 + 5, "text-anchor": "middle", "font-size": 14, "font-weight": 600, fill: "var(--carte)", "pointer-events": "none" }, x));
+    glisse(h, p => { x = Math.max(0, Math.min(XMAX, Math.round((p.x - X0) / KX))); });
+    const fa = f(x), gb = g(x);
+    let msg;
+    if (fa === gb) msg = `Pour ${x} entrées, les deux forfaits coûtent <span class="e">${fa} €</span> : f(${x}) = g(${x}).`;
+    else if (gb < fa) msg = `Pour ${x} entrée${x > 1 ? "s" : ""}, A coûte ${fa} € et B coûte ${gb} € : le <span class="b">forfait B</span> est le plus avantageux.`;
+    else msg = `Pour ${x} entrées, A coûte ${fa} € et B coûte ${gb} € : le <span class="a">forfait A</span> est le plus avantageux.`;
+    $("constat").innerHTML = msg;
+  }
+
+  function point(evt) { const r = svg.getBoundingClientRect(); return { x: (evt.clientX - r.left) * 900 / r.width, y: (evt.clientY - r.top) * 540 / r.height }; }
+  function glisse(node, maj) {
+    node.addEventListener("pointerdown", e => {
+      e.preventDefault();
+      const bouge = ev => { maj(point(ev)); dessin(); };
+      const fin = () => { window.removeEventListener("pointermove", bouge); window.removeEventListener("pointerup", fin); };
+      window.addEventListener("pointermove", bouge); window.addEventListener("pointerup", fin);
+    });
+  }
+  // un clic n'importe où sur le graphique déplace aussi le curseur
+  svg.addEventListener("pointerdown", e => { if (e.target.classList && e.target.classList.contains("poignee")) return; const p = point(e); x = Math.max(0, Math.min(XMAX, Math.round((p.x - X0) / KX))); dessin(); });
+  dessin();
+})();
+</script>
+
+<!-- plein-ecran : bouton commun à toutes les pages interactives -->
+<style>
+#pleinEcran { position: fixed; top: calc(10px + env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); z-index: 50; font: 500 13px var(--ui, system-ui, sans-serif); padding: 6px 12px; border-radius: 999px; border: 1px solid var(--filet, #d9dee5); background: var(--carte, #fff); color: var(--encre, #1b1f24); cursor: pointer; opacity: .9; }
+#pleinEcran:hover { opacity: 1; }
+body.plein-ecran .niveau, body.plein-ecran h1, body.plein-ecran h1 + .chapeau { display: none !important; }
+body.plein-ecran .page { max-width: none !important; min-height: 100vh; padding-top: 48px !important; align-content: start; }
+body.plein-ecran .page svg:not(.mini) { max-height: 76vh; }
+body.plein-ecran.plein-multi .page svg:not(.mini) { max-height: 46vh; }
+body.plein-ecran .constat { font-size: clamp(20px, 2.6vw, 30px); }
+</style>
+<script>
+(() => {
+  const b = document.createElement("button");
+  b.type = "button"; b.id = "pleinEcran"; document.body.appendChild(b);
+  function etat(on) { document.body.classList.toggle("plein-ecran", on); b.textContent = on ? "✕ Quitter le plein écran" : "⛶ Plein écran"; b.setAttribute("aria-pressed", on); window.dispatchEvent(new Event("resize")); }
+  b.addEventListener("click", async () => {
+    const on = !document.body.classList.contains("plein-ecran");
+    etat(on);
+    try { on ? await document.documentElement.requestFullscreen() : (document.fullscreenElement && await document.exitFullscreen()); } catch (e) {}
+  });
+  document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement && document.body.classList.contains("plein-ecran")) etat(false); });
+  window.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("plein-ecran")) etat(false); });
+  if (document.querySelectorAll(".page svg:not(.mini), .page canvas").length > 1) document.body.classList.add("plein-multi");
+  etat(location.hash === "#plein");
+})();
+</script>
+
+</body></html>

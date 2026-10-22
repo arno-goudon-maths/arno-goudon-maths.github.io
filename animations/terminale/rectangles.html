@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;box-sizing:border-box}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head><body>
+<title>Méthode des rectangles</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* La courbe et ses n rectangles en grand ; un curseur pour n ; la somme des aires
+   comparée à l'intégrale. Avec « les deux », la fonction étant monotone, les deux
+   sommes encadrent l'intégrale. */
+:root {
+  --papier: #f7f8fa; --carte: #ffffff; --encre: #1b1f24; --discret: #5d6672; --filet: #d9dee5; --grille: #e7eaef;
+  --courbe: #1f5fbf; --gauche: #0b8a3a; --gauche-fond: rgba(20, 170, 70, 0.28); --droite: #d81b2c; --droite-fond: rgba(235, 40, 60, 0.18); --aire: rgba(31, 95, 191, 0.16);
+  --math: "STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --ui: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #252b34; --courbe: #6fa3f0; --gauche: #4ade80; --gauche-fond: rgba(74, 222, 128, 0.25); --droite: #ff6b7a; --droite-fond: rgba(255, 90, 110, 0.2); --aire: rgba(111, 163, 240, 0.18); color-scheme: dark; }
+}
+:root[data-theme="dark"] { --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #252b34; --courbe: #6fa3f0; --gauche: #4ade80; --gauche-fond: rgba(74, 222, 128, 0.25); --droite: #ff6b7a; --droite-fond: rgba(255, 90, 110, 0.2); --aire: rgba(111, 163, 240, 0.18); color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--papier); color: var(--encre); font-family: var(--ui); font-size: 15px; line-height: 1.5; margin: 0; }
+.page { max-width: 960px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 40px; display: grid; gap: 14px; }
+.niveau { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--discret); }
+h1 { font-family: var(--math); font-weight: 600; font-size: clamp(26px, 4vw, 36px); line-height: 1.15; margin: 0; }
+.chapeau { margin: 0; color: var(--discret); max-width: 72ch; }
+.m { font-family: var(--math); font-style: italic; }
+.barre { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.barre button { font: inherit; font-size: 14px; padding: 5px 12px; border-radius: 999px; border: 1px solid var(--filet); background: var(--carte); color: var(--encre); cursor: pointer; }
+.barre button[aria-pressed="true"] { border-color: var(--courbe); box-shadow: inset 0 0 0 1px var(--courbe); font-weight: 600; }
+.barre .sep { width: 1px; height: 24px; background: var(--filet); margin: 0 4px; }
+.n { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: center; font-family: var(--math); font-size: 20px; }
+.n input { width: 100%; accent-color: var(--courbe); }
+.figure { background: var(--carte); border: 1px solid var(--filet); border-radius: 10px; padding: 8px; }
+svg { display: block; width: 100%; height: auto; }
+.bilan { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+.case { background: var(--carte); border: 1px solid var(--filet); border-radius: 10px; padding: 10px 14px; font-family: var(--math); font-size: 19px; border-left: 5px solid var(--c, var(--filet)); }
+.case small { display: block; font-family: var(--ui); font-size: 13px; color: var(--discret); }
+button:focus-visible, input:focus-visible { outline: 3px solid var(--courbe); outline-offset: 2px; }
+</style>
+
+<div class="page">
+  <span class="niveau">Terminale spécialité · Chapitre 11 · Calcul intégral</span>
+  <h1>Méthode des rectangles</h1>
+  <p class="chapeau">Chaque rectangle a pour largeur <span class="m">(b − a)/n</span> et pour hauteur l'image de <span class="m">f</span> en une extrémité. Augmentez <span class="m">n</span> : la somme des aires se rapproche de l'intégrale.</p>
+  <div class="barre" role="group" aria-label="Fonction et type de rectangles">
+    <span id="fonctions"></span>
+    <span class="sep"></span>
+    <button type="button" data-m="g">à gauche</button>
+    <button type="button" data-m="d">à droite</button>
+    <button type="button" data-m="2">les deux</button>
+  </div>
+  <label class="n"><span><span class="m">n</span> = <span id="vn"></span></span><input id="cn" type="range" min="1" max="100" value="4"></label>
+  <div class="figure"><svg id="g" viewBox="0 0 900 420" role="img" aria-label="Courbe et rectangles"></svg></div>
+  <div class="bilan" id="bilan"></div>
+</div>
+
+<script>
+(() => {
+  const NS = "http://www.w3.org/2000/svg", $ = id => document.getElementById(id);
+  const el = (t, a, txt) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); if (txt != null) e.textContent = txt; return e; };
+  const fr = (x, d = 4) => (Math.round(x * 10 ** d) / 10 ** d).toLocaleString("fr-FR", { maximumFractionDigits: d }).replace("-", "−");
+  // fonctions du cours (figure de la partie 3.3, aire sous la courbe de la partie 3.1) et un exemple de calcul
+  const F = [
+    { nom: "f(x) = −0,15(x − 1)(x − 6) + 1,5 sur [1 ; 6]", f: x => -0.15 * (x - 1) * (x - 6) + 1.5, a: 1, b: 6, Y: 3, exact: "85/8", mono: false },
+    { nom: "f(x) = √(x − 1) sur [2 ; 5]", f: x => Math.sqrt(x - 1), a: 2, b: 5, Y: 2.5, exact: "14/3" },
+    { nom: "f(t) = e⁻ᵗ sur [0 ; 1]", f: x => Math.exp(-x), a: 0, b: 1, Y: 1.2, exact: "1 − 1/e" },
+    { nom: "f(x) = x² + 1 sur [1 ; 2]", f: x => x * x + 1, a: 1, b: 2, Y: 5.5, exact: "10/3" }
+  ];
+  let k = 0, mode = "g";
+  const zone = $("fonctions");
+  F.forEach((o, i) => { const b = document.createElement("button"); b.type = "button"; b.textContent = o.nom; b.style.fontFamily = "var(--math)"; b.addEventListener("click", () => { k = i; maj(); }); zone.appendChild(b); zone.appendChild(document.createTextNode(" ")); });
+  document.querySelectorAll("[data-m]").forEach(b => b.addEventListener("click", () => { mode = b.dataset.m; maj(); }));
+  $("cn").addEventListener("input", maj);
+  function integrale(o) { const N = 2000, h = (o.b - o.a) / N; let s = o.f(o.a) + o.f(o.b); for (let i = 1; i < N; i++) s += (i % 2 ? 4 : 2) * o.f(o.a + i * h); return s * h / 3; }
+  function maj() {
+    const o = F[k], n = +$("cn").value; $("vn").textContent = n;
+    [...zone.children].forEach((b, i) => b.setAttribute("aria-pressed", i === k));
+    document.querySelectorAll("[data-m]").forEach(b => b.setAttribute("aria-pressed", b.dataset.m === mode));
+    const g = $("g"); g.textContent = "";
+    const marge = (o.b - o.a) * 0.12, X = [Math.max(0, o.a - marge), o.b + marge], G = 60, D = 880, H = 20, B = 370;
+    const sx = x => G + (x - X[0]) / (X[1] - X[0]) * (D - G), sy = y => B - y / o.Y * (B - H);
+    for (let y = 0; y <= o.Y; y += o.Y > 4 ? 1 : 0.5) { g.appendChild(el("line", { x1: G, x2: D, y1: sy(y), y2: sy(y), stroke: "var(--grille)" })); g.appendChild(el("text", { x: G - 8, y: sy(y) + 5, "text-anchor": "end", "font-size": 13, "font-family": "var(--ui)", fill: "var(--discret)" }, fr(y, 1))); }
+    // aire exacte sous la courbe
+    let d = `M${sx(o.a)},${sy(0)}`; for (let i = 0; i <= 200; i++) { const x = o.a + (o.b - o.a) * i / 200; d += `L${sx(x)},${sy(o.f(x))}`; } d += `L${sx(o.b)},${sy(0)}Z`;
+    g.appendChild(el("path", { d, fill: "var(--aire)" }));
+    const w = (o.b - o.a) / n, sommes = {};
+    for (const m of mode === "2" ? ["d", "g"] : [mode]) {
+      let s = 0;
+      for (let i = 0; i < n; i++) { const x0 = o.a + i * w, hgt = o.f(m === "g" ? x0 : x0 + w); s += w * hgt;
+        g.appendChild(el("rect", { x: sx(x0), y: sy(hgt), width: sx(x0 + w) - sx(x0), height: sy(0) - sy(hgt), fill: `var(--${m === "g" ? "gauche" : "droite"}-fond)`, stroke: `var(--${m === "g" ? "gauche" : "droite"})`, "stroke-width": n > 40 ? 0.6 : 1.5 })); }
+      sommes[m] = s;
+    }
+    let dc = ""; for (let i = 0; i <= 300; i++) { const x = X[0] + (X[1] - X[0]) * i / 300; if (x < 1 && k === 1) continue; dc += (dc ? "L" : "M") + sx(x) + "," + Math.max(0, sy(o.f(x))); }
+    g.appendChild(el("path", { d: dc, fill: "none", stroke: "var(--courbe)", "stroke-width": 3.5 }));
+    g.appendChild(el("line", { x1: G, x2: D, y1: sy(0), y2: sy(0), stroke: "var(--encre)", "stroke-width": 1.5 }));
+    for (const [x, nom] of [[o.a, "a"], [o.b, "b"]]) { g.appendChild(el("text", { x: sx(x), y: B + 24, "text-anchor": "middle", "font-size": 18, "font-family": "var(--math)", "font-style": "italic", fill: "var(--encre)" }, nom)); g.appendChild(el("text", { x: sx(x), y: B + 42, "text-anchor": "middle", "font-size": 13, "font-family": "var(--ui)", fill: "var(--discret)" }, fr(x, 2))); }
+    // bilan
+    const I = integrale(o), bil = $("bilan"); bil.innerHTML = "";
+    const cas = (titre, val, c) => { const e = document.createElement("div"); e.className = "case"; e.style.setProperty("--c", c); e.innerHTML = `<small>${titre}</small>${val}`; bil.appendChild(e); };
+    if (sommes.g != null) cas("somme des aires, rectangles à gauche", `≈ ${fr(sommes.g)}`, "var(--gauche)");
+    if (sommes.d != null) cas("somme des aires, rectangles à droite", `≈ ${fr(sommes.d)}`, "var(--droite)");
+    cas(`intégrale de <span class="m">f</span> sur [<span class="m">a</span> ; <span class="m">b</span>] = ${o.exact}`, `≈ ${fr(I)}`, "var(--courbe)");
+    if (mode === "2" && o.mono === false) cas("encadrement", "f n'est pas monotone sur [a ; b] : les deux sommes n'encadrent pas forcément l'intégrale", "var(--encre)");
+    else if (mode === "2") { const lo = Math.min(sommes.g, sommes.d), hi = Math.max(sommes.g, sommes.d); cas("encadrement (f monotone sur [a ; b])", `${fr(lo)} ≤ ∫ ≤ ${fr(hi)} &nbsp; (amplitude ${fr(hi - lo)})`, "var(--encre)"); }
+    else cas("écart avec l'intégrale", `${fr(Math.abs(sommes[mode] - I))}`, "var(--encre)");
+  }
+  maj();
+})();
+</script>
+
+<!-- plein-ecran : bouton commun à toutes les pages interactives -->
+<style>
+#pleinEcran { position: fixed; top: calc(10px + env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); z-index: 50; font: 500 13px var(--ui, system-ui, sans-serif); padding: 6px 12px; border-radius: 999px; border: 1px solid var(--filet, #d9dee5); background: var(--carte, #fff); color: var(--encre, #1b1f24); cursor: pointer; opacity: .9; }
+#pleinEcran:hover { opacity: 1; }
+body.plein-ecran .niveau, body.plein-ecran h1, body.plein-ecran h1 + .chapeau { display: none !important; }
+body.plein-ecran .page { max-width: none !important; min-height: 100vh; padding-top: 48px !important; align-content: start; }
+body.plein-ecran .page svg:not(.mini) { max-height: 76vh; }
+body.plein-ecran.plein-multi .page svg:not(.mini) { max-height: 46vh; }
+body.plein-ecran .constat { font-size: clamp(20px, 2.6vw, 30px); }
+</style>
+<script>
+(() => {
+  const b = document.createElement("button");
+  b.type = "button"; b.id = "pleinEcran"; document.body.appendChild(b);
+  function etat(on) { document.body.classList.toggle("plein-ecran", on); b.textContent = on ? "✕ Quitter le plein écran" : "⛶ Plein écran"; b.setAttribute("aria-pressed", on); window.dispatchEvent(new Event("resize")); }
+  b.addEventListener("click", async () => {
+    const on = !document.body.classList.contains("plein-ecran");
+    etat(on);
+    try { on ? await document.documentElement.requestFullscreen() : (document.fullscreenElement && await document.exitFullscreen()); } catch (e) {}
+  });
+  document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement && document.body.classList.contains("plein-ecran")) etat(false); });
+  window.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("plein-ecran")) etat(false); });
+  if (document.querySelectorAll(".page svg:not(.mini), .page canvas").length > 1) document.body.classList.add("plein-multi");
+  etat(location.hash === "#plein");
+})();
+</script>
+
+</body></html>

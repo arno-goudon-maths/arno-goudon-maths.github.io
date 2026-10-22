@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;box-sizing:border-box}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head><body>
+<title>Combinaisons</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root {
+  --papier: #f7f8fa; --carte: #ffffff; --encre: #1b1f24; --discret: #5d6672; --filet: #d9dee5; --grille: #e4e8ee;
+  --courbe: #1f5fbf; --rouge: #e0161b; --rouge-fond: rgba(224, 22, 27, 0.10);
+  --hausse: #1a56db; --baisse: #f07800; --hausse-fond: rgba(26, 86, 219, 0.20); --baisse-fond: rgba(240, 120, 0, 0.24);
+  --orange: #e07000; --violet: #7c3aed;
+  --math: "STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --ui: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #262c35; --courbe: #6fa3f0; --rouge: #ff4d52; --rouge-fond: rgba(255, 77, 82, 0.14); --hausse: #6aa0ff; --baisse: #ffa133; --hausse-fond: rgba(106, 160, 255, 0.24); --baisse-fond: rgba(255, 161, 51, 0.26); --orange: #ffa53d; --violet: #b794f6; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #262c35; --courbe: #6fa3f0; --rouge: #ff4d52; --rouge-fond: rgba(255, 77, 82, 0.14); --hausse: #6aa0ff; --baisse: #ffa133; --hausse-fond: rgba(106, 160, 255, 0.24); --baisse-fond: rgba(255, 161, 51, 0.26); --orange: #ffa53d; --violet: #b794f6; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--papier); color: var(--encre); font-family: var(--ui); font-size: 15px; line-height: 1.5; margin: 0; }
+.page { max-width: 920px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 40px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+.page > * { min-width: 0; }
+.niveau { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--discret); }
+h1 { font-family: var(--math); font-weight: 600; font-size: clamp(26px, 4vw, 36px); line-height: 1.15; margin: 0; }
+.centre { text-align: center; margin: 0 auto !important; }
+.chapeau { margin: 0; color: var(--discret); max-width: 68ch; }
+.m { font-family: var(--math); font-style: italic; }
+.barre { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
+.groupe { display: flex; gap: 8px; flex-wrap: wrap; }
+button { font: inherit; font-weight: 500; padding: 7px 14px; border-radius: 999px; border: 1px solid var(--filet); background: var(--carte); color: var(--encre); cursor: pointer; }
+button[aria-pressed="true"] { border-color: var(--rouge); color: var(--rouge); box-shadow: inset 0 0 0 1.5px var(--rouge); }
+button:focus-visible { outline: 3px solid var(--rouge); outline-offset: 2px; }
+.figure { background: var(--carte); border: 1px solid var(--filet); border-radius: 10px; padding: 6px; touch-action: none; }
+svg { display: block; width: 100%; height: auto; user-select: none; -webkit-user-select: none; }
+.constat { font-family: var(--math); font-size: clamp(18px, 2.5vw, 23px); text-align: center; margin: 0; padding: 10px 14px; border-radius: 10px; background: var(--carte); border: 1.5px solid var(--filet); min-height: 1.6em; }
+.constat b { font-weight: 600; }
+.fr { display: inline-flex; flex-direction: column; vertical-align: middle; font-size: .78em; line-height: 1.05; text-align: center; margin: 0 .08em; } .fr > span:first-child { border-bottom: 1.3px solid currentColor; padding: 0 .15em; }
+.n { display: flex; gap: 8px; align-items: center; font-family: var(--math); font-size: 19px; }
+.n button { width: 34px; height: 34px; padding: 0; font-size: 18px; }
+#g { width: min(100%, 340px); margin: 0 auto; }
+.liste { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.mini { width: 78px; height: 78px; padding: 2px; border-radius: 10px; border: 1.5px solid transparent; }
+.mini.moi { border-color: var(--rouge); background: var(--rouge-fond); }
+body.plein .niveau, body.plein .chapeau, body.plein h1 { display: none; }
+body.plein .page { max-width: none; min-height: 100vh; padding-block: 14px; align-content: start; }
+body.plein #g { width: min(100%, 58vh); }
+body.plein .constat { font-size: clamp(22px, 3vw, 32px); }
+body.plein .mini { width: clamp(78px, 9vw, 120px); height: clamp(78px, 9vw, 120px); }
+body.plein .n { font-size: 22px; }
+.binom { display: inline-flex; flex-direction: column; vertical-align: middle; line-height: 1; font-size: .8em; border-left: 1.5px solid currentColor; border-right: 1.5px solid currentColor; border-radius: 40%; padding: 1px 6px; text-align: center; }
+</style>
+
+<div class="page">
+  <span class="niveau">Terminale spécialité · Chapitre 13 · Combinatoire et dénombrement</span>
+  <h1>Combien de parties à <span class="m">k</span> éléments ?</h1>
+  <p class="chapeau" id="chapeau">Touchez des croix dans la patate <span class="m">E</span> pour former une partie. Dessous, toutes les parties qui ont autant d'éléments : on les compte.</p>
+  <div class="barre"><div class="n">La patate <span class="m">E</span> contient&nbsp;<button type="button" id="moins" aria-label="une croix de moins">−</button><b id="n"></b><button type="button" id="plus" aria-label="une croix de plus">+</button>&nbsp;éléments</div><button type="button" id="plein" aria-pressed="false">⛶ Plein écran</button></div>
+  <div class="figure"><svg id="g" role="img" aria-label="Ensemble E représenté par une patate contenant des croix"></svg></div>
+  <p class="constat" id="constat" aria-live="polite"></p>
+  <div class="liste" id="liste"></div>
+</div>
+
+<script>
+(() => {
+  const NS = "http://www.w3.org/2000/svg", $ = id => document.getElementById(id);
+  const el = (t, a, txt) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); if (txt != null) e.textContent = txt; return e; };
+  const fr = (x, d = 2) => { const r = Math.round(x * 10 ** d) / 10 ** d; return (Object.is(r, -0) ? 0 : r).toString().replace(".", ",").replace("-", "−"); };
+  const entier = x => Math.abs(x - Math.round(x)) < 1e-9;
+  const pgcd = (a, b) => { a = Math.abs(a); b = Math.abs(b); while (b) [a, b] = [b, a % b]; return a || 1; };
+  // fraction p/q réduite, écrite en HTML (−3/4 en barre de fraction compacte)
+  const frac = (p, q) => { if (q < 0) { p = -p; q = -q; } const g = pgcd(p, q); p /= g; q /= g;
+    const s = p < 0 ? "−" : ""; p = Math.abs(p);
+    return q === 1 ? s + p : `${s}<span class="fr"><span>${p}</span><span>${q}</span></span>`; };
+  const pos = (svg, ev) => { const p = svg.createSVGPoint(); p.x = ev.clientX; p.y = ev.clientY; return p.matrixTransform(svg.getScreenCTM().inverse()); };
+  function glisser(svg, cible, maj, fini) {
+    cible.addEventListener("pointerdown", e => {
+      e.preventDefault(); maj(pos(svg, e));
+      const bouge = ev => maj(pos(svg, ev));
+      const fin = () => { window.removeEventListener("pointermove", bouge); window.removeEventListener("pointerup", fin); if (fini) fini(); };
+      window.addEventListener("pointermove", bouge); window.addEventListener("pointerup", fin);
+    });
+  }
+  // courbe lisse passant par des points, sans dépassement (Fritsch-Carlson)
+  function lisse(P) {
+    const n = P.length, h = [], s = [], m = [];
+    for (let i = 0; i < n - 1; i++) { h[i] = P[i + 1][0] - P[i][0]; s[i] = (P[i + 1][1] - P[i][1]) / h[i]; }
+    m[0] = s[0]; m[n - 1] = s[n - 2];
+    for (let i = 1; i < n - 1; i++) m[i] = s[i - 1] * s[i] <= 0 ? 0 : 3 * (h[i - 1] + h[i]) / ((2 * h[i] + h[i - 1]) / s[i - 1] + (h[i] + 2 * h[i - 1]) / s[i]);
+    return x => { let i = 0; while (i < n - 2 && x > P[i + 1][0]) i++;
+      const t = (x - P[i][0]) / h[i], t2 = t * t, t3 = t2 * t;
+      return (2 * t3 - 3 * t2 + 1) * P[i][1] + (t3 - 2 * t2 + t) * h[i] * m[i] + (-2 * t3 + 3 * t2) * P[i + 1][1] + (t3 - t2) * h[i] * m[i + 1]; };
+  }
+  // repère quadrillé : renvoie les fonctions d'échelle
+  function repere(g, X, Y, cadre, opt = {}) {
+    const [G, D, Hh, B] = cadre;
+    const id = "c" + Math.random().toString(36).slice(2, 7);
+    g.appendChild(el("defs")).appendChild(el("clipPath", { id })).appendChild(el("rect", { x: G, y: Hh, width: D - G, height: B - Hh }));
+    const sx = x => G + (x - X[0]) / (X[1] - X[0]) * (D - G), sy = y => B - (y - Y[0]) / (Y[1] - Y[0]) * (B - Hh);
+    const pas = opt.pas || 1;
+    for (let x = Math.ceil(X[0]); x <= X[1]; x++) g.appendChild(el("line", { x1: sx(x), x2: sx(x), y1: Hh, y2: B, stroke: "var(--grille)" }));
+    for (let y = Math.ceil(Y[0]); y <= Y[1]; y++) g.appendChild(el("line", { x1: G, x2: D, y1: sy(y), y2: sy(y), stroke: "var(--grille)" }));
+    g.appendChild(el("line", { x1: G, x2: D, y1: sy(0), y2: sy(0), stroke: "var(--encre)", "stroke-width": 1.6 }));
+    g.appendChild(el("line", { x1: sx(0), x2: sx(0), y1: Hh, y2: B, stroke: "var(--encre)", "stroke-width": 1.6 }));
+    const t = { x: {}, y: {} };
+    for (let x = Math.ceil(X[0]); x <= X[1]; x++) if (x % pas === 0) { const e = el("text", { x: x ? sx(x) : sx(0) - 9, y: sy(0) + 20, "text-anchor": "middle", "font-size": 14, fill: "var(--discret)", "font-family": "var(--ui)" }, String(x).replace("-", "−")); g.appendChild(e); t.x[x] = e; }
+    for (let y = Math.ceil(Y[0]); y <= Y[1]; y++) if (y && y % pas === 0) { const e = el("text", { x: sx(0) - 8, y: sy(y) + 5, "text-anchor": "end", "font-size": 14, fill: "var(--discret)", "font-family": "var(--ui)" }, String(y).replace("-", "−")); g.appendChild(e); t.y[y] = e; }
+    return { clip: `url(#${id})`, sx, sy, ix: p => X[0] + (p - G) / (D - G) * (X[1] - X[0]), iy: p => Y[0] + (B - p) / (B - Hh) * (Y[1] - Y[0]), t };
+  }
+
+  // Une « patate » E avec n croix. On touche des croix : elles forment une partie,
+  // entourée en rouge. Dessous, toutes les parties à k éléments, en petites patates :
+  // on les compte d'un coup d'œil.
+  let n = 5, choix = [0, 2];
+  // positions des croix dans la patate (repère 0..100), selon n
+  const POS = {
+    3: [[30, 42], [64, 34], [50, 68]],
+    4: [[28, 38], [62, 30], [36, 70], [70, 64]],
+    5: [[26, 40], [52, 26], [76, 44], [38, 70], [66, 72]],
+    6: [[24, 38], [48, 24], [74, 34], [30, 68], [56, 56], [76, 72]],
+    7: [[22, 42], [42, 24], [66, 22], [80, 48], [30, 72], [54, 52], [64, 78]]
+  };
+  const PATATE = "M50,6 C72,4 94,18 95,42 C96,64 84,92 58,94 C34,96 10,86 6,60 C2,36 24,8 50,6 Z";
+  const fact = m => m <= 1 ? 1 : m * fact(m - 1), binom = (m, p) => fact(m) / (fact(p) * fact(m - p));
+  function combis(m, k, d = 0) { if (k === 0) return [[]]; const r = []; for (let i = d; i <= m - k; i++) combis(m, k - 1, i + 1).forEach(c => r.push([i, ...c])); return r; }
+  function enveloppe(P) { // enveloppe convexe (Andrew)
+    const p = [...P].sort((a, b) => a[0] - b[0] || a[1] - b[1]); if (p.length < 3) return p;
+    const x = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+    const lo = [], hi = [];
+    for (const q of p) { while (lo.length >= 2 && x(lo.at(-2), lo.at(-1), q) <= 0) lo.pop(); lo.push(q); }
+    for (const q of [...p].reverse()) { while (hi.length >= 2 && x(hi.at(-2), hi.at(-1), q) <= 0) hi.pop(); hi.push(q); }
+    return lo.slice(0, -1).concat(hi.slice(0, -1));
+  }
+  // dessine une patate (grande ou petite) dans un <svg> ; sel = indices des croix choisies
+  function patate(s, sel, grand) {
+    s.setAttribute("viewBox", "0 0 100 100"); s.textContent = "";
+    s.appendChild(el("path", { d: PATATE, fill: "var(--carte)", stroke: "var(--encre)", "stroke-width": grand ? 1.2 : 2.2 }));
+    const P = POS[n];
+    if (sel.length) { // la partie : un lasso arrondi autour des croix choisies
+      const h = enveloppe(sel.map(i => P[i])), d = "M" + h.map(q => q.join(",")).join(" L") + (h.length > 2 ? " Z" : "");
+      const gl = el("g", { opacity: grand ? 0.13 : 0.18 }); s.appendChild(gl);
+      gl.appendChild(el("path", { d, fill: "var(--rouge)", stroke: "var(--rouge)", "stroke-width": grand ? 22 : 24, "stroke-linejoin": "round", "stroke-linecap": "round" }));
+    }
+    P.forEach(([x, y], i) => { const on = sel.includes(i), t = grand ? 5 : 7, w = grand ? 2.4 : (on ? 4.2 : 2.6);
+      const coul = on ? "var(--rouge)" : (grand ? "var(--encre)" : "var(--discret)");
+      // petit numéro discret sous chaque croix : les éléments sont distincts
+      s.appendChild(el("text", { x, y: y + (grand ? t + 7.5 : t + 10), "text-anchor": "middle", "font-size": grand ? 6.5 : 11, "font-family": "var(--ui)", fill: on ? "var(--rouge)" : "var(--discret)", opacity: on ? 0.9 : 0.75 }, String(i + 1)));
+      if (!grand && !on) { s.appendChild(el("circle", { cx: x, cy: y, r: 3.2, fill: "var(--discret)", opacity: .55 })); return; }
+      s.appendChild(el("path", { d: `M${x - t},${y - t} L${x + t},${y + t} M${x + t},${y - t} L${x - t},${y + t}`, stroke: coul, "stroke-width": w, "stroke-linecap": "round" }));
+      if (grand) { const z = el("circle", { cx: x, cy: y, r: 11, fill: "transparent", style: "cursor:pointer" });
+        z.addEventListener("click", () => { choix = on ? choix.filter(j => j !== i) : [...choix, i].sort((a, b) => a - b); dessine(); }); s.appendChild(z); } });
+  }
+  $("moins").addEventListener("click", () => { if (n > 3) { n--; choix = choix.filter(i => i < n); dessine(); } });
+  $("plus").addEventListener("click", () => { if (n < 7) { n++; dessine(); } });
+  function dessine() {
+    const k = choix.length;
+    $("n").textContent = n;
+    patate($("g"), choix, true);
+    const L = $("liste"); L.textContent = "";
+    combis(n, k).forEach(c => { const s = el("svg", { class: "mini" + (c.join() === choix.join() ? " moi" : "") }); patate(s, c, false); L.appendChild(s); });
+    const C = binom(n, k);
+    $("constat").innerHTML = `Partie à <b style="color:var(--rouge)">${k}</b> élément${k > 1 ? "s" : ""} · il y en a <b>${C}</b> en tout : &nbsp;<span class="binom"><span>${n}</span><span>${k}</span></span> = ${C}`;
+  }
+  // plein écran : API du navigateur si elle est permise, sinon la page s'étale dans sa fenêtre
+  const bp = $("plein");
+  function etat(on) { document.body.classList.toggle("plein", on); bp.setAttribute("aria-pressed", on); bp.textContent = on ? "✕ Quitter le plein écran" : "⛶ Plein écran"; }
+  bp.addEventListener("click", async () => {
+    const on = !document.body.classList.contains("plein");
+    if (on) { etat(true); try { await document.documentElement.requestFullscreen(); } catch (e) {} }
+    else { etat(false); if (document.fullscreenElement) try { await document.exitFullscreen(); } catch (e) {} }
+  });
+  document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement) etat(false); });
+  window.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("plein")) etat(false); });
+  if (location.hash === "#plein") etat(true);
+  dessine();
+
+})();
+</script>
+
+</body></html>

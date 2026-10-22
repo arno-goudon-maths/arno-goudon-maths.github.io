@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;box-sizing:border-box}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head><body>
+<title>Loi des grands nombres</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Des centaines d'échantillons tirés en même temps : chaque courbe est la moyenne M_n
+   d'un échantillon quand n grandit. Elles se resserrent dans la bande E[X] ± δ ;
+   la proportion d'échantillons hors de la bande est comparée à V(X)/(nδ²). */
+:root {
+  --papier: #f7f8fa; --carte: #ffffff; --encre: #1b1f24; --discret: #5d6672; --filet: #d9dee5; --grille: #e7eaef;
+  --dedans: #1f5fbf; --dehors: #d81b2c; --esp: #d35400; --bande: rgba(211, 84, 0, 0.12); --borne: #0b8a3a;
+  --math: "STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --ui: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #252b34; --dedans: #6fa3f0; --dehors: #ff6b7a; --esp: #f0a35e; --bande: rgba(240, 163, 94, 0.14); --borne: #4ade80; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #252b34; --dedans: #6fa3f0; --dehors: #ff6b7a; --esp: #f0a35e; --bande: rgba(240, 163, 94, 0.14); --borne: #4ade80; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--papier); color: var(--encre); font-family: var(--ui); font-size: 15px; line-height: 1.5; margin: 0; }
+.page { max-width: 980px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 40px; display: grid; gap: 14px; }
+.niveau { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--discret); }
+h1 { font-family: var(--math); font-weight: 600; font-size: clamp(26px, 4vw, 36px); line-height: 1.15; margin: 0; }
+.chapeau { margin: 0; color: var(--discret); max-width: 74ch; }
+.m { font-family: var(--math); font-style: italic; }
+.barre { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.barre button { font: inherit; font-size: 14px; padding: 5px 12px; border-radius: 999px; border: 1px solid var(--filet); background: var(--carte); color: var(--encre); cursor: pointer; }
+.barre button[aria-pressed="true"] { border-color: var(--dedans); box-shadow: inset 0 0 0 1px var(--dedans); font-weight: 600; }
+.barre .go { margin-left: auto; font-weight: 600; background: var(--esp); border-color: var(--esp); color: #fff; padding: 7px 18px; border-radius: 8px; }
+.delta { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: center; font-family: var(--math); font-size: 19px; }
+.delta input { width: 100%; accent-color: var(--esp); }
+.figure { background: var(--carte); border: 1px solid var(--filet); border-radius: 10px; padding: 8px; }
+svg { display: block; width: 100%; height: auto; }
+.constat { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
+.case { background: var(--carte); border: 1px solid var(--filet); border-left: 5px solid var(--c); border-radius: 10px; padding: 10px 14px; font-family: var(--math); font-size: 19px; }
+.case small { display: block; font-family: var(--ui); font-size: 13px; color: var(--discret); }
+button:focus-visible, input:focus-visible { outline: 3px solid var(--esp); outline-offset: 2px; }
+</style>
+
+<div class="page">
+  <span class="niveau">Terminale spécialité · Chapitre 12 · Loi des grands nombres</span>
+  <h1>Loi des grands nombres</h1>
+  <p class="chapeau">On tire 300 échantillons <span class="m">(X</span><sub>1</sub> ; … ; <span class="m">X<sub>n</sub>)</span> en même temps. Chaque courbe suit la moyenne <span class="m">M<sub>n</sub></span> d'un échantillon quand <span class="m">n</span> grandit : elles finissent toutes dans la bande <span class="m">E</span>[<span class="m">X</span>] ± δ.</p>
+  <div class="barre" id="lois" role="group" aria-label="Loi de X"><button type="button" class="go" id="go">Lancer</button></div>
+  <label class="delta"><span>δ = <span id="vd"></span></span><input id="cd" type="range" min="1" max="100" value="15"></label>
+  <div class="figure"><svg id="g" viewBox="0 0 900 420" role="img" aria-label="Moyennes M_n de 300 échantillons en fonction de n"></svg></div>
+  <div class="constat" id="constat"></div>
+</div>
+
+<script>
+(() => {
+  const NS = "http://www.w3.org/2000/svg", $ = id => document.getElementById(id);
+  const el = (t, a, txt) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); if (txt != null) e.textContent = txt; return e; };
+  const fr = (x, d = 3) => (Math.round(x * 10 ** d) / 10 ** d).toLocaleString("fr-FR", { maximumFractionDigits: d }).replace("-", "−");
+  // lois : le jeu du poulpe du cours (partie 2.3), un dé, une pièce
+  const LOIS = [
+    { nom: "Jeu du poulpe (cours)", v: [0, 5, 10, 20, 50, 100], p: [0.6, 0.2, 0.1, 0.06, 0.03, 0.01], dmax: 20 },
+    { nom: "Dé équilibré", v: [1, 2, 3, 4, 5, 6], p: [1, 1, 1, 1, 1, 1].map(x => x / 6), dmax: 1.5 },
+    { nom: "Pièce : X = 1 si pile", v: [0, 1], p: [0.5, 0.5], dmax: 0.3 }
+  ];
+  LOIS.forEach(L => { L.E = L.v.reduce((s, x, i) => s + x * L.p[i], 0); L.V = L.v.reduce((s, x, i) => s + (x - L.E) ** 2 * L.p[i], 0); });
+  const K = 300, NMAX = 1000, AFF = 60;
+  let k = 0, n = 0, S = new Float64Array(K), traces = [], anim = null;
+  const zone = $("lois"), go = $("go");
+  LOIS.forEach((L, i) => { const b = document.createElement("button"); b.type = "button"; b.textContent = L.nom; b.addEventListener("click", () => { k = i; $("cd").value = 15; reset(); }); zone.insertBefore(b, go); });
+  const tirage = L => { let r = Math.random(), i = 0; while (i < L.p.length - 1 && r >= L.p[i]) { r -= L.p[i]; i++; } return L.v[i]; };
+  const delta = () => LOIS[k].dmax * (+$("cd").value / 100);
+  function reset() { if (anim) cancelAnimationFrame(anim); anim = null; n = 0; S = new Float64Array(K); traces = Array.from({ length: AFF }, () => []); go.textContent = "Lancer"; dessine(); }
+  function pas(m) { const L = LOIS[k]; for (let t = 0; t < m && n < NMAX; t++) { n++; for (let j = 0; j < K; j++) S[j] += tirage(L); for (let j = 0; j < AFF; j++) traces[j].push(S[j] / n); } }
+  function boucle() { pas(n < 50 ? 1 : n < 200 ? 3 : 8); dessine(); if (n < NMAX) anim = requestAnimationFrame(boucle); else { anim = null; go.textContent = "Relancer"; } }
+  go.addEventListener("click", () => { reset(); anim = requestAnimationFrame(boucle); go.textContent = "…"; });
+  $("cd").addEventListener("input", dessine);
+  function dessine() {
+    const L = LOIS[k], d = delta(), s = Math.sqrt(L.V);
+    [...zone.querySelectorAll("button:not(.go)")].forEach((b, i) => b.setAttribute("aria-pressed", i === k));
+    $("vd").textContent = fr(d, 2);
+    const g = $("g"); g.textContent = "";
+    const G = 60, D = 880, H = 16, B = 380, Y = [L.E - 1.3 * s, L.E + 1.3 * s];
+    const sx = i => G + (i / NMAX) * (D - G), sy = y => B - (y - Y[0]) / (Y[1] - Y[0]) * (B - H), cl = y => Math.max(H, Math.min(B, sy(y)));
+    // bande E[X] ± δ
+    g.appendChild(el("rect", { x: G, y: cl(L.E + d), width: D - G, height: cl(L.E - d) - cl(L.E + d), fill: "var(--bande)" }));
+    for (const y of [L.E - d, L.E + d]) g.appendChild(el("line", { x1: G, x2: D, y1: cl(y), y2: cl(y), stroke: "var(--esp)", "stroke-dasharray": "6 5", "stroke-width": 1.2 }));
+    // trajectoires
+    traces.forEach(tr => { if (!tr.length) return; const pasT = Math.max(1, Math.floor(tr.length / 400)); let p = ""; for (let i = 0; i < tr.length; i += pasT) p += (p ? "L" : "M") + sx(i + 1).toFixed(1) + "," + cl(tr[i]).toFixed(1); p += "L" + sx(tr.length).toFixed(1) + "," + cl(tr[tr.length - 1]).toFixed(1);
+      const dehors = Math.abs(tr[tr.length - 1] - L.E) >= d;
+      g.appendChild(el("path", { d: p, fill: "none", stroke: dehors ? "var(--dehors)" : "var(--dedans)", "stroke-width": 1.2, opacity: 0.55 })); });
+    // E[X]
+    g.appendChild(el("line", { x1: G, x2: D, y1: sy(L.E), y2: sy(L.E), stroke: "var(--esp)", "stroke-width": 2.5 }));
+    g.appendChild(el("text", { x: D - 4, y: sy(L.E) - 8, "text-anchor": "end", "font-size": 17, "font-family": "var(--math)", "font-style": "italic", fill: "var(--esp)", stroke: "var(--carte)", "stroke-width": 5, "paint-order": "stroke" }, `E[X] = ${fr(L.E, 3)}`));
+    // axes
+    g.appendChild(el("line", { x1: G, x2: D, y1: B, y2: B, stroke: "var(--encre)", "stroke-width": 1.5 }));
+    g.appendChild(el("line", { x1: G, x2: G, y1: H, y2: B, stroke: "var(--encre)", "stroke-width": 1.5 }));
+    for (let i = 0; i <= NMAX; i += 200) g.appendChild(el("text", { x: sx(i), y: B + 22, "text-anchor": "middle", "font-size": 13, "font-family": "var(--ui)", fill: "var(--discret)" }, String(i)));
+    g.appendChild(el("text", { x: D, y: B + 38, "text-anchor": "end", "font-size": 15, "font-family": "var(--math)", "font-style": "italic", fill: "var(--encre)" }, "n"));
+    g.appendChild(el("text", { x: G + 6, y: H + 14, "font-size": 16, "font-family": "var(--math)", "font-style": "italic", fill: "var(--encre)" }, "Mₙ"));
+    if (n) g.appendChild(el("line", { x1: sx(n), x2: sx(n), y1: H, y2: B, stroke: "var(--discret)", "stroke-width": 1 }));
+    // bilan
+    let hors = 0; for (let j = 0; j < K; j++) if (n && Math.abs(S[j] / n - L.E) >= d) hors++;
+    const borne = n ? L.V / (n * d * d) : NaN, c = $("constat"); c.innerHTML = "";
+    const cas = (t, v, col) => { const e = document.createElement("div"); e.className = "case"; e.style.setProperty("--c", col); e.innerHTML = `<small>${t}</small>${v}`; c.appendChild(e); };
+    cas(`taille des échantillons`, `<span class="m">n</span> = ${n}`, "var(--discret)");
+    cas(`échantillons hors de la bande, qui estiment <span class="m">P</span>(|<span class="m">M<sub>n</sub></span> − <span class="m">E</span>[<span class="m">X</span>]| ≥ δ)`, n ? `${hors} sur ${K} ≈ ${fr(hors / K, 2)}` : "—", "var(--dehors)");
+    cas(`majoration du cours : <span class="m">V</span>(<span class="m">X</span>) / (<span class="m">n</span>δ²)`, n ? (borne >= 1 ? `${fr(borne, 2)} (≥ 1 : n'apprend rien)` : fr(borne, 3)) : `<span class="m">V</span>(<span class="m">X</span>) = ${fr(L.V, 3)}`, "var(--borne)");
+  }
+  reset();
+})();
+</script>
+
+<!-- plein-ecran : bouton commun à toutes les pages interactives -->
+<style>
+#pleinEcran { position: fixed; top: calc(10px + env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); z-index: 50; font: 500 13px var(--ui, system-ui, sans-serif); padding: 6px 12px; border-radius: 999px; border: 1px solid var(--filet, #d9dee5); background: var(--carte, #fff); color: var(--encre, #1b1f24); cursor: pointer; opacity: .9; }
+#pleinEcran:hover { opacity: 1; }
+body.plein-ecran .niveau, body.plein-ecran h1, body.plein-ecran h1 + .chapeau { display: none !important; }
+body.plein-ecran .page { max-width: none !important; min-height: 100vh; padding-top: 48px !important; align-content: start; }
+body.plein-ecran .page svg:not(.mini) { max-height: 76vh; }
+body.plein-ecran.plein-multi .page svg:not(.mini) { max-height: 46vh; }
+body.plein-ecran .constat { font-size: clamp(20px, 2.6vw, 30px); }
+</style>
+<script>
+(() => {
+  const b = document.createElement("button");
+  b.type = "button"; b.id = "pleinEcran"; document.body.appendChild(b);
+  function etat(on) { document.body.classList.toggle("plein-ecran", on); b.textContent = on ? "✕ Quitter le plein écran" : "⛶ Plein écran"; b.setAttribute("aria-pressed", on); window.dispatchEvent(new Event("resize")); }
+  b.addEventListener("click", async () => {
+    const on = !document.body.classList.contains("plein-ecran");
+    etat(on);
+    try { on ? await document.documentElement.requestFullscreen() : (document.fullscreenElement && await document.exitFullscreen()); } catch (e) {}
+  });
+  document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement && document.body.classList.contains("plein-ecran")) etat(false); });
+  window.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("plein-ecran")) etat(false); });
+  if (document.querySelectorAll(".page svg:not(.mini), .page canvas").length > 1) document.body.classList.add("plein-multi");
+  etat(location.hash === "#plein");
+})();
+</script>
+
+</body></html>

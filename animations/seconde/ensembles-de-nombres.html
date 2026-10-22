@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;box-sizing:border-box}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head><body>
+<title>Où vit ce nombre ?</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Mise en page : les ensemble emboîtés N ⊂ Z ⊂ D ⊂ Q ⊂ R en grand, le nombre posé dans le plus petit ensemble qui le contient ;
+   dessous, la droite graduée qu'on zoome (×10) : un décimal finit par tomber pile sur une graduation, 1/3 ou √2 jamais. */
+:root {
+  --papier: #f7f8fa; --carte: #ffffff; --encre: #1b1f24; --discret: #5d6672; --filet: #d9dee5; --grille: #e7eaef;
+  --dans: #1a56db; --hors: #f07800; --dans-fond: rgba(26, 86, 219, 0.10); --lecture: #d62828;
+  --math: "STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --ui: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #252b34; --dans: #6fa3f0; --hors: #ffa64d; --dans-fond: rgba(111, 163, 240, 0.14); --lecture: #ff6b6b; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #252b34; --dans: #6fa3f0; --hors: #ffa64d; --dans-fond: rgba(111, 163, 240, 0.14); --lecture: #ff6b6b; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--papier); color: var(--encre); font-family: var(--ui); font-size: 15px; line-height: 1.5; }
+.page { max-width: 960px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 40px; display: grid; gap: 12px; }
+.niveau { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--discret); }
+h1 { font-family: var(--math); font-weight: 600; font-size: clamp(26px, 4vw, 36px); line-height: 1.15; margin: 0; text-wrap: balance; }
+.chapeau { margin: 0; color: var(--discret); max-width: 70ch; }
+.m { font-family: var(--math); font-style: italic; }
+.choix { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.choix button { font: 400 16px var(--math); padding: 3px 11px; border-radius: 999px; border: 1px solid var(--filet); background: var(--carte); color: var(--encre); cursor: pointer; }
+.choix button[aria-pressed="true"] { border-color: var(--dans); color: var(--dans); font-weight: 600; }
+.choix form { display: flex; gap: 6px; margin-left: auto; }
+.choix input { font: 16px var(--math); width: 8.5em; padding: 3px 8px; border-radius: 8px; border: 1px solid var(--filet); background: var(--carte); color: var(--encre); }
+.choix input[aria-invalid="true"] { border-color: var(--hors); }
+.choix form button { font-family: var(--ui); font-size: 13px; }
+button:focus-visible, input:focus-visible { outline: 3px solid var(--hors); outline-offset: 2px; }
+.figure { background: var(--carte); border: 1px solid var(--filet); border-radius: 10px; padding: 8px; }
+svg { display: block; width: 100%; height: auto; touch-action: none; }
+.decimal { font-family: var(--math); font-size: 22px; text-align: center; margin: 0; overflow-wrap: anywhere; }
+.decimal .rep { color: var(--hors); text-decoration: underline; text-underline-offset: 4px; }
+.zoom { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 14px; color: var(--discret); }
+.zoom button { font: 500 13px var(--ui); padding: 4px 12px; border-radius: 999px; border: 1px solid var(--filet); background: var(--carte); color: var(--encre); cursor: pointer; }
+.zoom button:disabled { opacity: .4; cursor: default; }
+.constat { font-size: 16px; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--filet); background: var(--carte); margin: 0; }
+details { background: var(--carte); border: 1px solid var(--filet); border-radius: 10px; padding: 10px 14px; }
+summary { cursor: pointer; font-weight: 500; }
+details p { color: var(--discret); margin: 8px 0; }
+@media (max-width: 560px) { .choix form { margin-left: 0; } }
+</style>
+
+<div class="page">
+  <span class="niveau">Seconde · Chapitre 1 · Ensembles de nombres</span>
+  <h1>Où vit ce nombre ?</h1>
+  <p class="chapeau">Choisissez un nombre : il se pose dans le plus petit ensemble qui le contient. Zoomez ensuite sur la droite graduée : un nombre décimal finit toujours par tomber pile sur une graduation.</p>
+
+  <div class="choix" id="choix">
+    <form id="saisie" autocomplete="off"><input id="champ" aria-label="Saisir un nombre (par exemple 7/4, −0,25, √5, π)" placeholder="7/4, √5, π…"><button type="submit">Placer</button></form>
+  </div>
+
+  <div class="figure"><svg id="ens" viewBox="0 0 900 360" role="img" aria-label="Les ensembles emboîtés N, Z, D, Q, R et le nombre choisi"></svg></div>
+  <p class="decimal" id="decimal"></p>
+  <div class="figure"><svg id="droite" viewBox="0 0 900 120" role="img" aria-label="Droite graduée zoomée autour du nombre"></svg></div>
+  <div class="zoom">
+    <button type="button" id="moins">− Dézoomer</button>
+    <button type="button" id="plus">+ Zoomer ×10</button>
+    <span id="pas"></span>
+  </div>
+  <p class="constat" id="constat"></p>
+
+  <details>
+    <summary>Pour aller plus loin</summary>
+    <p>ℕ : les entiers naturels 0 ; 1 ; 2 ; … — ℤ : les entiers relatifs … ; −1 ; 0 ; 1 ; … — 𝔻 : les nombres de la forme <span class="m">a</span>/10<sup><span class="m">n</span></sup> avec <span class="m">a</span> ∈ ℤ et <span class="m">n</span> ∈ ℕ, c'est-à-dire avec un nombre fini de décimales — ℚ : les nombres de la forme <span class="m">p</span>/<span class="m">q</span> avec <span class="m">p</span> ∈ ℤ et <span class="m">q</span> ∈ ℕ* — ℝ : tous les nombres de la droite graduée.</p>
+    <p>On a ℕ ⊂ ℤ ⊂ 𝔻 ⊂ ℚ ⊂ ℝ. L'écriture décimale d'un rationnel finit toujours par se répéter ; celle de √2 ou de π ne se répète jamais.</p>
+  </details>
+</div>
+
+<script>
+(() => {
+  const NS = "http://www.w3.org/2000/svg", $ = id => document.getElementById(id);
+  const el = (t, a, txt) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); if (txt != null) e.textContent = txt; return e; };
+  const PI = "3141592653589793238462643383279502884197169399375105820974944592307816406286";
+  const big = BigInt, abs = v => v < 0n ? -v : v;
+  const pgcd = (a, b) => { a = abs(a); b = abs(b); while (b) [a, b] = [b, a % b]; return a; };
+  const isqrt = n => { if (n < 2n) return n; let y = 1n << big(Math.ceil(n.toString(2).length / 2)); for (;;) { const z = (y + n / y) / 2n; if (z >= y) break; y = z; } while (y * y > n) y--; return y; };
+  const moins = s => s.replace(/-/g, "−");
+
+  // Un nombre : rationnel exact (p/q réduit, q > 0) ou irrationnel (√n, π) dont on sait écrire autant de décimales que voulu.
+  function rationnel(p, q, nom) { if (q < 0n) { p = -p; q = -q; } const g = pgcd(p, q) || 1n; return { nom, rat: true, p: p / g, q: q / g, neg: p < 0n }; }
+  function lireNombre(s) {
+    s = s.trim().replace(/\s/g, "").replace(/−/g, "-").replace(/\./g, ",");
+    if (!s) return null;
+    let neg = false, t = s;
+    if (t[0] === "-") { neg = true; t = t.slice(1); }
+    if (/^(π|pi)$/i.test(t)) return { nom: (neg ? "−" : "") + "π", rat: false, neg, chiffres: n => PI.slice(0, n + 1) };
+    let m = t.match(/^(?:√|racine|sqrt)\(?(\d+)\)?$/i);
+    if (m) {
+      const n = big(m[1]), r = isqrt(n), nom = (neg ? "−" : "") + "√" + m[1];
+      if (r * r === n) return Object.assign(rationnel(neg ? -r : r, 1n, nom), { egal: (neg ? "−" : "") + r });
+      return { nom, rat: false, neg, chiffres: k => { const v = isqrt(n * 10n ** big(2 * k)).toString(); return v.padStart(k + 1, "0"); } };
+    }
+    m = t.match(/^(\d+)(?:,(\d+))?(?:\/(\d+)(?:,(\d+))?)?$/);
+    if (!m) return null;
+    const dec = (e, f) => [big(e + (f || "")), 10n ** big((f || "").length)];
+    let [p, q] = dec(m[1], m[2]);
+    if (m[3] !== undefined) { const [p2, q2] = dec(m[3], m[4]); if (p2 === 0n) return null; p *= q2; q *= p2; }
+    return rationnel(neg ? -p : p, q, s.replace(/-/g, "−").replace(/^(\d+),(\d+)$/, "$1,$2"));
+  }
+  // chiffres de |x| : partie entière suivie de k décimales (tronqué), sous forme de chaîne
+  function chiffres(x, k) {
+    if (!x.rat) return x.chiffres(k);
+    const P = abs(x.p) * 10n ** big(k) / x.q; return P.toString().padStart(k + 1, "0");
+  }
+  function ensembles(x) {
+    if (!x.rat) return ["R"];
+    if (x.q === 1n) return x.p >= 0n ? ["N", "Z", "D", "Q", "R"] : ["Z", "D", "Q", "R"];
+    let q = x.q; while (q % 2n === 0n) q /= 2n; while (q % 5n === 0n) q /= 5n;
+    return q === 1n ? ["D", "Q", "R"] : ["Q", "R"];
+  }
+  // écriture décimale avec la période soulignée
+  function ecritureDecimale(x) {
+    const s = x.neg ? "−" : "";
+    if (!x.rat) { const c = chiffres(x, 30); const e = c.slice(0, c.length - 30); return s + e + "," + c.slice(-30) + "…"; }
+    const P = abs(x.p), ent = P / x.q; let r = P % x.q;
+    if (r === 0n) return s + ent;
+    const vus = new Map(), ds = [];
+    while (r !== 0n && !vus.has(r) && ds.length < 60) { vus.set(r, ds.length); r *= 10n; ds.push((r / x.q).toString()); r %= x.q; }
+    if (r === 0n) return s + ent + "," + ds.join("");
+    if (!vus.has(r)) return s + ent + "," + ds.join("") + "…";
+    const i = vus.get(r), avant = ds.slice(0, i).join(""), per = ds.slice(i).join("");
+    let rep = per; while (rep.length < 12) rep += per;
+    return s + ent + "," + avant + "<span class=\"rep\">" + rep + "</span>…";
+  }
+
+  const pasTexte = k => k === 0 ? "1" : "0," + "0".repeat(k - 1) + "1";
+  const NOMPAS = ["des unités", "des dixièmes", "des centièmes", "des millièmes"];
+  const EXEMPLES = ["137", "−5", "2,6", "−3/2", "1/3", "2/5", "√9", "√2", "π", "0,083", "22/7", "−1000"];
+  let x = null, k = 0;
+  const KMAX = 12;
+
+  const choix = $("choix"), saisie = $("saisie");
+  EXEMPLES.forEach(s => { const b = document.createElement("button"); b.type = "button"; b.textContent = s; b.dataset.v = s; b.addEventListener("click", () => poser(s)); choix.insertBefore(b, saisie); });
+  saisie.addEventListener("submit", e => { e.preventDefault(); const v = $("champ").value; if (lireNombre(v)) { $("champ").setAttribute("aria-invalid", "false"); poser(v); } else $("champ").setAttribute("aria-invalid", "true"); });
+  $("plus").addEventListener("click", () => { if (k < KMAX) { k++; dessinerDroite(); } });
+  $("moins").addEventListener("click", () => { if (k > 0) { k--; dessinerDroite(); } });
+
+  function poser(s) {
+    x = lireNombre(s); k = 0;
+    choix.querySelectorAll("button[data-v]").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === s));
+    dessinerEnsembles();
+    const special = /[\/√π]/.test(x.nom);
+    $("decimal").innerHTML = x.egal ? x.nom + " = " + x.egal : (special ? x.nom + " = " : "") + ecritureDecimale(x);
+    dessinerDroite();
+  }
+
+  // ensembles emboîtés
+  const NOMS = { N: "ℕ", Z: "ℤ", D: "𝔻", Q: "ℚ", R: "ℝ" }, ORDRE = ["R", "Q", "D", "Z", "N"];
+  function cadre(i) { return { x: 10 + 150 * i, y: 10 + 55 * i, w: 880 - 170 * i, h: 340 - 67 * i }; }
+  function dessinerEnsembles() {
+    const g = $("ens"); g.textContent = "";
+    const E = ensembles(x), plusPetit = E[0];
+    ORDRE.forEach((n, i) => {
+      const c = cadre(i), dedans = E.includes(n);
+      g.appendChild(el("rect", { x: c.x, y: c.y, width: c.w, height: c.h, rx: 22, fill: dedans ? "var(--dans-fond)" : "var(--carte)", stroke: dedans ? "var(--dans)" : "var(--hors)", "stroke-width": dedans ? 2.5 : 2, "stroke-dasharray": dedans ? "none" : "7 6" }));
+      g.appendChild(el("text", { x: c.x + 16, y: c.y + 36, "font-size": 30, "font-family": "var(--math)", fill: dedans ? "var(--dans)" : "var(--hors)" }, NOMS[n]));
+      g.appendChild(el("text", { x: c.x + 52, y: c.y + 35, "font-size": 20, "font-family": "var(--math)", fill: dedans ? "var(--dans)" : "var(--hors)" }, dedans ? "∈" : "∉"));
+    });
+    // le nombre, dans la bande propre au plus petit ensemble
+    const i = ORDRE.indexOf(plusPetit), c = cadre(i);
+    const cx = plusPetit === "N" ? c.x + c.w / 2 + 20 : c.x + 75, cy = plusPetit === "N" ? c.y + c.h / 2 + 8 : c.y + Math.min(c.h * 0.62, 150);
+    const label = x.nom, w = Math.max(56, 16 * [...label].length + 24);
+    g.appendChild(el("rect", { x: cx - w / 2, y: cy - 22, width: w, height: 40, rx: 20, fill: "var(--carte)", stroke: "var(--dans)", "stroke-width": 2.5 }));
+    g.appendChild(el("text", { x: cx, y: cy + 7, "text-anchor": "middle", "font-size": 24, "font-family": "var(--math)", fill: "var(--encre)" }, label));
+  }
+
+  // droite graduée zoomée : graduations tous les 10^-k
+  function formate(gS) { // gS : BigInt = valeur × 10^k
+    const neg = gS < 0n, s = abs(gS).toString().padStart(k + 1, "0");
+    const e = s.slice(0, s.length - k), d = s.slice(s.length - k);
+    return (neg && gS !== 0n ? "−" : "") + e + (k ? "," + d : "");
+  }
+  function dessinerDroite() {
+    const g = $("droite"); g.textContent = "";
+    const S = 10n ** big(k + 6), u = 10n ** 6n;
+    const A = big(chiffres(x, k + 6)); // |x| × 10^(k+6) tronqué
+    const exact = x.rat && (abs(x.p) * 10n ** big(k)) % x.q === 0n;
+    const Xs = x.neg ? -A : A;
+    let L = x.neg ? -(((A + u - 1n) / u) * u) : (A / u) * u;
+    if (exact) L = Xs;
+    const g0 = L - 4n * u, x0 = 40, x1 = 860, larg = x1 - x0, Y = 70;
+    const pos = v => x0 + Number(v - g0) / Number(10n * u) * larg;
+    g.appendChild(el("line", { x1: 20, x2: 880, y1: Y, y2: Y, stroke: "var(--encre)", "stroke-width": 2 }));
+    g.appendChild(el("path", { d: `M880,${Y} l-12,-6 v12 z`, fill: "var(--encre)" }));
+    for (let i = 0; i <= 10; i++) { const v = g0 + big(i) * u, X = pos(v); g.appendChild(el("line", { x1: X, x2: X, y1: Y - 9, y2: Y + 9, stroke: "var(--encre)", "stroke-width": 1.5 })); }
+    const lab = (v, ancre, couleur) => g.appendChild(el("text", { x: pos(v) + (ancre === "end" ? 4 : ancre === "start" ? -4 : 0), y: Y + 34, "text-anchor": ancre, "font-size": 17, "font-family": "var(--math)", fill: couleur }, formate(v / u)));
+    const px = pos(Xs);
+    if (exact) {
+      lab(L, "middle", "var(--dans)");
+      g.appendChild(el("circle", { cx: px, cy: Y, r: 9, fill: "var(--dans)", stroke: "var(--carte)", "stroke-width": 2.5 }));
+    } else {
+      g.appendChild(el("rect", { x: pos(L), y: Y - 7, width: pos(L + u) - pos(L), height: 14, fill: "var(--hors)", opacity: 0.25 }));
+      lab(L, "end", "var(--hors)"); lab(L + u, "start", "var(--hors)");
+      g.appendChild(el("circle", { cx: px, cy: Y, r: 8, fill: "var(--lecture)", stroke: "var(--carte)", "stroke-width": 2.5 }));
+    }
+    g.appendChild(el("text", { x: Math.min(840, Math.max(60, px)), y: Y - 20, "text-anchor": "middle", "font-size": 20, "font-family": "var(--math)", fill: exact ? "var(--dans)" : "var(--lecture)" }, x.nom));
+    $("pas").textContent = "Graduations tous les " + pasTexte(k);
+    $("plus").disabled = k >= KMAX; $("moins").disabled = k === 0;
+    // constat
+    const E = ensembles(x), pp = NOMS[E[0]];
+    let t = "";
+    if (exact) t = `<strong style="color:var(--dans)">${x.nom}</strong> tombe pile sur une graduation ${NOMPAS[k] || "de pas " + pasTexte(k)} : ` + (E[0] === "D" ? "c'est un nombre décimal." : "c'est un entier.");
+    else t = `${formate(L / u)} &lt; <strong style="color:var(--lecture)">${x.nom}</strong> &lt; ${formate((L + u) / u)} : encadrement d'amplitude ${pasTexte(k)}.`;
+    if (!exact && k >= 4) t += x.rat && E[0] === "Q" ? " Il ne tombera jamais pile : ses décimales se répètent sans fin. C'est un rationnel." : (!x.rat ? " Il ne tombera jamais pile, et ses décimales ne se répètent pas : il n'est pas rationnel." : "");
+    t += ` Le plus petit ensemble qui le contient : <strong style="color:var(--dans)">${pp}</strong>.`;
+    $("constat").innerHTML = t;
+  }
+  poser("1/3");
+})();
+</script>
+<!-- plein-ecran : bouton commun à toutes les pages interactives -->
+<style>
+#pleinEcran { position: fixed; top: calc(10px + env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); z-index: 50; font: 500 13px var(--ui, system-ui, sans-serif); padding: 6px 12px; border-radius: 999px; border: 1px solid var(--filet, #d9dee5); background: var(--carte, #fff); color: var(--encre, #1b1f24); cursor: pointer; opacity: .9; }
+#pleinEcran:hover { opacity: 1; }
+body.plein-ecran .niveau, body.plein-ecran h1, body.plein-ecran h1 + .chapeau { display: none !important; }
+body.plein-ecran .page { max-width: none !important; min-height: 100vh; padding-top: 48px !important; align-content: start; }
+body.plein-ecran .page svg:not(.mini) { max-height: 76vh; }
+body.plein-ecran.plein-multi .page svg:not(.mini) { max-height: 46vh; }
+body.plein-ecran .constat { font-size: clamp(20px, 2.6vw, 30px); }
+</style>
+<script>
+(() => {
+  const b = document.createElement("button");
+  b.type = "button"; b.id = "pleinEcran"; document.body.appendChild(b);
+  function etat(on) { document.body.classList.toggle("plein-ecran", on); b.textContent = on ? "✕ Quitter le plein écran" : "⛶ Plein écran"; b.setAttribute("aria-pressed", on); window.dispatchEvent(new Event("resize")); }
+  b.addEventListener("click", async () => {
+    const on = !document.body.classList.contains("plein-ecran");
+    etat(on);
+    try { on ? await document.documentElement.requestFullscreen() : (document.fullscreenElement && await document.exitFullscreen()); } catch (e) {}
+  });
+  document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement && document.body.classList.contains("plein-ecran")) etat(false); });
+  window.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("plein-ecran")) etat(false); });
+  if (document.querySelectorAll(".page svg:not(.mini), .page canvas").length > 1) document.body.classList.add("plein-multi");
+  etat(location.hash === "#plein");
+})();
+</script>
+
+</body></html>

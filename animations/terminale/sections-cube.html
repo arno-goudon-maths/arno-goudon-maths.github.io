@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;box-sizing:border-box}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head><body>
+<title>Sections d'un cube</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root {
+  --papier: #f7f8fa; --carte: #ffffff; --encre: #1b1f24; --discret: #5d6672; --filet: #d9dee5; --grille: #e7eaef;
+  --bleu: #1a56db; --orange: #f07800; --rouge: #d81b2c; --violet: #7b2cbf; --vert: #0b8a3a;
+  --bleu-fond: rgba(26, 86, 219, 0.16); --orange-fond: rgba(240, 120, 0, 0.18); --rouge-fond: rgba(216, 27, 44, 0.12);
+  --math: "STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --ui: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #252b34;
+    --bleu: #6fa3f0; --orange: #ffa040; --rouge: #ff6b6b; --violet: #c49bff; --vert: #5fd38a;
+    --bleu-fond: rgba(111, 163, 240, 0.22); --orange-fond: rgba(255, 160, 64, 0.22); --rouge-fond: rgba(255, 107, 107, 0.16); color-scheme: dark; }
+}
+:root[data-theme="dark"] { --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #252b34;
+  --bleu: #6fa3f0; --orange: #ffa040; --rouge: #ff6b6b; --violet: #c49bff; --vert: #5fd38a;
+  --bleu-fond: rgba(111, 163, 240, 0.22); --orange-fond: rgba(255, 160, 64, 0.22); --rouge-fond: rgba(255, 107, 107, 0.16); color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--papier); color: var(--encre); font-family: var(--ui); font-size: 15px; line-height: 1.5; }
+.page { max-width: 960px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 40px; display: grid; gap: 12px; }
+.niveau { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--discret); }
+h1 { font-family: var(--math); font-weight: 600; font-size: clamp(26px, 4vw, 36px); line-height: 1.15; margin: 0; text-wrap: balance; }
+.chapeau { margin: 0; color: var(--discret); max-width: 72ch; }
+.m { font-family: var(--math); font-style: italic; }
+.barre { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; font-size: 14px; }
+select, input[type=number] { font: inherit; font-size: 14px; padding: 4px 8px; border-radius: 7px; border: 1px solid var(--filet); background: var(--carte); color: var(--encre); }
+input[type=number] { width: 4.2em; }
+input[type=range] { accent-color: var(--bleu); }
+button { font: inherit; font-size: 14px; font-weight: 500; border-radius: 7px; padding: 5px 12px; cursor: pointer; border: 1px solid var(--bleu); background: transparent; color: var(--bleu); }
+button.principal { background: var(--bleu); color: var(--carte); }
+button:disabled { opacity: .45; cursor: default; }
+button:focus-visible, select:focus-visible, input:focus-visible, summary:focus-visible, .poignee:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
+.onglets { display: flex; gap: 6px; flex-wrap: wrap; }
+.onglets button { border-color: var(--filet); color: var(--discret); }
+.onglets button[aria-selected="true"] { border-color: var(--bleu); color: var(--bleu); background: var(--bleu-fond); }
+.figure { background: var(--carte); border: 1px solid var(--filet); border-radius: 10px; padding: 8px; touch-action: none; }
+svg { display: block; width: 100%; height: auto; user-select: none; }
+canvas { display: block; width: 100%; user-select: none; }
+.constat { font-size: 16px; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--filet); background: var(--carte); margin: 0; min-height: 3.2em; }
+details { background: var(--carte); border: 1px solid var(--filet); border-radius: 10px; padding: 10px 14px; }
+summary { cursor: pointer; font-weight: 500; }
+details p, details li { color: var(--discret); }
+details p { margin: 8px 0; }
+.tableau { overflow-x: auto; }
+table { border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: 14px; margin-top: 6px; }
+td, th { border: 1px solid var(--filet); padding: 3px 9px; text-align: center; }
+th { font-family: var(--math); font-weight: 400; font-style: italic; }
+pre { background: var(--papier); border: 1px solid var(--filet); border-radius: 8px; padding: 10px 12px; overflow-x: auto; font-size: 13.5px; color: var(--encre); }
+.b { color: var(--bleu); } .o { color: var(--orange); } .r { color: var(--rouge); } .v { color: var(--violet); }
+.vec { position: relative; display: inline-block; padding-top: .18em; font-family: var(--math); font-style: italic; }
+.vec::before { content: ""; position: absolute; left: .04em; right: .12em; top: .1em; border-top: 1.2px solid currentColor; }
+.vec::after { content: ""; position: absolute; right: 0; top: calc(.1em - .19em); border: .19em solid transparent; border-left: .3em solid currentColor; border-right: 0; }
+
+#toile { height: min(62vh, 560px); cursor: grab; }
+#toile.saisie { cursor: grabbing; }
+.etape { font-size: 13px; color: var(--discret); }
+</style>
+
+<div class="page">
+  <span class="niveau">Terminale spécialité · Chapitre 4 · Géométrie dans l'espace</span>
+  <h1>Sections d'un cube</h1>
+  <p class="chapeau" id="chapeau">Le plan passant par trois points coupe le cube selon un polygone : sa section. On la construit face par face. Faites tourner le cube en le faisant glisser.</p>
+
+  <div class="barre">
+    <label for="choix">Section :
+      <select id="choix">
+        <option value="td">Exercice du TD : le plan (MNP)</option>
+        <option value="tri">Un triangle : le plan (BDE)</option>
+        <option value="rect">Un rectangle : le plan (ABK)</option>
+        <option value="penta">Un pentagone : le plan (IJC)</option>
+        <option value="hexa">Un hexagone : le plan (IJK)</option>
+        <option value="libre">À vous : trois points libres</option>
+      </select>
+    </label>
+    <button id="prec" type="button">◀ Étape précédente</button>
+    <button id="suiv" class="principal" type="button">Étape suivante ▶</button>
+    <span class="etape" id="numero"></span>
+  </div>
+
+  <div class="figure"><canvas id="toile" role="img" aria-label="Cube ABCDEFGH et section par un plan"></canvas></div>
+  <p class="constat" id="constat"></p>
+
+  <details>
+    <summary>Pour aller plus loin</summary>
+    <p>Les trois règles qui suffisent à construire toute section d'un cube :</p>
+    <ol>
+      <li>Deux points du plan situés sur une même face : le plan coupe cette face selon le segment qui les joint.</li>
+      <li>Deux faces opposées sont dans des plans parallèles ; or un plan qui coupe deux plans parallèles les coupe selon deux droites parallèles : les traces de la section sur deux faces opposées sont parallèles.</li>
+      <li>Quand aucune des deux règles ne s'applique, on prolonge : une droite de la section et une arête situées dans un même plan se coupent (souvent hors du cube) en un point qui appartient à la fois au plan de la section et au plan d'une autre face.</li>
+    </ol>
+    <p>Une section de cube a 3, 4, 5 ou 6 côtés : elle a au plus un côté par face, et deux côtés sur deux faces opposées sont parallèles.</p>
+  </details>
+</div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const toile = $("toile"), ctx = toile.getContext("2d");
+  const MATH = "STIX Two Text, Cambria Math, Times New Roman, serif";
+  const fr = (x, d = 2) => { if (Math.abs(x) < 1e-9) x = 0; let s = x.toFixed(d); if (s.includes(".")) s = s.replace(/0+$/, "").replace(/\.$/, ""); return s.replace(".", ",").replace("-", "−"); };
+
+  // ---------- vecteurs ----------
+  const add = (a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
+  const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+  const mul = (a, k) => [a[0] * k, a[1] * k, a[2] * k];
+  const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+  const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+  const norme = a => Math.sqrt(dot(a, a));
+  const unit = a => mul(a, 1 / (norme(a) || 1));
+  const lerp = (a, b, t) => add(a, mul(sub(b, a), t));
+
+  // ---------- cube d'arête 8 ----------
+  const S = {
+    A: [0, 0, 0], B: [8, 0, 0], C: [8, 8, 0], D: [0, 8, 0],
+    E: [0, 0, 8], F: [8, 0, 8], G: [8, 8, 8], H: [0, 8, 8],
+  };
+  const NOMS = "ABCDEFGH";
+  const ARETES = [["A", "B"], ["B", "C"], ["C", "D"], ["D", "A"], ["E", "F"], ["F", "G"], ["G", "H"], ["H", "E"], ["A", "E"], ["B", "F"], ["C", "G"], ["D", "H"]];
+  // faces : coordonnée fixée (axe, valeur), normale sortante, nom
+  const FACES = [
+    { ax: 2, v: 0, n: [0, 0, -1], nom: "ABCD" }, { ax: 2, v: 8, n: [0, 0, 1], nom: "EFGH" },
+    { ax: 1, v: 0, n: [0, -1, 0], nom: "ABFE" }, { ax: 1, v: 8, n: [0, 1, 0], nom: "DCGH" },
+    { ax: 0, v: 0, n: [-1, 0, 0], nom: "ADHE" }, { ax: 0, v: 8, n: [1, 0, 0], nom: "BCGF" },
+  ];
+  const CENTRE = [4, 4, 4];
+
+  // ---------- caméra orthographique ----------
+  const cam = { az: -1.18, el: 0.38, echelle: 30, cx: 0, cy: 0 };
+  let AX;
+  function axes() {
+    const { az, el } = cam;
+    AX = {
+      e: [Math.cos(el) * Math.cos(az), Math.cos(el) * Math.sin(az), Math.sin(el)],
+      r: [-Math.sin(az), Math.cos(az), 0],
+      u: [-Math.sin(el) * Math.cos(az), -Math.sin(el) * Math.sin(az), Math.cos(el)],
+    };
+  }
+  const proj = P => { const q = sub(P, CENTRE); return [cam.cx + cam.echelle * dot(q, AX.r), cam.cy - cam.echelle * dot(q, AX.u)]; };
+  const visible = f => dot(f.n, AX.e) > 1e-6;
+  const faceDe = (P, Q) => FACES.filter(f => Math.abs(P[f.ax] - f.v) < 1e-6 && Math.abs(Q[f.ax] - f.v) < 1e-6);
+
+  // ---------- les sections préparées ----------
+  // chaque étape : texte, segments de la section [P, Q], droites auxiliaires [P, Q], points nommés
+  const PRE = {
+    td: {
+      chapeau: "<span class=\"m\">ABCDEFGH</span> est un cube d'arête 8 cm ; <span class=\"m\">M</span>, <span class=\"m\">N</span> et <span class=\"m\">P</span> sont les points des arêtes [<span class=\"m\">GH</span>], [<span class=\"m\">EF</span>] et [<span class=\"m\">AB</span>] tels que <span class=\"m\">EN</span> = <span class=\"m\">MG</span> = <span class=\"m\">PB</span> = 2 cm. On construit la section du cube par le plan (<span class=\"m\">MNP</span>).",
+      pts: { N: [2, 0, 8], M: [6, 8, 8], P: [6, 0, 0], Q: [8, 4, 0], R: [8, 8, 4] },
+      donnes: ["M", "N", "P"],
+      etapes: [
+        { t: "<i>Étape 1.</i> <span class=\"m\">M</span> et <span class=\"m\">N</span> appartiennent au plan (<span class=\"m\">MNP</span>) et à la face <span class=\"m\">EFGH</span> : le plan coupe cette face selon le segment [<span class=\"m\">MN</span>]. De même, <span class=\"m\">N</span> et <span class=\"m\">P</span> sont sur la face <span class=\"m\">ABFE</span> : on trace [<span class=\"m\">NP</span>].", seg: [["M", "N"], ["N", "P"]] },
+        { t: "<i>Étape 2.</i> Les faces <span class=\"m\">ABCD</span> et <span class=\"m\">EFGH</span> sont dans deux plans parallèles : la trace sur <span class=\"m\">ABCD</span> est la parallèle à (<span class=\"m\">MN</span>) passant par <span class=\"m\">P</span>. Elle coupe [<span class=\"m\">BC</span>] en <span class=\"m\">Q</span>, milieu de [<span class=\"m\">BC</span>].", seg: [["P", "Q"]], par: [["M", "N"], ["P", "Q"]], nouv: ["Q"] },
+        { t: "<i>Étape 3.</i> De même, les faces <span class=\"m\">ABFE</span> et <span class=\"m\">DCGH</span> sont parallèles : la trace sur <span class=\"m\">DCGH</span> est la parallèle à (<span class=\"m\">NP</span>) passant par <span class=\"m\">M</span>. Elle coupe [<span class=\"m\">CG</span>] en <span class=\"m\">R</span>, milieu de [<span class=\"m\">CG</span>].", seg: [["M", "R"]], par: [["N", "P"], ["M", "R"]], nouv: ["R"] },
+        { t: "<i>Étape 4.</i> <span class=\"m\">Q</span> et <span class=\"m\">R</span> sont sur la face <span class=\"m\">BCGF</span> : on trace [<span class=\"m\">QR</span>]. La section est le pentagone <span class=\"m\">PQRMN</span> : un côté sur chacune des faces <span class=\"m\">ABCD</span>, <span class=\"m\">BCGF</span>, <span class=\"m\">DCGH</span>, <span class=\"m\">EFGH</span> et <span class=\"m\">ABFE</span>.", seg: [["Q", "R"]], poly: ["P", "Q", "R", "M", "N"] },
+      ],
+    },
+    tri: {
+      vue: { az: -0.36, el: 0.52 },
+      chapeau: "<span class=\"m\">ABCDEFGH</span> est un cube. On construit la section du cube par le plan (<span class=\"m\">BDE</span>), qui passe par trois sommets.",
+      pts: {}, donnes: ["B", "D", "E"],
+      etapes: [
+        { t: "<i>Étape 1.</i> <span class=\"m\">B</span> et <span class=\"m\">D</span> sont sur la face <span class=\"m\">ABCD</span> : on trace [<span class=\"m\">BD</span>]. <span class=\"m\">B</span> et <span class=\"m\">E</span> sont sur la face <span class=\"m\">ABFE</span> : on trace [<span class=\"m\">BE</span>].", seg: [["B", "D"], ["B", "E"]] },
+        { t: "<i>Étape 2.</i> <span class=\"m\">D</span> et <span class=\"m\">E</span> sont sur la face <span class=\"m\">ADHE</span> : on trace [<span class=\"m\">DE</span>]. La section est le triangle <span class=\"m\">BDE</span> ; ses côtés sont des diagonales de faces, de même longueur : il est équilatéral.", seg: [["D", "E"]], poly: ["B", "D", "E"] },
+      ],
+    },
+    rect: {
+      chapeau: "<span class=\"m\">ABCDEFGH</span> est un cube et <span class=\"m\">K</span> le milieu de [<span class=\"m\">GH</span>]. On construit la section du cube par le plan (<span class=\"m\">ABK</span>).",
+      pts: { K: [4, 8, 8] }, donnes: ["A", "B", "K"],
+      etapes: [
+        { t: "<i>Étape 1.</i> <span class=\"m\">A</span> et <span class=\"m\">B</span> sont sur la face <span class=\"m\">ABCD</span> : on trace [<span class=\"m\">AB</span>].", seg: [["A", "B"]] },
+        { t: "<i>Étape 2.</i> Les faces <span class=\"m\">ABCD</span> et <span class=\"m\">EFGH</span> sont parallèles : la trace sur <span class=\"m\">EFGH</span> est la parallèle à (<span class=\"m\">AB</span>) passant par <span class=\"m\">K</span>, c'est-à-dire la droite (<span class=\"m\">GH</span>). On trace [<span class=\"m\">HG</span>].", seg: [["H", "G"]], par: [["A", "B"], ["H", "G"]] },
+        { t: "<i>Étape 3.</i> <span class=\"m\">B</span> et <span class=\"m\">G</span> sont sur la face <span class=\"m\">BCGF</span>, <span class=\"m\">A</span> et <span class=\"m\">H</span> sur la face <span class=\"m\">ADHE</span>. La section est le rectangle <span class=\"m\">ABGH</span> : <span class=\"m\">AB</span> = 8 et <span class=\"m\">BG</span> = 8√2 (diagonale d'une face).", seg: [["B", "G"], ["A", "H"]], poly: ["A", "B", "G", "H"] },
+      ],
+    },
+    penta: {
+      vue: { az: -0.36, el: 0.52 },
+      chapeau: "<span class=\"m\">ABCDEFGH</span> est un cube d'arête 8 ; <span class=\"m\">I</span> et <span class=\"m\">J</span> sont les milieux de [<span class=\"m\">EH</span>] et [<span class=\"m\">EF</span>]. On construit la section du cube par le plan (<span class=\"m\">IJC</span>) : il faut prolonger.",
+      pts: { I: [0, 4, 8], J: [4, 0, 8], U: [8, -4, 8], V: [-4, 8, 8], L: [8, 0, 16 / 3], K: [0, 8, 16 / 3] },
+      donnes: ["I", "J", "C"],
+      etapes: [
+        { t: "<i>Étape 1.</i> <span class=\"m\">I</span> et <span class=\"m\">J</span> sont sur la face <span class=\"m\">EFGH</span> : on trace [<span class=\"m\">IJ</span>]. Aucune autre face ne contient deux des trois points.", seg: [["I", "J"]] },
+        { t: "<i>Étape 2.</i> Les droites (<span class=\"m\">IJ</span>) et (<span class=\"m\">FG</span>) sont dans le plan (<span class=\"m\">EFG</span>) : elles se coupent en <span class=\"m\">U</span>, hors du cube. <span class=\"m\">U</span> est dans le plan (<span class=\"m\">IJC</span>) et dans le plan (<span class=\"m\">BCG</span>), comme <span class=\"m\">C</span> : la trace sur <span class=\"m\">BCGF</span> est portée par (<span class=\"m\">UC</span>), qui coupe [<span class=\"m\">BF</span>] en <span class=\"m\">L</span>.", aux: [["J", "U"], ["G", "U"], ["U", "L"]], seg: [["L", "C"]], nouv: ["U", "L"] },
+        { t: "<i>Étape 3.</i> <span class=\"m\">L</span> et <span class=\"m\">J</span> sont sur la face <span class=\"m\">ABFE</span> : on trace [<span class=\"m\">LJ</span>].", seg: [["L", "J"]] },
+        { t: "<i>Étape 4.</i> De même, (<span class=\"m\">IJ</span>) coupe (<span class=\"m\">GH</span>) en <span class=\"m\">V</span> ; la droite (<span class=\"m\">VC</span>), dans le plan (<span class=\"m\">DCG</span>), coupe [<span class=\"m\">DH</span>] en <span class=\"m\">K</span>. On trace [<span class=\"m\">CK</span>] et [<span class=\"m\">KI</span>] : la section est le pentagone <span class=\"m\">IJLCK</span>.", aux: [["I", "V"], ["G", "V"], ["V", "K"]], seg: [["C", "K"], ["K", "I"]], nouv: ["V", "K"], poly: ["I", "J", "L", "C", "K"] },
+      ],
+    },
+    hexa: {
+      vue: { az: -0.36, el: 0.52 },
+      chapeau: "<span class=\"m\">ABCDEFGH</span> est un cube d'arête 8 ; <span class=\"m\">I</span>, <span class=\"m\">J</span> et <span class=\"m\">K</span> sont les milieux de [<span class=\"m\">BC</span>], [<span class=\"m\">CD</span>] et [<span class=\"m\">EH</span>]. On construit la section du cube par le plan (<span class=\"m\">IJK</span>).",
+      pts: { I: [8, 4, 0], J: [4, 8, 0], K: [0, 4, 8], L: [4, 0, 8], U: [12, 0, 0], V: [0, 12, 0], S: [8, 0, 4], T: [0, 8, 4] },
+      donnes: ["I", "J", "K"],
+      etapes: [
+        { t: "<i>Étape 1.</i> <span class=\"m\">I</span> et <span class=\"m\">J</span> sont sur la face <span class=\"m\">ABCD</span> : on trace [<span class=\"m\">IJ</span>].", seg: [["I", "J"]] },
+        { t: "<i>Étape 2.</i> Les faces <span class=\"m\">ABCD</span> et <span class=\"m\">EFGH</span> sont parallèles : la trace sur <span class=\"m\">EFGH</span> est la parallèle à (<span class=\"m\">IJ</span>) passant par <span class=\"m\">K</span>. Elle coupe [<span class=\"m\">EF</span>] en son milieu <span class=\"m\">L</span>.", seg: [["K", "L"]], par: [["I", "J"], ["K", "L"]], nouv: ["L"] },
+        { t: "<i>Étape 3.</i> Dans le plan (<span class=\"m\">ABC</span>), (<span class=\"m\">IJ</span>) coupe (<span class=\"m\">AB</span>) en <span class=\"m\">U</span>. <span class=\"m\">U</span> et <span class=\"m\">L</span> sont dans le plan (<span class=\"m\">ABF</span>) et dans le plan de la section : (<span class=\"m\">UL</span>) coupe [<span class=\"m\">BF</span>] en son milieu <span class=\"m\">S</span>. On trace [<span class=\"m\">LS</span>], puis [<span class=\"m\">SI</span>] sur la face <span class=\"m\">BCGF</span>.", aux: [["I", "U"], ["B", "U"], ["U", "S"]], seg: [["L", "S"], ["S", "I"]], nouv: ["U", "S"] },
+        { t: "<i>Étape 4.</i> De même, (<span class=\"m\">IJ</span>) coupe (<span class=\"m\">AD</span>) en <span class=\"m\">V</span>, et (<span class=\"m\">VK</span>) coupe [<span class=\"m\">DH</span>] en son milieu <span class=\"m\">T</span>. On trace [<span class=\"m\">KT</span>] et [<span class=\"m\">TJ</span>] : la section est un hexagone, régulier car ses six côtés mesurent 4√2 et ses angles sont égaux.", aux: [["J", "V"], ["D", "V"], ["V", "T"]], seg: [["K", "T"], ["T", "J"]], nouv: ["V", "T"], poly: ["I", "S", "L", "K", "T", "J"] },
+      ],
+    },
+  };
+
+  // ---------- état ----------
+  let cle = "td", etape = 0;
+  // mode libre : trois points, chacun sur une arête (indice, paramètre)
+  const libres = [{ a: 0, t: 0.3, nom: "P" }, { a: 5, t: 0.5, nom: "Q" }, { a: 11, t: 0.6, nom: "R" }];
+  let choisi = 0;
+  const posLibre = p => lerp(S[ARETES[p.a][0]], S[ARETES[p.a][1]], p.t);
+  const point = n => S[n] || PRE[cle].pts[n];
+
+  // ---------- dessin ----------
+  let C = {};
+  function couleurs() { const s = getComputedStyle(document.documentElement); for (const k of ["encre", "discret", "grille", "bleu", "orange", "rouge", "violet", "carte", "bleu-fond", "orange-fond", "filet"]) C[k] = s.getPropertyValue("--" + k).trim(); }
+  function ligne(P, Q, coul, larg, tirets) {
+    const a = proj(P), b = proj(Q);
+    ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]);
+    ctx.strokeStyle = coul; ctx.lineWidth = larg; ctx.setLineDash(tirets || []); ctx.stroke(); ctx.setLineDash([]);
+  }
+  function texte(t, x, y, coul, taille = 19) {
+    ctx.font = `italic ${taille}px ${MATH}`; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.lineWidth = 4; ctx.strokeStyle = C.carte; ctx.strokeText(t, x, y); ctx.fillStyle = coul; ctx.fillText(t, x, y);
+  }
+  function etiquette(P, nom, coul, r = 4.5, creux = false) {
+    const a = proj(P), c = proj(CENTRE);
+    let dx = a[0] - c[0], dy = a[1] - c[1]; const L = Math.hypot(dx, dy) || 1; dx /= L; dy /= L;
+    ctx.beginPath(); ctx.arc(a[0], a[1], r, 0, 2 * Math.PI);
+    if (creux) { ctx.fillStyle = C.carte; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = coul; ctx.stroke(); }
+    else { ctx.fillStyle = coul; ctx.fill(); }
+    if (nom) texte(nom, a[0] + 17 * dx, a[1] + 17 * dy, coul);
+  }
+  // segment de la section : en pointillés s'il est sur une face cachée
+  function segSection(P, Q, coul, larg) {
+    const f = faceDe(P, Q);
+    const cache = f.length > 0 && f.every(x => !visible(x));
+    ligne(P, Q, coul, larg, cache ? [7, 6] : null);
+  }
+  function polygone(Ps, fond) {
+    ctx.beginPath(); Ps.forEach((P, i) => { const a = proj(P); i ? ctx.lineTo(a[0], a[1]) : ctx.moveTo(a[0], a[1]); });
+    ctx.closePath(); ctx.fillStyle = fond; ctx.fill();
+  }
+  function areteVisible(a) { return FACES.some(f => visible(f) && [0, 1].every(k => Math.abs(S[ARETES[a][k]][f.ax] - f.v) < 1e-6)); }
+
+  function cadrer() {
+    const pts = Object.values(S).concat(cle === "libre" ? [] : Object.values(PRE[cle].pts));
+    const ps = pts.map(P => { const q = sub(P, CENTRE); return [dot(q, AX.r), dot(q, AX.u)]; });
+    const lx = Math.max(...ps.map(p => Math.abs(p[0]))), ly = Math.max(...ps.map(p => Math.abs(p[1])));
+    cam.echelle = Math.min(toile.clientWidth / (2 * lx + 3), toile.clientHeight / (2 * ly + 3));
+  }
+
+  function dessiner() {
+    couleurs(); axes();
+    const dpr = window.devicePixelRatio || 1, W = toile.clientWidth, H = toile.clientHeight;
+    toile.width = W * dpr; toile.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
+    cam.cx = W / 2; cam.cy = H / 2; cadrer();
+    // arêtes cachées
+    ARETES.forEach(([p, q], i) => { if (!areteVisible(i)) ligne(S[p], S[q], C.discret, 1.2, [5, 5]); });
+    if (cle === "libre") dessinerLibre(); else dessinerEtapes();
+    // arêtes visibles par-dessus
+    ARETES.forEach(([p, q], i) => { if (areteVisible(i)) ligne(S[p], S[q], C.encre, 1.8); });
+    if (cle === "libre") poignees(); else pointsEtapes();
+    for (const n of NOMS) if (!(cle !== "libre" && PRE[cle].donnes.includes(n))) etiquette(S[n], n, C.discret, 0);
+  }
+
+  function dessinerEtapes() {
+    const pre = PRE[cle], fait = pre.etapes.slice(0, etape);
+    const der = fait[fait.length - 1];
+    if (der && der.poly) polygone(der.poly.map(point), C["bleu-fond"]);
+    fait.forEach((e, i) => {
+      const courant = i === etape - 1;
+      (e.aux || []).forEach(([p, q]) => ligne(point(p), point(q), courant ? C.orange : C.filet, courant ? 1.6 : 1.1, [3, 4]));
+      if (courant && e.par) e.par.forEach(([p, q]) => {
+        const P = point(p), Q = point(q), m = proj(lerp(P, Q, 0.5)), a = proj(P), b = proj(Q);
+        const ang = Math.atan2(b[1] - a[1], b[0] - a[0]);
+        ctx.save(); ctx.translate(m[0], m[1]); ctx.rotate(ang); ctx.strokeStyle = C.orange; ctx.lineWidth = 2;
+        for (const dx of [-4, 4]) { ctx.beginPath(); ctx.moveTo(dx - 4, -6); ctx.lineTo(dx + 2, 0); ctx.lineTo(dx - 4, 6); ctx.stroke(); }
+        ctx.restore();
+      });
+      e.seg.forEach(([p, q]) => segSection(point(p), point(q), courant ? C.bleu : C.bleu, courant ? 4 : 2));
+    });
+  }
+  function pointsEtapes() {
+    const pre = PRE[cle];
+    const vus = new Set(pre.donnes);
+    pre.etapes.slice(0, etape).forEach(e => (e.nouv || []).forEach(n => vus.add(n)));
+    vus.forEach(n => {
+      const P = point(n), dehors = P.some(v => v < -1e-6 || v > 8 + 1e-6);
+      etiquette(P, n, pre.donnes.includes(n) ? C.rouge : dehors ? C.orange : C.bleu, 5, dehors);
+    });
+  }
+
+  // ---------- mode libre ----------
+  function section() {
+    const [P, Q, R] = libres.map(posLibre);
+    const n = cross(sub(Q, P), sub(R, P));
+    if (norme(n) < 1e-6) return null;
+    const d = dot(n, P), pts = [];
+    for (const [a, b] of ARETES) {
+      const U = S[a], V = S[b], fu = dot(n, U) - d, fv = dot(n, V) - d;
+      const ajoute = X => { if (!pts.some(Y => norme(sub(X, Y)) < 1e-6)) pts.push(X); };
+      if (Math.abs(fu) < 1e-9) ajoute(U);
+      if (Math.abs(fv) < 1e-9) ajoute(V);
+      if (fu * fv < 0) ajoute(lerp(U, V, fu / (fu - fv)));
+    }
+    if (pts.length < 3) return { pts, n };
+    const G = mul(pts.reduce(add, [0, 0, 0]), 1 / pts.length);
+    const e1 = unit(sub(pts[0], G)), e2 = cross(unit(n), e1);
+    pts.sort((X, Y) => Math.atan2(dot(sub(X, G), e2), dot(sub(X, G), e1)) - Math.atan2(dot(sub(Y, G), e2), dot(sub(Y, G), e1)));
+    return { pts, n };
+  }
+  function nature(pts) {
+    const k = pts.length;
+    if (k === 3) return "un triangle";
+    if (k === 5) return "un pentagone";
+    if (k === 6) return "un hexagone";
+    if (k !== 4) return "un polygone";
+    const v = i => sub(pts[(i + 1) % 4], pts[i]);
+    const par = (a, b) => norme(cross(a, b)) < 1e-6 * norme(a) * norme(b);
+    const p1 = par(v(0), v(2)), p2 = par(v(1), v(3));
+    if (p1 && p2) {
+      const droit = Math.abs(dot(v(0), v(1))) < 1e-6, egaux = Math.abs(norme(v(0)) - norme(v(1))) < 1e-6;
+      return droit && egaux ? "un carré" : droit ? "un rectangle" : egaux ? "un losange" : "un parallélogramme";
+    }
+    return p1 || p2 ? "un trapèze" : "un quadrilatère";
+  }
+  function dessinerLibre() {
+    const s = section();
+    if (s && s.pts.length >= 3) {
+      polygone(s.pts, C["bleu-fond"]);
+      s.pts.forEach((P, i) => segSection(P, s.pts[(i + 1) % s.pts.length], C.bleu, 3.2));
+    }
+  }
+  function poignees() {
+    libres.forEach((p, i) => {
+      const a = proj(posLibre(p));
+      if (i === choisi) { ctx.beginPath(); ctx.arc(a[0], a[1], 12, 0, 2 * Math.PI); ctx.strokeStyle = C.orange; ctx.lineWidth = 2; ctx.stroke(); }
+      etiquette(posLibre(p), p.nom, C.rouge, 6.5);
+    });
+  }
+
+  // ---------- textes ----------
+  function textes() {
+    const libre = cle === "libre";
+    $("prec").hidden = $("suiv").hidden = libre;
+    if (libre) {
+      $("chapeau").innerHTML = "Faites glisser <span class=\"m\">P</span>, <span class=\"m\">Q</span> ou <span class=\"m\">R</span> le long de son arête. Pour changer d'arête, sélectionnez un point (cercle orange) puis cliquez sur une autre arête.";
+      $("numero").textContent = "";
+      const s = section(), nm = libres.map(p => p.nom).join("");
+      if (!s) $("constat").innerHTML = "Les trois points sont alignés : ils ne définissent pas un plan.";
+      else if (s.pts.length < 3) $("constat").innerHTML = `Le plan (<span class="m">${nm}</span>) ne fait que toucher le cube : la section se réduit à ${s.pts.length === 1 ? "un point" : "un segment"}.`;
+      else $("constat").innerHTML = `La section du cube par le plan (<span class="m">${nm}</span>) est <b>${nature(s.pts)}</b> : ${s.pts.length} côtés, au plus un par face.`;
+      return;
+    }
+    const pre = PRE[cle];
+    $("chapeau").innerHTML = pre.chapeau;
+    $("numero").textContent = `Étape ${etape} sur ${pre.etapes.length}`;
+    $("prec").disabled = etape === 0; $("suiv").disabled = etape === pre.etapes.length;
+    $("constat").innerHTML = etape === 0 ? "Les trois points donnés sont en rouge. Cliquez sur « Étape suivante »." : pre.etapes[etape - 1].t;
+  }
+  function tout() { textes(); dessiner(); }
+
+  // ---------- interactions ----------
+  let glisse = null, x0 = 0, y0 = 0, az0 = 0, el0 = 0, bouge = false;
+  const local = e => { const r = toile.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+  function distSeg(p, a, b) {
+    const vx = b[0] - a[0], vy = b[1] - a[1], t = Math.max(0, Math.min(1, ((p[0] - a[0]) * vx + (p[1] - a[1]) * vy) / (vx * vx + vy * vy || 1)));
+    return [Math.hypot(p[0] - a[0] - t * vx, p[1] - a[1] - t * vy), t];
+  }
+  toile.addEventListener("pointerdown", e => {
+    const p = local(e); bouge = false; x0 = p[0]; y0 = p[1]; az0 = cam.az; el0 = cam.el;
+    if (cle === "libre") {
+      const i = libres.findIndex(q => { const a = proj(posLibre(q)); return Math.hypot(a[0] - p[0], a[1] - p[1]) < 16; });
+      if (i >= 0) { glisse = "point"; choisi = i; toile.setPointerCapture(e.pointerId); dessiner(); return; }
+    }
+    glisse = "vue"; toile.classList.add("saisie"); toile.setPointerCapture(e.pointerId);
+  });
+  toile.addEventListener("pointermove", e => {
+    if (!glisse) return;
+    const p = local(e);
+    if (Math.hypot(p[0] - x0, p[1] - y0) > 4) bouge = true;
+    if (glisse === "vue") {
+      cam.az = az0 - (p[0] - x0) * 0.01;
+      cam.el = Math.max(-1.2, Math.min(1.35, el0 + (p[1] - y0) * 0.01));
+      dessiner();
+    } else {
+      const q = libres[choisi], [u, v] = ARETES[q.a];
+      q.t = Math.max(0, Math.min(1, distSeg(p, proj(S[u]), proj(S[v]))[1]));
+      tout();
+    }
+  });
+  toile.addEventListener("pointerup", e => {
+    toile.classList.remove("saisie");
+    if (glisse === "vue" && !bouge && cle === "libre") {
+      // clic sur une arête : le point choisi y passe
+      const p = local(e);
+      let best = null;
+      ARETES.forEach(([u, v], i) => { const [d, t] = distSeg(p, proj(S[u]), proj(S[v])); if (d < 14 && (!best || d < best.d)) best = { d, i, t }; });
+      if (best) { libres[choisi].a = best.i; libres[choisi].t = best.t; tout(); }
+    }
+    glisse = null;
+  });
+  function vue() { const v = (PRE[cle] && PRE[cle].vue) || { az: -1.18, el: 0.38 }; cam.az = v.az; cam.el = v.el; }
+  $("choix").addEventListener("change", e => { cle = e.target.value; etape = 0; vue(); tout(); });
+  $("suiv").addEventListener("click", () => { etape = Math.min(PRE[cle].etapes.length, etape + 1); tout(); });
+  $("prec").addEventListener("click", () => { etape = Math.max(0, etape - 1); tout(); });
+  window.addEventListener("resize", dessiner);
+  if (window.matchMedia) window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", dessiner);
+  // lien direct : #td, #hexa, #libre… ou #td-4 pour ouvrir à l'étape 4
+  const [h, n] = location.hash.slice(1).split("-");
+  if (PRE[h] || h === "libre") { cle = h; $("choix").value = h; if (PRE[h] && n) etape = Math.min(PRE[h].etapes.length, +n || 0); }
+  vue(); tout();
+})();
+</script>
+
+<!-- plein-ecran : bouton commun à toutes les pages interactives -->
+<style>
+#pleinEcran { position: fixed; top: calc(10px + env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); z-index: 50; font: 500 13px var(--ui, system-ui, sans-serif); padding: 6px 12px; border-radius: 999px; border: 1px solid var(--filet, #d9dee5); background: var(--carte, #fff); color: var(--encre, #1b1f24); cursor: pointer; opacity: .9; }
+#pleinEcran:hover { opacity: 1; }
+body.plein-ecran .niveau, body.plein-ecran h1, body.plein-ecran h1 + .chapeau { display: none !important; }
+body.plein-ecran .page { max-width: none !important; min-height: 100vh; padding-top: 48px !important; align-content: start; }
+body.plein-ecran .page svg:not(.mini) { max-height: 76vh; }
+body.plein-ecran.plein-multi .page svg:not(.mini) { max-height: 46vh; }
+body.plein-ecran .constat { font-size: clamp(20px, 2.6vw, 30px); }
+</style>
+<script>
+(() => {
+  const b = document.createElement("button");
+  b.type = "button"; b.id = "pleinEcran"; document.body.appendChild(b);
+  function etat(on) { document.body.classList.toggle("plein-ecran", on); b.textContent = on ? "✕ Quitter le plein écran" : "⛶ Plein écran"; b.setAttribute("aria-pressed", on); window.dispatchEvent(new Event("resize")); }
+  b.addEventListener("click", async () => {
+    const on = !document.body.classList.contains("plein-ecran");
+    etat(on);
+    try { on ? await document.documentElement.requestFullscreen() : (document.fullscreenElement && await document.exitFullscreen()); } catch (e) {}
+  });
+  document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement && document.body.classList.contains("plein-ecran")) etat(false); });
+  window.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("plein-ecran")) etat(false); });
+  if (document.querySelectorAll(".page svg:not(.mini), .page canvas").length > 1) document.body.classList.add("plein-multi");
+  etat(location.hash === "#plein");
+})();
+</script>
+
+
+</body></html>
