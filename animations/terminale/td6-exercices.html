@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;box-sizing:border-box}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head><body>
+<title>TD6 en images</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Terminale, chapitre 6, TD6 : une scène par exercice, choisie par l'ancre de l'adresse
+   (#e5 = exercice 5), pour les QR codes placés à côté des exercices.
+   Conventions des autres pages du chapitre : bleu = succès, rouge = échec ; seuil en orange. */
+:root {
+  --papier: #f7f8fa; --carte: #ffffff; --encre: #1b1f24; --discret: #5d6672; --filet: #d9dee5; --grille: #e7eaef;
+  --succes: #1f5fbf; --echec: #c62828; --neutre: #c3cad4; --seuil: #f07800; --violet: #7c3aed;
+  --math: "STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --ui: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #252b34; --succes: #6fa3f0; --echec: #f07a7a; --neutre: #4a5361; --seuil: #ff9a3c; --violet: #b48cff; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #252b34; --succes: #6fa3f0; --echec: #f07a7a; --neutre: #4a5361; --seuil: #ff9a3c; --violet: #b48cff; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--papier); color: var(--encre); font-family: var(--ui); font-size: 15px; line-height: 1.5; margin: 0; }
+.page { max-width: 920px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 40px; display: grid; gap: 12px; }
+.tete { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; padding-right: 140px; }
+.niveau { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--discret); }
+select { font: 500 13px var(--ui); padding: 3px 8px; border-radius: 8px; border: 1px solid var(--filet); background: var(--carte); color: var(--encre); max-width: 100%; }
+h1 { font-family: var(--math); font-weight: 600; font-size: clamp(24px, 3.6vw, 34px); line-height: 1.15; margin: 0; text-wrap: balance; }
+.chapeau { margin: 0; color: var(--discret); max-width: 70ch; }
+.onglets, .commandes { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.onglets button, .commandes button { font: 500 13px var(--ui); padding: 4px 12px; border-radius: 999px; border: 1px solid var(--filet); background: var(--carte); color: var(--encre); cursor: pointer; }
+.onglets button[aria-pressed="true"], .commandes button[aria-pressed="true"] { background: var(--encre); color: var(--carte); border-color: var(--encre); }
+.commandes label { font: 500 13px var(--ui); color: var(--discret); display: flex; align-items: center; gap: 8px; }
+.commandes input[type=range] { width: min(320px, 60vw); accent-color: var(--succes); }
+.figure { background: var(--carte); border: 1px solid var(--filet); border-radius: 10px; overflow: hidden; touch-action: manipulation; }
+svg { display: block; width: 100%; height: auto; user-select: none; -webkit-user-select: none; }
+.constat { font-family: var(--math); font-size: clamp(17px, 2.3vw, 21px); margin: 0; padding: 10px 14px; border-radius: 10px; border: 1.5px solid var(--filet); background: var(--carte); text-align: center; }
+.constat .petit { display: block; font-family: var(--ui); font-size: 14px; color: var(--discret); margin-top: 2px; }
+.b { color: var(--succes); } .r { color: var(--echec); } .o { color: var(--seuil); } .vi { color: var(--violet); }
+</style>
+
+<div class="page">
+  <div class="tete">
+    <span class="niveau">Terminale · Chapitre 6 · TD6</span>
+    <select id="choix" aria-label="Exercice"></select>
+  </div>
+  <h1 id="titre"></h1>
+  <p class="chapeau" id="chapeau"></p>
+  <div class="onglets" id="onglets"></div>
+  <div class="figure"><svg id="g" viewBox="0 0 900 470" role="img" aria-label="Représentation de l'exercice"></svg></div>
+  <div class="commandes" id="commandes"></div>
+  <p class="constat" id="constat" aria-live="polite"></p>
+</div>
+
+<script>
+(() => {
+  const NS = "http://www.w3.org/2000/svg", $ = id => document.getElementById(id);
+  const el = (t, a, txt) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); if (txt != null) e.textContent = txt; return e; };
+  const svg = $("g"), W = 900, H = 470;
+  const fr = (x, d = 3) => { const r = Number(x.toFixed(d)); return String(r).replace(".", ","); };
+  const f3 = x => x.toFixed(3).replace(".", ",");   // arrondi à 10⁻³, zéros conservés
+  const sep = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  const texte = (x, y, t, o = {}) => svg.appendChild(el("text", Object.assign({ x, y, "text-anchor": "middle", "font-family": "var(--math)", "font-size": 17, fill: "var(--encre)" }, o), t));
+
+  // pendant qu'on fait glisser un curseur, les commandes ne sont pas reconstruites (sinon le glissement s'interrompt) :
+  // on les construit dans un élément jetable et on ne recopie que la valeur affichée
+  let curseurActif = false;
+  const zoneCommandes = () => { const c = $("commandes"); if (!curseurActif) { c.textContent = ""; return c; } const t = document.createElement("div"); t._vraie = c; return t; };
+  const finCommandes = t => { if (t._vraie) { const b = t.querySelector("label b"), v = t._vraie.querySelector("label b"); if (b && v) v.textContent = b.textContent; } };
+  // loi binomiale : P(X = k) pour k = 0..n, par récurrence (stable même pour n = 250)
+  function loi(n, p) {
+    const L = new Array(n + 1).fill(0);
+    let m = Math.round(n * p), lm = 0;            // on part du mode, en logarithmes
+    const lg = k => { let s = 0; for (let i = 2; i <= k; i++) s += Math.log(i); return s; };
+    lm = lg(n) - lg(m) - lg(n - m) + m * Math.log(p) + (n - m) * Math.log(1 - p);
+    L[m] = Math.exp(lm);
+    for (let k = m; k < n; k++) L[k + 1] = L[k] * (n - k) / (k + 1) * p / (1 - p);
+    for (let k = m; k > 0; k--) L[k - 1] = L[k] * k / (n - k + 1) * (1 - p) / p;
+    return L;
+  }
+
+  // ---------- vue « loi binomiale » : histogramme, événement surligné ----------
+  function vueBinomiale(v) {
+    const n = v.n, p = v.p, L = loi(n, p);
+    const kmin = v.kmin ?? 0, kmax = v.kmax ?? n;
+    const ev = v.evenements[etat.ev] || v.evenements[0];
+    const x0 = 70, x1 = W - 30, y0 = H - 50, y1 = 50;
+    const larg = (x1 - x0) / (kmax - kmin + 1), M = Math.max(...L.slice(kmin, kmax + 1)) * 1.12;
+    const X = k => x0 + (k - kmin + 0.5) * larg, Y = q => y0 - (y0 - y1) * q / M;
+    // graduations verticales
+    const pas = [0.01, 0.02, 0.05, 0.1, 0.2, 0.25, 0.5].find(s => M / s <= 6);
+    for (let q = 0; q <= M + 1e-9; q += pas) {
+      svg.appendChild(el("line", { x1: x0, y1: Y(q), x2: x1, y2: Y(q), stroke: "var(--grille)" }));
+      texte(x0 - 8, Y(q) + 5, fr(q, 2), { "text-anchor": "end", "font-size": 14, fill: "var(--discret)" });
+    }
+    const etiq = Math.max(1, Math.ceil((kmax - kmin + 1) / 26));
+    for (let k = kmin; k <= kmax; k++) {
+      const dedans = ev && ev.f(k, n);
+      const r = el("rect", { x: X(k) - larg * 0.42, y: Y(L[k]), width: larg * 0.84, height: Math.max(0, y0 - Y(L[k])), fill: dedans ? (ev.couleur === "r" ? "var(--echec)" : "var(--succes)") : "var(--neutre)", rx: Math.min(3, larg * 0.1) });
+      r.addEventListener("pointerenter", () => survol(k, L[k]));
+      r.addEventListener("click", () => survol(k, L[k]));
+      svg.appendChild(r);
+      if ((k - kmin) % etiq === 0 || k === kmax) texte(X(k), y0 + 20, k, { "font-size": 14, fill: "var(--discret)" });
+    }
+    svg.appendChild(el("line", { x1: x0, y1: y0, x2: x1, y2: y0, stroke: "var(--encre)", "stroke-width": 1.2 }));
+    texte(x1, y0 + 40, "k", { "text-anchor": "end", "font-style": "italic", fill: "var(--discret)" });
+    texte(x1, 30, `X ∼ 𝓑(${n} ; ${v.pTexte})`, { "text-anchor": "end", "font-size": 20 });
+    if (v.esperance || (ev && ev.esperance)) {
+      const E = n * p, xe = x0 + (E - kmin + 0.5) * larg;
+      svg.appendChild(el("line", { x1: xe, y1: y1 - 10, x2: xe, y2: y0, stroke: "var(--violet)", "stroke-width": 2, "stroke-dasharray": "6 5" }));
+      texte(xe, y1 - 16, `E[X] = ${fr(E, 3)}`, { fill: "var(--violet)", "font-size": 16 });
+    }
+    // commandes : un bouton par question
+    const c = zoneCommandes();
+    v.evenements.forEach((e, i) => { const b = document.createElement("button"); b.type = "button"; b.textContent = e.bouton || e.nom; b.setAttribute("aria-pressed", i === etat.ev); b.onclick = () => { etat.ev = i; dessiner(); }; c.appendChild(b); });
+    if (v.curseurN) ajouterCurseur(c, v.curseurN, n);
+    finCommandes(c);
+    const proba = L.reduce((s, q, k) => s + (ev.f(k, n) ? q : 0), 0);
+    $("constat").innerHTML = ev.esperance
+      ? `E[X] = n × p = ${n} × ${v.pTexte} = <b class="vi">${fr(n * p, 3)}</b>` + (ev.texte ? `<span class="petit">${ev.texte(n, proba, L)}</span>` : "")
+      : `${ev.nom} ≈ <b class="${ev.couleur === "r" ? "r" : "b"}">${proba < 0.0005 ? sci(proba) : f3(proba)}</b>` + (ev.texte ? `<span class="petit">${ev.texte(n, proba, L)}</span>` : `<span class="petit">Touchez une barre pour lire P(X = k).</span>`);
+  }
+  function survol(k, q) {
+    const p = $("constat").querySelector(".petit"); if (p) p.textContent = `P(X = ${k}) ≈ ${q < 0.0005 ? sci(q) : f3(q)}`;
+  }
+  function ajouterCurseur(c, cur, val) {
+    const l = document.createElement("label");
+    l.innerHTML = `${cur.nom} = <b style="font-family:var(--math);font-size:17px;color:var(--encre);min-width:2.5em">${val}</b>`;
+    const r = document.createElement("input"); r.type = "range"; r.min = cur.min; r.max = cur.max; r.step = 1; r.value = val;
+    r.oninput = () => { etat.n = +r.value; curseurActif = true; dessiner(); curseurActif = false; };
+    l.appendChild(r); c.appendChild(l);
+  }
+
+  // ---------- vue « seuil » : u(n) = 1 − qⁿ comparé à s ----------
+  function vueSeuil(v) {
+    const N = v.nmax, n = etat.n ?? v.n0, u = k => 1 - Math.pow(v.q, k);
+    const n0 = (() => { for (let k = 1; k <= 100000; k++) if (u(k) > v.s) return k; })();
+    const x0 = 70, x1 = W - 30, y0 = H - 50, y1 = 40, ymin = v.ymin ?? 0;
+    const X = k => x0 + (x1 - x0) * (k - 1) / (N - 1), Y = q => y0 - (y0 - y1) * (q - ymin) / (1 - ymin);
+    for (let q = ymin; q <= 1.0001; q += (1 - ymin) / 5) {
+      svg.appendChild(el("line", { x1: x0, y1: Y(q), x2: x1, y2: Y(q), stroke: "var(--grille)" }));
+      texte(x0 - 8, Y(q) + 5, fr(q, 3), { "text-anchor": "end", "font-size": 14, fill: "var(--discret)" });
+    }
+    svg.appendChild(el("line", { x1: x0, y1: Y(v.s), x2: x1, y2: Y(v.s), stroke: "var(--seuil)", "stroke-width": 2, "stroke-dasharray": "8 6" }));
+    texte(x1 - 4, Y(v.s) - 8, fr(v.s, 4), { "text-anchor": "end", fill: "var(--seuil)", "font-size": 16 });
+    const pasE = Math.max(1, Math.ceil(N / 20));
+    for (let k = 1; k <= N; k++) {
+      const ok = u(k) > v.s;
+      if (Y(u(k)) <= y0 + 1) svg.appendChild(el("circle", { cx: X(k), cy: Y(u(k)), r: N > 60 ? 2.6 : 4.5, fill: ok ? "var(--succes)" : "var(--neutre)" }));
+      if (k === 1 || k % pasE === 0) texte(X(k), y0 + 20, k, { "font-size": 14, fill: "var(--discret)" });
+    }
+    svg.appendChild(el("line", { x1: x0, y1: y0, x2: x1, y2: y0, stroke: "var(--encre)", "stroke-width": 1.2 }));
+    texte(x1, y0 + 40, "n", { "text-anchor": "end", "font-style": "italic", fill: "var(--discret)" });
+    texte(x0 + 6, 28, v.expr + " en fonction de n", { "text-anchor": "start", "font-size": 19 });
+    // le point courant
+    const yc = Math.max(y1 - 4, Math.min(y0, Y(u(n))));
+    svg.appendChild(el("line", { x1: X(n), y1: y0, x2: X(n), y2: yc, stroke: "var(--echec)", "stroke-width": 1.4, "stroke-dasharray": "3 4" }));
+    svg.appendChild(el("circle", { cx: X(n), cy: yc, r: 8, fill: "none", stroke: u(n) > v.s ? "var(--succes)" : "var(--echec)", "stroke-width": 2.5 }));
+    const c = zoneCommandes(); ajouterCurseur(c, { nom: "n", min: 1, max: N }, n); finCommandes(c);
+    const ok = u(n) > v.s;
+    $("constat").innerHTML = `${v.expr.replace("ⁿ", sup(n))} ≈ <b class="${ok ? "b" : "r"}">${fr(u(n), 4)}</b> ${ok ? ">" : "≤"} ${fr(v.s, 4)}`
+      + `<span class="petit">${ok ? (n === n0 ? `C'est le plus petit entier qui convient : n = ${n0}. ` : "") + v.phraseOk(n) : v.phraseNon(n)}</span>`;
+  }
+  const sci = q => { const e = Math.floor(Math.log10(q)), m = q / 10 ** e; return `${fr(m, 2)} × 10⁻${sup(-e)}`; };
+  const SUP = { 0: "⁰", 1: "¹", 2: "²", 3: "³", 4: "⁴", 5: "⁵", 6: "⁶", 7: "⁷", 8: "⁸", 9: "⁹" };
+  const sup = d => String(d).split("").map(c => SUP[c]).join("");
+
+  // ---------- vue « suite » : p(n+1) = a p(n) + b ----------
+  function vueSuite(v) {
+    const N = v.nmax, n = etat.n ?? v.n0, P = [null, v.p1];
+    for (let k = 1; k < N + 5; k++) P[k + 1] = v.a * P[k] + v.b;
+    const lim = v.b / (1 - v.a);
+    const vals = P.slice(1, N + 1), lo = Math.min(lim, ...vals), hi = Math.max(lim, ...vals);
+    const ymin = v.ymin ?? Math.floor((lo - 0.05) * 10) / 10, ymax = v.ymax ?? Math.ceil((hi + 0.05) * 10) / 10;
+    const x0 = 70, x1 = W - 30, y0 = H - 50, y1 = 40;
+    const X = k => x0 + (x1 - x0) * (k - 1) / (N - 1), Y = q => y0 - (y0 - y1) * (q - ymin) / (ymax - ymin);
+    for (let q = ymin; q <= ymax + 1e-9; q += v.pas || (ymax - ymin) / 5) {
+      svg.appendChild(el("line", { x1: x0, y1: Y(q), x2: x1, y2: Y(q), stroke: "var(--grille)" }));
+      texte(x0 - 8, Y(q) + 5, fr(q, 2), { "text-anchor": "end", "font-size": 14, fill: "var(--discret)" });
+    }
+    svg.appendChild(el("line", { x1: x0, y1: Y(lim), x2: x1, y2: Y(lim), stroke: "var(--violet)", "stroke-width": 2, "stroke-dasharray": "8 6" }));
+    texte(x1 - 4, Y(lim) - 9, v.limTexte, { "text-anchor": "end", fill: "var(--violet)", "font-size": 17 });
+    for (let k = 1; k <= N; k++) {
+      svg.appendChild(el("circle", { cx: X(k), cy: Y(P[k]), r: 5, fill: k === n ? "var(--echec)" : "var(--succes)" }));
+      texte(X(k), y0 + 20, k, { "font-size": 14, fill: "var(--discret)" });
+    }
+    svg.appendChild(el("line", { x1: x0, y1: y0, x2: x1, y2: y0, stroke: "var(--encre)", "stroke-width": 1.2 }));
+    texte(x0 + 6, 28, v.legende, { "text-anchor": "start", "font-size": 19 });
+    const c = zoneCommandes(); ajouterCurseur(c, { nom: "n", min: 1, max: N }, n); finCommandes(c);
+    $("constat").innerHTML = `p<sub>${n}</sub> ≈ <b class="b">${fr(P[n], 4)}</b>` + `<span class="petit">${v.phrase(n, P[n])}</span>`;
+  }
+
+  // ---------- vue « portique » (exercice 8, partie A) : 100 000 voyageurs ----------
+  function vuePortique() {
+    const tot = 100000, m = tot / 500, mS = m * 0.98, nS = (tot - m) * 0.02;
+    const x0 = 60, x1 = W - 60;
+    texte(x0, 40, "Sur 100 000 voyageurs :", { "text-anchor": "start", "font-family": "var(--ui)", "font-size": 16 });
+    // bande 1 : objet métallique ou non (largeur réelle : 0,2 % est presque invisible)
+    const bande = (y, parts, titre) => {
+      texte(x0, y - 10, titre, { "text-anchor": "start", "font-family": "var(--ui)", "font-size": 14, fill: "var(--discret)" });
+      let x = x0; const T = parts.reduce((s, p) => s + p.v, 0);
+      parts.forEach(p => { const w = (x1 - x0) * p.v / T; svg.appendChild(el("rect", { x, y, width: Math.max(w, 1.5), height: 44, fill: p.c })); x += w; });
+    };
+    bande(80, [{ v: m, c: "var(--succes)" }, { v: tot - m, c: "var(--neutre)" }], "Tous les voyageurs : 200 portent un objet métallique (en bleu), 99 800 n'en portent pas");
+    bande(200, [{ v: mS, c: "var(--succes)" }, { v: nS, c: "var(--echec)" }], "Les 2 192 voyageurs qui font sonner le portique");
+    texte(x0 + (x1 - x0) * mS / (mS + nS) / 2, 290, "196 avec un objet", { "font-family": "var(--ui)", "font-size": 15, fill: "var(--succes)" });
+    texte(x0 + (x1 - x0) * (mS + nS / 2) / (mS + nS), 290, "1 996 sans objet (fausses alertes)", { "font-family": "var(--ui)", "font-size": 15, fill: "var(--echec)" });
+    // l'arbre pondéré, avec les effectifs sur 100 000 voyageurs
+    texte(x0, 335, "Arbre pondéré (effectifs sur 100 000 voyageurs) :", { "text-anchor": "start", "font-family": "var(--ui)", "font-size": 14, fill: "var(--discret)" });
+    const R0 = [x0 + 10, 405], N1 = [[x0 + 190, 368, "M", "200", "0,002"], [x0 + 190, 442, "M̄", "99 800", "0,998"]];
+    const N2 = [[[x0 + 420, 352, "S", "196", "0,98", "var(--succes)"], [x0 + 420, 384, "S̄", "4", "0,02", "var(--discret)"]],
+                [[x0 + 420, 426, "S", "1 996", "0,02", "var(--echec)"], [x0 + 420, 458, "S̄", "97 804", "0,98", "var(--discret)"]]];
+    const branche = (A, B, p, haut) => { svg.appendChild(el("line", { x1: A[0], y1: A[1], x2: B[0] - 26, y2: B[1], stroke: "var(--discret)", "stroke-width": 1.3 })); texte((A[0] + B[0]) / 2 - 10, (A[1] + B[1]) / 2 + (haut ? -7 : 16), p, { "font-size": 14 }); };
+    N1.forEach((n, i) => { branche(R0, n, n[4], i === 0); texte(n[0] - 12, n[1] + 6, n[2], { "font-style": "italic" }); texte(n[0] + 8, n[1] + 6, n[3], { "text-anchor": "start", "font-size": 14, fill: "var(--discret)" });
+      N2[i].forEach((m, j) => { branche([n[0] + 70, n[1]], m, m[4], j === 0); texte(m[0] - 12, m[1] + 6, m[2], { "font-style": "italic", fill: m[5] }); texte(m[0] + 8, m[1] + 6, m[3], { "text-anchor": "start", "font-size": 14, fill: m[5] }); }); });
+    $("commandes").textContent = "";
+    $("constat").innerHTML = `P<sub>S</sub>(M) = 196 / 2 192 ≈ <b class="b">0,09</b><span class="petit">Quand le portique sonne, le voyageur ne porte un objet métallique qu'environ une fois sur onze : presque toutes les sonneries sont de fausses alertes, car les voyageurs sans objet sont 499 fois plus nombreux.</span>`;
+  }
+
+  // ---------- vue « surbooking » : n billets vendus, 200 places ----------
+  function vueSurbooking() {
+    const n = etat.n ?? 206, p = 0.95, L = loi(n, p);
+    const kmin = 175, kmax = Math.max(n, 210);
+    const x0 = 70, x1 = W - 30, y0 = H - 50, y1 = 50, larg = (x1 - x0) / (kmax - kmin + 1);
+    const M = Math.max(...L.slice(kmin, n + 1)) * 1.15, X = k => x0 + (k - kmin + 0.5) * larg, Y = q => y0 - (y0 - y1) * q / M;
+    for (let q = 0; q <= M; q += 0.02) { svg.appendChild(el("line", { x1: x0, y1: Y(q), x2: x1, y2: Y(q), stroke: "var(--grille)" })); texte(x0 - 8, Y(q) + 5, fr(q, 2), { "text-anchor": "end", "font-size": 14, fill: "var(--discret)" }); }
+    for (let k = kmin; k <= Math.min(n, kmax); k++) {
+      svg.appendChild(el("rect", { x: X(k) - larg * 0.42, y: Y(L[k]), width: larg * 0.84, height: y0 - Y(L[k]), fill: k > 200 ? "var(--echec)" : "var(--succes)", rx: 2 }));
+      if (k % 5 === 0) texte(X(k), y0 + 20, k, { "font-size": 14, fill: "var(--discret)" });
+    }
+    const xs = X(200.5);
+    svg.appendChild(el("line", { x1: xs, y1: y1 - 14, x2: xs, y2: y0, stroke: "var(--seuil)", "stroke-width": 2, "stroke-dasharray": "6 5" }));
+    texte(xs, y1 - 20, "200 places", { fill: "var(--seuil)", "font-size": 16 });
+    svg.appendChild(el("line", { x1: x0, y1: y0, x2: x1, y2: y0, stroke: "var(--encre)", "stroke-width": 1.2 }));
+    texte(x0 + 6, 30, `X ∼ 𝓑(${n} ; 0,95) : passagers présents`, { "text-anchor": "start", "font-size": 19 });
+    let pOk = 0, EY = 0; for (let k = 0; k <= n; k++) { if (k <= 200) pOk += L[k]; else EY += (k - 200) * L[k]; }
+    const EC = 250 * n - 850 * EY;
+    const c = zoneCommandes(); ajouterCurseur(c, { nom: "billets vendus", min: 200, max: 215 }, n); finCommandes(c);
+    $("constat").innerHTML = `P(X ≤ 200) ≈ <b class="b">${f3(pOk)}</b> · chiffre d'affaires moyen ≈ <b class="vi">${sep(Math.round(EC))} €</b>`
+      + `<span class="petit">Sans surbooking (200 billets), le chiffre d'affaires est de 50 000 €. En rouge : les cas où des passagers ne peuvent pas embarquer (remboursement et 600 € de pénalité chacun).</span>`;
+  }
+
+  // ---------- les exercices ----------
+  const ou = (a, b) => k => k >= a && k <= b;
+  const SCENES = {
+    e4: { titre: "Exercice 4 · Vélo ou bus ?", chapeau: "La probabilité p<sub>n</sub> que Léa prenne le vélo le jour n se rapproche de 4/7, quel que soit le premier jour.",
+      vues: [{ nom: "La suite (p<sub>n</sub>)", type: vueSuite, a: 0.3, b: 0.4, p1: 1, nmax: 12, n0: 5, ymin: 0.5, ymax: 1, limTexte: "4/7 ≈ 0,571", legende: "p₁ = 1 et pₙ₊₁ = 0,3 pₙ + 0,4",
+        phrase: (n, q) => n === 1 ? "Le premier jour, Léa prend le vélo." : `La suite est décroissante et se rapproche de 4/7 ≈ 0,571 : à long terme, Léa prend le vélo environ 4 jours sur 7.` }] },
+    e5: { titre: "Exercice 5 · Les stylos défectueux", chapeau: "X compte les stylos défectueux parmi les 10 prélevés. Chaque question surligne les valeurs de X concernées.",
+      vues: [{ nom: "Loi de X", type: vueBinomiale, n: 10, p: 0.1, pTexte: "0,1", evenements: [
+        { nom: "P(X = 2)", f: k => k === 2 }, { nom: "P(X = 10)", f: k => k === 10, texte: () => "P(X = 10) = 0,1¹⁰ : la barre est invisible, l'événement est quasi impossible." },
+        { nom: "P(X = 0)", f: k => k === 0, couleur: "r" }, { nom: "P(X ≥ 1)", f: k => k >= 1, texte: () => "P(X ≥ 1) = 1 − P(X = 0) : toutes les barres sauf la première." }] }] },
+    e6: { titre: "Exercice 6 · Repas végétariens", chapeau: "X compte les végétariens parmi les 250 convives. Avec 32 repas prévus, il en manque si X ≥ 33.",
+      vues: [{ nom: "Loi de X", type: vueBinomiale, n: 250, p: 0.12, pTexte: "0,12", kmin: 8, kmax: 52, esperance: true, evenements: [
+        { nom: "P(X = 10)", f: k => k === 10, texte: () => "Une barre minuscule : il est très peu probable que seulement 10 convives soient végétariens." },
+        { nom: "P(X ≥ 33)", bouton: "Pas assez de repas", f: k => k >= 33, couleur: "r", texte: () => "La queue de droite, au-delà de 32 : la probabilité que les 32 repas ne suffisent pas." }] }] },
+    e7: { titre: "Exercice 7 · Répondre au hasard à un QCM", chapeau: "X compte les bonnes réponses parmi 8 questions à quatre choix, une seule exacte.",
+      vues: [{ nom: "Loi de X", type: vueBinomiale, n: 8, p: 0.25, pTexte: "0,25", evenements: [
+        { nom: "P(X = 3)", f: k => k === 3 }, { nom: "P(X ≥ 1)", f: k => k >= 1 }, { nom: "P(2 ≤ X ≤ 4)", f: ou(2, 4) },
+        { nom: "E[X]", esperance: true, f: () => false, texte: () => "En moyenne, un élève qui répond au hasard obtient 2 bonnes réponses sur 8." }] }] },
+    e8: { titre: "Exercice 8 · Le portique de sécurité", chapeau: "Partie A : pourquoi une sonnerie signale si rarement un objet métallique. Partie B : X compte les sonneries parmi 80 voyageurs.",
+      vues: [{ nom: "Partie A", type: vuePortique },
+        { nom: "Partie B", type: vueBinomiale, n: 80, p: 0.02192, pTexte: "0,02192", kmax: 10, esperance: true, evenements: [
+          { nom: "P(X ≥ 1)", f: k => k >= 1 }, { nom: "P(X ≤ 5)", f: k => k <= 5 },
+          { nom: "P(X ≤ 3)", bouton: "Plus petit k", f: k => k <= 3, texte: () => "P(X ≤ 2) ≈ 0,744 est inférieure à 0,9 et P(X ≤ 3) ≈ 0,901 la dépasse : k = 3. Dans 90 % des cas au moins, 3 personnes au plus font sonner le portique." }] }] },
+    e9: { titre: "Exercice 9 · L'archer", chapeau: "La probabilité d'atteindre au moins une fois la cible en n tirs est 1 − 0,7ⁿ. À partir de quel n dépasse-t-elle 0,95 ?",
+      vues: [{ nom: "Seuil", type: vueSeuil, q: 0.7, s: 0.95, nmax: 20, n0: 5, expr: "1 − 0,7ⁿ",
+        phraseOk: n => `Avec ${n} flèches, l'archer a plus de 95 % de chances d'atteindre au moins une fois la cible.`, phraseNon: n => `Avec ${n} flèche${n > 1 ? "s" : ""}, ce n'est pas encore suffisant.` }] },
+    e10: { titre: "Exercice 10 · Le site de vente en ligne", chapeau: "Au moins un achat parmi n visiteurs : probabilité 1 − 0,98ⁿ, à comparer à 0,999. Puis 400 visiteurs par jour.",
+      vues: [{ nom: "Seuil", type: vueSeuil, q: 0.98, s: 0.999, nmax: 400, n0: 300, ymin: 0.9, expr: "1 − 0,98ⁿ",
+        phraseOk: n => `Avec ${n} visiteurs, la probabilité d'au moins un achat dépasse 0,999.`, phraseNon: n => `Avec ${n} visiteurs, la probabilité reste inférieure ou égale à 0,999.` },
+        { nom: "400 visiteurs", type: vueBinomiale, n: 400, p: 0.02, pTexte: "0,02", kmax: 20, esperance: true, evenements: [{ nom: "P(Y ≥ 10)", f: k => k >= 10, texte: () => "En moyenne 8 achats par jour ; au moins 10 achats, c'est la partie bleue." }] }] },
+    e11: { titre: "Exercice 11 · Contrôlé ou pas ?", chapeau: "X compte les contrôles subis par Romain L. sur ses 25 trajets du mois, avec une probabilité 1/8 à chaque trajet.",
+      vues: [{ nom: "Loi de X", type: vueBinomiale, n: 25, p: 0.125, pTexte: "1/8", kmax: 12, esperance: true, evenements: [
+        { nom: "P(X = 0)", f: k => k === 0, couleur: "r" }, { nom: "P(X ≥ 1)", f: k => k >= 1 },
+        { nom: "E[X]", esperance: true, f: () => false, texte: () => "En moyenne 3,125 contrôles par mois, soit E[Y] = 90 × 3,125 = 281,25 € d'amendes, contre 25 × 15 = 375 € de billets." }] },
+        { nom: "Question 8", type: vueSeuil, q: 0.875, s: 0.99, nmax: 50, n0: 25, expr: "1 − 0,875ⁿ",
+          phraseOk: n => `Sur ${n} trajets, la probabilité d'être contrôlé au moins une fois dépasse 0,99.`, phraseNon: n => `Sur ${n} trajets, elle ne dépasse pas encore 0,99.` }] },
+    e12: { titre: "Exercice 12 · La forgemagie", chapeau: "50 essais réussis chacun avec une probabilité 1/100 : Romain L. a-t-il vraiment une chance sur deux de réussir au moins une amélioration ?",
+      vues: [{ nom: "Loi de X", type: vueBinomiale, n: 50, p: 0.01, pTexte: "0,01", kmax: 6, esperance: true, evenements: [
+        { nom: "P(X ≥ 1)", f: k => k >= 1, texte: () => "Environ 0,395 : moins d'une chance sur deux, Romain L. se trompe." }, { nom: "P(X = 0)", f: k => k === 0, couleur: "r" }] },
+        { nom: "Question 8", type: vueSeuil, q: 0.99, s: 0.5, nmax: 120, n0: 50, expr: "1 − 0,99ⁿ",
+          phraseOk: n => `Avec ${n} essais, Romain L. a plus d'une chance sur deux de réussir au moins une amélioration.`, phraseNon: n => `Avec ${n} essais, il a au plus une chance sur deux.` }] },
+    e13: { titre: "Exercice 13 · Le surbooking", chapeau: "Combien de billets vendre pour un avion de 200 places, si chaque passager a 5 % de chances de ne pas se présenter ?",
+      vues: [{ nom: "Billets vendus", type: vueSurbooking },
+        { nom: "Question 9", type: vueSeuil, q: 0.95, s: 0.99, nmax: 120, n0: 60, expr: "1 − 0,95ⁿ",
+          phraseOk: n => `Avec ${n} billets vendus, la probabilité qu'au moins un passager ne se présente pas dépasse 0,99.`, phraseNon: n => `Avec ${n} billets vendus, elle ne dépasse pas encore 0,99.` }] },
+    e14: { titre: "Exercice 14 · Un nombre pair de « Pile »", chapeau: "p<sub>n</sub> = 1/2 + 1/2 × 0,4ⁿ se rapproche de 1/2 en décroissant.",
+      vues: [{ nom: "La suite (p<sub>n</sub>)", type: vueSuite, a: 0.4, b: 0.3, p1: 0.7, nmax: 14, n0: 1, ymin: 0.45, ymax: 0.75, pas: 0.05, limTexte: "1/2", legende: "p₁ = 0,7 et pₙ₊₁ = 0,4 pₙ + 0,3",
+        phrase: (n, q) => q < 0.5001 ? `p<sub>${n}</sub> < 0,5001 : à partir de n = 10, obtenir un nombre pair de « Pile » est pratiquement aussi probable qu'un nombre impair.` : `p<sub>${n}</sub> ≥ 0,5001 : la suite n'est pas encore assez proche de 1/2.` }] },
+  };
+
+  const etat = { scene: "e5", vue: 0, ev: 0, n: null };
+  function dessiner() {
+    const S = SCENES[etat.scene], v = S.vues[etat.vue];
+    if (v.curseurN && etat.n != null) v.n = etat.n;
+    svg.textContent = "";
+    v.type(v);
+  }
+  function choisir(cle, vue = 0) {
+    etat.scene = SCENES[cle] ? cle : "e5"; etat.vue = vue; etat.ev = 0; etat.n = null;
+    const S = SCENES[etat.scene];
+    $("titre").textContent = S.titre; $("chapeau").innerHTML = S.chapeau; $("choix").value = etat.scene;
+    const o = $("onglets"); o.textContent = "";
+    if (S.vues.length > 1) S.vues.forEach((v, i) => { const b = document.createElement("button"); b.type = "button"; b.innerHTML = v.nom; b.setAttribute("aria-pressed", i === etat.vue); b.onclick = () => { etat.vue = i; etat.ev = 0; etat.n = null; [...o.children].forEach((x, j) => x.setAttribute("aria-pressed", j === i)); dessiner(); }; o.appendChild(b); });
+    o.hidden = S.vues.length < 2;
+    dessiner();
+  }
+  for (const k in SCENES) { const op = document.createElement("option"); op.value = k; op.textContent = SCENES[k].titre; $("choix").appendChild(op); }
+  $("choix").onchange = () => { choisir($("choix").value); try { history.replaceState(null, "", "#" + $("choix").value); } catch (e) {} };
+  const ancre = () => (location.hash.match(/e\d+/) || ["e5"])[0];
+  window.addEventListener("hashchange", () => choisir(ancre()));
+  choisir(ancre());
+})();
+</script>
+
+<!-- plein-ecran : bouton commun à toutes les pages interactives -->
+<style>
+#pleinEcran { position: fixed; top: calc(10px + env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); z-index: 50; font: 500 13px var(--ui, system-ui, sans-serif); padding: 6px 12px; border-radius: 999px; border: 1px solid var(--filet, #d9dee5); background: var(--carte, #fff); color: var(--encre, #1b1f24); cursor: pointer; opacity: .9; }
+#pleinEcran:hover { opacity: 1; }
+body.plein-ecran .niveau, body.plein-ecran h1 + .chapeau { display: none !important; }
+body.plein-ecran .page { max-width: none !important; min-height: 100vh; padding-top: 48px !important; align-content: start; }
+body.plein-ecran .page svg:not(.mini) { max-height: 66vh; }
+body.plein-ecran .constat { font-size: clamp(20px, 2.6vw, 30px); }
+</style>
+<script>
+(() => {
+  const b = document.createElement("button");
+  b.type = "button"; b.id = "pleinEcran"; document.body.appendChild(b);
+  function etat(on) { document.body.classList.toggle("plein-ecran", on); b.textContent = on ? "✕ Quitter le plein écran" : "⛶ Plein écran"; b.setAttribute("aria-pressed", on); window.dispatchEvent(new Event("resize")); }
+  b.addEventListener("click", async () => {
+    const on = !document.body.classList.contains("plein-ecran");
+    etat(on);
+    try { on ? await document.documentElement.requestFullscreen() : (document.fullscreenElement && await document.exitFullscreen()); } catch (e) {}
+  });
+  document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement && document.body.classList.contains("plein-ecran")) etat(false); });
+  window.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("plein-ecran")) etat(false); });
+  etat(location.hash === "#plein");
+})();
+</script>
+
+</body></html>

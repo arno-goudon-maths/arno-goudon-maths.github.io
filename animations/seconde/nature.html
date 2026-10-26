@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;box-sizing:border-box}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head><body>
+<title>Nature d'une figure</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Cours de 2nde, chapitre 9, § 5.1 et 5.2 « Triangles et quadrilatères particuliers » : carrés des longueurs, plus long côté et Pythagore ; milieux des diagonales, losange, rectangle, carré. */
+:root {
+  --papier: #f7f8fa; --carte: #ffffff; --encre: #1b1f24; --discret: #5d6672; --filet: #d9dee5; --grille: #e2e6ec;
+  --u: #1a56db; --v: #f07800; --aire: #7c3aed; --nul: #d6332a;
+  --math: "STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --ui: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #262c35; --u: #6fa3f0; --v: #ff9a3c; --aire: #b48cff; --nul: #ff6b5e; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #262c35; --u: #6fa3f0; --v: #ff9a3c; --aire: #b48cff; --nul: #ff6b5e; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--papier); color: var(--encre); font-family: var(--ui); font-size: 15px; line-height: 1.5; margin: 0; }
+.page { max-width: 920px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 40px; display: grid; gap: 14px; }
+.niveau { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--discret); }
+h1 { font-family: var(--math); font-weight: 600; font-size: clamp(26px, 4vw, 36px); line-height: 1.15; margin: 0; text-wrap: balance; }
+.chapeau { margin: 0; color: var(--discret); max-width: 68ch; }
+.vec { font-family: var(--math); font-style: italic; position: relative; display: inline-block; padding-top: .18em; }
+.vec::before { content: ""; position: absolute; left: .02em; right: -.06em; top: .02em; height: 0; border-top: 1.5px solid currentColor; }
+.vec::after { content: ""; position: absolute; right: -.1em; top: -.16em; border: .2em solid transparent; border-left: .32em solid currentColor; border-right: 0; }
+.figure { background: var(--carte); border: 1px solid var(--filet); border-radius: 10px; padding: 0; overflow: hidden; touch-action: none; }
+svg { display: block; width: 100%; height: auto; user-select: none; -webkit-user-select: none; }
+.poignee { cursor: grab; } .poignee:active { cursor: grabbing; }
+.constat { font-family: var(--math); font-size: clamp(17px, 2.4vw, 22px); margin: 0; padding: 10px 14px; border-radius: 10px; border: 1.5px solid var(--filet); background: var(--carte); display: flex; align-items: center; justify-content: center; gap: .45em; flex-wrap: wrap; text-align: center; }
+.constat.zero { border-color: var(--nul); }
+.det { display: inline-flex; align-items: center; }
+.det .b { display: inline-block; width: 0; height: 2.6em; border-left: 1.5px solid currentColor; margin: 0 .25em; }
+.det .g { display: inline-grid; grid-template-columns: auto auto; gap: 0 .8em; line-height: 1.3; text-align: center; }
+.u, .bleu { color: var(--u); } .bleu { font-weight: 600; } .v { color: var(--v); } .rouge { color: var(--nul); font-weight: 600; }
+.verdict { font-family: var(--ui); font-size: 15px; width: 100%; }
+.ligne { width: 100%; }
+.vi { color: var(--aire); }
+.choix { display: flex; gap: 6px; justify-self: start; }
+.choix button { font: 500 13px var(--ui); padding: 4px 12px; border-radius: 999px; border: 1px solid var(--filet); background: var(--carte); color: var(--encre); cursor: pointer; }
+.choix button[aria-pressed="true"] { background: var(--encre); color: var(--carte); border-color: var(--encre); }
+</style>
+
+<div class="page">
+  <span class="niveau">Seconde · Chapitre 9 · Problèmes de géométrie</span>
+  <h1>Quelle est sa nature ?</h1>
+  <p class="chapeau">Déplacez les sommets. Les carrés des longueurs, calculés à partir des coordonnées, disent si la figure est rectangle, isocèle, un parallélogramme, un losange, un rectangle ou un carré.</p>
+  <div class="choix" role="group" aria-label="Figure"><button type="button" data-m="t">Triangle</button><button type="button" data-m="q">Quadrilatère</button></div>
+  <div class="figure"><svg id="g" viewBox="0 0 900 560" role="img" aria-label="Un triangle ou un quadrilatère dont on déplace les sommets"></svg></div>
+  <p class="constat" id="constat" aria-live="polite"></p>
+</div>
+
+<script>
+(() => {
+  const NS = "http://www.w3.org/2000/svg", $ = id => document.getElementById(id);
+  const el = (t, a, txt) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); if (txt != null) e.textContent = txt; return e; };
+  const XMIN = -10, XMAX = 10, YMIN = -6, YMAX = 6, U = 42, OX = 450, OY = 280;
+  const px = x => OX + x * U, py = y => OY - y * U;
+  const svg = $("g"); svg.setAttribute("overflow", "hidden");
+  const s = n => (n < 0 ? "−" : "") + String(Math.abs(Math.round(n * 100) / 100)).replace(".", ",");
+  const par = n => n < 0 ? "(" + s(n) + ")" : s(n);
+  const det2 = (a, b) => a.x * b.y - b.x * a.y;
+  const vect = (P, Q) => ({ x: Q.x - P.x, y: Q.y - P.y });
+
+  function fleche(x1, y1, x2, y2, c, ep) {
+    const L = Math.hypot(x2 - x1, y2 - y1); if (L < 1) return;
+    const ux = (x2 - x1) / L, uy = (y2 - y1) / L, t = 16;
+    svg.appendChild(el("line", { x1, y1, x2: x2 - ux * t * 0.8, y2: y2 - uy * t * 0.8, stroke: c, "stroke-width": ep, "stroke-linecap": "round" }));
+    svg.appendChild(el("path", { d: `M${x2},${y2} L${x2 - ux * t - uy * t * 0.42},${y2 - uy * t + ux * t * 0.42} L${x2 - ux * t + uy * t * 0.42},${y2 - uy * t - ux * t * 0.42} Z`, fill: c }));
+  }
+  const texte = (x, y, t, c, ancre = "middle", taille = 19, ital = true) =>
+    svg.appendChild(el("text", { x, y, "text-anchor": ancre, "font-family": "var(--math)", "font-style": ital ? "italic" : "normal", "font-size": taille, fill: c, "paint-order": "stroke", stroke: "var(--carte)", "stroke-width": 5 }, t));
+  function repere() {
+    svg.textContent = "";
+    for (let x = Math.ceil(-OX / U); x * U + OX <= 900; x++) svg.appendChild(el("line", { x1: px(x), y1: 0, x2: px(x), y2: 560, stroke: "var(--grille)" }));
+    for (let y = Math.ceil(-OY / U); y * U + OY <= 560; y++) svg.appendChild(el("line", { x1: 0, y1: OY + y * U, x2: 900, y2: OY + y * U, stroke: "var(--grille)" }));
+    svg.appendChild(el("line", { x1: 0, y1: OY, x2: 900, y2: OY, stroke: "var(--encre)", "stroke-width": 1.2, opacity: .7 }));
+    svg.appendChild(el("line", { x1: OX, y1: 0, x2: OX, y2: 560, stroke: "var(--encre)", "stroke-width": 1.2, opacity: .7 }));
+    texte(OX - 8, OY + 20, "O", "var(--discret)", "end", 16);
+  }
+  // un point nommé, déplaçable sur les nœuds du quadrillage ; centre = point vers lequel écarter l'étiquette
+  function pointMobile(P, nom, c, centre, autres) {
+    svg.appendChild(el("circle", { cx: px(P.x), cy: py(P.y), r: 5.5, fill: c }));
+    let dx = P.x - centre.x, dy = P.y - centre.y; const L = Math.hypot(dx, dy) || 1; dx /= L; dy /= L;
+    texte(px(P.x) + 16 * dx, py(P.y) - 16 * dy + 6, `${nom}(${s(P.x)} ; ${s(P.y)})`, c, dx < -0.3 ? "end" : dx > 0.3 ? "start" : "middle", 18);
+    const h = el("circle", { cx: px(P.x), cy: py(P.y), r: 17, fill: c, opacity: 0.18, class: "poignee" });
+    svg.appendChild(h);
+    glisse(h, p => {
+      const nx = Math.max(XMIN + 1, Math.min(XMAX - 1, Math.round((p.x - OX) / U))), ny = Math.max(YMIN + 1, Math.min(YMAX - 1, Math.round((OY - p.y) / U)));
+      if (!(autres || []).some(Q => Q !== P && Q.x === nx && Q.y === ny)) { P.x = nx; P.y = ny; }
+    });
+  }
+  function point(evt) { const r = svg.getBoundingClientRect(); return { x: (evt.clientX - r.left) * 900 / r.width, y: (evt.clientY - r.top) * 560 / r.height }; }
+  function glisse(node, maj) {
+    node.addEventListener("pointerdown", e => {
+      e.preventDefault();
+      const bouge = ev => { maj(point(ev)); dessin(); };
+      const fin = () => { window.removeEventListener("pointermove", bouge); window.removeEventListener("pointerup", fin); };
+      window.addEventListener("pointermove", bouge); window.addEventListener("pointerup", fin);
+    });
+  }
+  const V = (nom, cls = "") => `<span class="vec ${cls}">${nom}</span>`;
+  const coords = (w, cls = "") => `<span class="${cls}">(${s(w.x)} ; ${s(w.y)})</span>`;
+  const determinant = (a, b, na, nb) => `<span class="det">det(${na},&nbsp;${nb}) = <span class="b"></span><span class="g"><span class="u">${s(a.x)}</span><span class="v">${s(b.x)}</span><span class="u">${s(a.y)}</span><span class="v">${s(b.y)}</span></span><span class="b"></span></span>`
+    + ` = <span class="u">${s(a.x)}</span> × <span class="v">${par(b.y)}</span> − <span class="v">${par(b.x)}</span> × <span class="u">${par(a.y)}</span> = <b class="${det2(a, b) === 0 ? "rouge" : ""}">${s(det2(a, b))}</b>`;
+
+  const T = [{ x: -2, y: -1 }, { x: 2, y: 1 }, { x: 0, y: 5 }];                      // cours, § 5.1, exemple 1
+  const Q = [{ x: -2, y: 0 }, { x: 1, y: 1 }, { x: 2, y: -2 }, { x: -1, y: -3 }];     // cours, § 5.2, exemple 1
+  let mode = location.hash === "#quadrilatere" ? "q" : "t";
+  const d2 = (P, R) => (R.x - P.x) ** 2 + (R.y - P.y) ** 2;
+  const egaux = (P, R) => P.x === R.x && P.y === R.y;
+  function cote(P, R, t, c, centre) {   // étiquette « AB² = 20 » au milieu du côté, vers l'extérieur
+    const m = { x: (P.x + R.x) / 2, y: (P.y + R.y) / 2 };
+    let nx = -(R.y - P.y), ny = R.x - P.x; const L = Math.hypot(nx, ny) || 1; nx /= L; ny /= L;
+    if (nx * (m.x - centre.x) + ny * (m.y - centre.y) < 0) { nx = -nx; ny = -ny; }
+    texte(px(m.x) + 26 * nx, py(m.y) - 26 * ny + 6, t, c, nx < -0.4 ? "end" : nx > 0.4 ? "start" : "middle", 16);
+  }
+  function triangle() {
+    const [A, B, C] = T, g = { x: (A.x + B.x + C.x) / 3, y: (A.y + B.y + C.y) / 3 };
+    const L = { AB: d2(A, B), AC: d2(A, C), BC: d2(B, C) };
+    const plat = det2(vect(A, B), vect(A, C)) === 0;
+    const grand = Object.keys(L).reduce((a, b) => L[b] > L[a] ? b : a);
+    const autres = Object.keys(L).filter(k => k !== grand), somme = L[autres[0]] + L[autres[1]];
+    const sommet = "ABC".replace(grand[0], "").replace(grand[1], "");
+    const rect = !plat && somme === L[grand];
+    svg.appendChild(el("path", { d: `M${px(A.x)},${py(A.y)}L${px(B.x)},${py(B.y)}L${px(C.x)},${py(C.y)}Z`, fill: rect ? "var(--u)" : "var(--aire)", "fill-opacity": plat ? 0 : .1, stroke: "var(--encre)", "stroke-width": 1.6 }));
+    const P = { A, B, C };
+    if (!plat) {
+      svg.appendChild(el("line", { x1: px(P[grand[0]].x), y1: py(P[grand[0]].y), x2: px(P[grand[1]].x), y2: py(P[grand[1]].y), stroke: "var(--v)", "stroke-width": 4, "stroke-linecap": "round" }));
+      for (const k in L) cote(P[k[0]], P[k[1]], `${k}² = ${L[k]}`, k === grand ? "var(--v)" : "var(--encre)", g);
+      if (rect) { const S = P[sommet], a = P[autres[0].replace(sommet, "")], b = P[autres[1].replace(sommet, "")];
+        const e = (Q, l) => { const n = Math.sqrt(d2(S, Q)); return { x: S.x + (Q.x - S.x) * l / n, y: S.y + (Q.y - S.y) * l / n }; };
+        const u = e(a, .45), v = e(b, .45);
+        svg.appendChild(el("path", { d: `M${px(u.x)},${py(u.y)}L${px(u.x + v.x - S.x)},${py(u.y + v.y - S.y)}L${px(v.x)},${py(v.y)}`, fill: "none", stroke: "var(--u)", "stroke-width": 2 })); }
+    }
+    T.forEach((R, i) => pointMobile(R, "ABC"[i], "var(--encre)", g, T));
+    if (plat) return `<span class="verdict rouge">Les points A, B et C sont alignés : ce n'est pas un vrai triangle.</span>`;
+    const iso = [];
+    if (L.AB === L.AC) iso.push("A"); if (L.AB === L.BC) iso.push("B"); if (L.AC === L.BC) iso.push("C");
+    let txt = `<span class="ligne">Le plus long côté est <span class="v">[${grand}]</span> : ${autres[0]}² + ${autres[1]}² = ${L[autres[0]]} + ${L[autres[1]]} = ${somme}`
+      + (rect ? ` = <span class="v">${grand}²</span>.` : ` ≠ <span class="v">${grand}²</span>.`) + `</span>`;
+    const nat = iso.length === 3 ? "équilatéral" : rect && iso[0] === sommet ? `rectangle isocèle en ${sommet}` : [rect ? `rectangle en ${sommet}` : "", iso.length ? `isocèle en ${iso[0]}` : ""].filter(Boolean).join(" et ");
+    txt += `<span class="verdict${nat ? " bleu" : ""}">` + (rect ? "D'après la réciproque du théorème de Pythagore, " : "D'après la contraposée du théorème de Pythagore, ABC n'est pas rectangle. ")
+      + (nat ? (rect ? `ABC est ${nat}.` : `ABC est ${nat}.`) : "Il n'est pas non plus isocèle : c'est un triangle quelconque.") + `</span>`;
+    return txt;
+  }
+  function quadrilatere() {
+    const [A, B, C, D] = Q, g = { x: (A.x + B.x + C.x + D.x) / 4, y: (A.y + B.y + C.y + D.y) / 4 };
+    const I = { x: (A.x + C.x) / 2, y: (A.y + C.y) / 2 }, J = { x: (B.x + D.x) / 2, y: (B.y + D.y) / 2 };
+    const para = egaux(I, J) && det2(vect(A, B), vect(A, D)) !== 0;
+    const los = para && d2(A, B) === d2(B, C), rec = para && d2(A, C) === d2(B, D);
+    svg.appendChild(el("path", { d: `M${px(A.x)},${py(A.y)}L${px(B.x)},${py(B.y)}L${px(C.x)},${py(C.y)}L${px(D.x)},${py(D.y)}Z`, fill: para ? "var(--u)" : "none", "fill-opacity": .1, stroke: "var(--encre)", "stroke-width": 1.6 }));
+    for (const [P, R] of [[A, C], [B, D]]) svg.appendChild(el("line", { x1: px(P.x), y1: py(P.y), x2: px(R.x), y2: py(R.y), stroke: "var(--aire)", "stroke-width": rec ? 2.4 : 1.2, "stroke-dasharray": "5 5" }));
+    if (los) for (const [P, R] of [[A, B], [B, C]]) svg.appendChild(el("line", { x1: px(P.x), y1: py(P.y), x2: px(R.x), y2: py(R.y), stroke: "var(--v)", "stroke-width": 4, "stroke-linecap": "round" }));
+    svg.appendChild(el("circle", { cx: px(I.x), cy: py(I.y), r: 4.5, fill: "var(--aire)" }));
+    if (!egaux(I, J)) { svg.appendChild(el("circle", { cx: px(J.x), cy: py(J.y), r: 6, fill: "none", stroke: "var(--aire)", "stroke-width": 2.2 }));
+      texte(px(I.x), py(I.y) - 13, "I", "var(--aire)", "middle", 17); texte(px(J.x), py(J.y) - 13, "J", "var(--aire)", "middle", 17); }
+    else texte(px(I.x), py(I.y) - 13, "I = J", "var(--aire)", "middle", 17);
+    Q.forEach((R, i) => pointMobile(R, "ABCD"[i], "var(--encre)", g, Q));
+    let txt = `<span class="ligne"><span class="vi">I${coords(I)}</span>, milieu de [AC], et <span class="vi">J${coords(J)}</span>, milieu de [BD] : `
+      + (egaux(I, J) ? "les diagonales ont le même milieu." : "les diagonales n'ont pas le même milieu.") + `</span>`;
+    if (!para) return txt + `<span class="verdict">ABCD n'est pas un parallélogramme` + (egaux(I, J) ? " (les quatre points sont alignés)." : ".") + `</span>`;
+    txt += `<span class="ligne"><span class="${los ? "v" : ""}">AB² = ${d2(A, B)} et BC² = ${d2(B, C)}</span> ; AC² = ${d2(A, C)} et BD² = ${d2(B, D)}</span>`;
+    const nat = los && rec ? "un carré" : los ? "un losange" : rec ? "un rectangle" : "un parallélogramme quelconque";
+    return txt + `<span class="verdict bleu">ABCD est un parallélogramme` + (los ? ", AB = BC" : "") + (rec ? ", AC = BD" : "") + ` : c'est ${nat}.</span>`;
+  }
+  function dessin() {
+    repere();
+    $("constat").innerHTML = mode === "t" ? triangle() : quadrilatere();
+    document.querySelectorAll(".choix button").forEach(b => b.setAttribute("aria-pressed", b.dataset.m === mode));
+  }
+  document.querySelectorAll(".choix button").forEach(b => b.addEventListener("click", () => { mode = b.dataset.m; dessin(); }));
+  dessin();
+})();
+</script>
+
+<!-- plein-ecran : bouton commun à toutes les pages interactives -->
+<style>
+#pleinEcran { position: fixed; top: calc(10px + env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); z-index: 50; font: 500 13px var(--ui, system-ui, sans-serif); padding: 6px 12px; border-radius: 999px; border: 1px solid var(--filet, #d9dee5); background: var(--carte, #fff); color: var(--encre, #1b1f24); cursor: pointer; opacity: .9; }
+#pleinEcran:hover { opacity: 1; }
+body.plein-ecran .niveau, body.plein-ecran h1, body.plein-ecran h1 + .chapeau { display: none !important; }
+body.plein-ecran .page { max-width: none !important; min-height: 100vh; padding-top: 48px !important; align-content: start; }
+body.plein-ecran .page svg:not(.mini) { max-height: 76vh; }
+body.plein-ecran.plein-multi .page svg:not(.mini) { max-height: 46vh; }
+body.plein-ecran .constat { font-size: clamp(20px, 2.6vw, 30px); }
+</style>
+<script>
+(() => {
+  const b = document.createElement("button");
+  b.type = "button"; b.id = "pleinEcran"; document.body.appendChild(b);
+  function etat(on) { document.body.classList.toggle("plein-ecran", on); b.textContent = on ? "✕ Quitter le plein écran" : "⛶ Plein écran"; b.setAttribute("aria-pressed", on); window.dispatchEvent(new Event("resize")); }
+  b.addEventListener("click", async () => {
+    const on = !document.body.classList.contains("plein-ecran");
+    etat(on);
+    try { on ? await document.documentElement.requestFullscreen() : (document.fullscreenElement && await document.exitFullscreen()); } catch (e) {}
+  });
+  document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement && document.body.classList.contains("plein-ecran")) etat(false); });
+  window.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("plein-ecran")) etat(false); });
+  if (document.querySelectorAll(".page svg:not(.mini), .page canvas").length > 1) document.body.classList.add("plein-multi");
+  etat(location.hash === "#plein");
+})();
+</script>
+
+</body></html>

@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;box-sizing:border-box}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head><body>
+<title>Second degré en images</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Première spécialité, chapitre 4, TD4 : une scène par exercice (paraboles, signe, inéquations, problèmes), choisie par l'ancre #eN pour les QR codes placés à côté des exercices. Couleurs de la page « signe d'un trinôme » : bleu positif, violet négatif, orange pour les racines et les solutions. */
+:root {
+  --papier: #f7f8fa; --carte: #ffffff; --encre: #1b1f24; --discret: #5d6672; --filet: #d9dee5; --grille: #e7eaef;
+  --courbe: #1f5fbf; --plus: #1f5fbf; --moins: #7b4fa0; --zero: #d35400; --sol: #d35400; --vert: #0b8a3a; --secante: #1f5fbf; --tangente: #d35400; --attention: #9a5b00;
+  --sel: #1f5fbf; --cond: #f07800; --cond-fond: #fde7cf; --fond1: #e4eaf3; --fond2: #f1f3f6; --fond3: #d9e6d2; --porte: #8a5a2b;
+  --math: "STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --ui: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #252b34;
+    --courbe: #6fa3f0; --plus: #6fa3f0; --moins: #c49be6; --zero: #f0a35e; --sol: #f0a35e; --vert: #5fd38a; --secante: #6fa3f0; --tangente: #f0a35e; --attention: #e0a64a;
+    --sel: #6fa3f0; --cond: #ffa040; --cond-fond: #3d2c1a; --fond1: #26303d; --fond2: #22262d; --fond3: #2a3a2a; --porte: #a87444; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #252b34;
+    --courbe: #6fa3f0; --plus: #6fa3f0; --moins: #c49be6; --zero: #f0a35e; --sol: #f0a35e; --vert: #5fd38a; --secante: #6fa3f0; --tangente: #f0a35e; --attention: #e0a64a;
+    --sel: #6fa3f0; --cond: #ffa040; --cond-fond: #3d2c1a; --fond1: #26303d; --fond2: #22262d; --fond3: #2a3a2a; --porte: #a87444; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--papier); color: var(--encre); font-family: var(--ui); font-size: 15px; line-height: 1.5; margin: 0; }
+.page { max-width: 920px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 40px; display: grid; gap: 12px; }
+.tete { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; padding-right: 140px; }
+.niveau { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--discret); }
+select { font: 500 13px var(--ui); padding: 3px 8px; border-radius: 8px; border: 1px solid var(--filet); background: var(--carte); color: var(--encre); max-width: 100%; }
+h1 { font-family: var(--math); font-weight: 600; font-size: clamp(24px, 3.6vw, 34px); line-height: 1.15; margin: 0; text-wrap: balance; }
+.chapeau { margin: 0; color: var(--discret); max-width: 70ch; }
+.onglets, .commandes { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.onglets button, .commandes button { font: 500 13px var(--ui); padding: 4px 12px; border-radius: 999px; border: 1px solid var(--filet); background: var(--carte); color: var(--encre); cursor: pointer; }
+.onglets button[aria-pressed="true"], .commandes button[aria-pressed="true"] { background: var(--encre); color: var(--carte); border-color: var(--encre); }
+.commandes label { font: 500 13px var(--ui); color: var(--discret); display: flex; align-items: center; gap: 8px; }
+.commandes input[type=range] { width: min(320px, 60vw); accent-color: var(--plus); }
+.figure { background: var(--carte); border: 1px solid var(--filet); border-radius: 10px; overflow: hidden; touch-action: none; }
+svg { display: block; width: 100%; height: auto; user-select: none; -webkit-user-select: none; }
+.constat { font-family: var(--math); font-size: clamp(17px, 2.3vw, 21px); margin: 0; padding: 10px 14px; border-radius: 10px; border: 1.5px solid var(--filet); background: var(--carte); text-align: center; }
+.constat .petit { display: block; font-family: var(--ui); font-size: 14px; color: var(--discret); margin-top: 2px; }
+.b { color: var(--plus); } .o { color: var(--zero); } .m { color: var(--moins); }
+</style>
+
+<div class="page">
+  <div class="tete">
+    <span class="niveau">Première spécialité · Chapitre 4 · TD4</span>
+    <select id="choix" aria-label="Exercice"></select>
+  </div>
+  <h1 id="titre"></h1>
+  <p class="chapeau" id="chapeau"></p>
+  <div class="onglets" id="onglets"></div>
+  <div class="figure"><svg id="g" viewBox="0 0 900 500" role="img" aria-label="Figure de l'exercice"></svg></div>
+  <div class="commandes" id="commandes"></div>
+  <p class="constat" id="constat" aria-live="polite"></p>
+</div>
+
+<script>
+(() => {
+  const NS = "http://www.w3.org/2000/svg", $ = id => document.getElementById(id);
+  const el = (t, a, txt) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); if (txt != null) e.textContent = txt; return e; };
+  const svg = $("g"); let W = 900, H = 500;
+  const fr = (x, d = 2) => { const r = Number((+x).toFixed(d)); return (r < 0 ? "−" : "") + String(Math.abs(r)).replace(".", ","); };
+  const frac = x => { for (const q of [1, 2, 3, 4, 5, 6, 8, 9, 12]) { const p = Math.round(x * q); if (Math.abs(p / q - x) < 1e-9) return q === 1 ? fr(p, 0) : (p < 0 ? "−" : "") + Math.abs(p) + "/" + q; } return fr(x, 2); };
+  const texte = (x, y, t, o = {}) => svg.appendChild(el("text", Object.assign({ x, y, "text-anchor": "middle", "font-family": "var(--math)", "font-size": 17, fill: "var(--encre)", "paint-order": "stroke", stroke: "var(--carte)", "stroke-width": 4 }, o), t));
+  const SUP = { "-": "⁻", 0: "⁰", 1: "¹", 2: "²", 3: "³", 4: "⁴", 5: "⁵", 6: "⁶", 7: "⁷", 8: "⁸", 9: "⁹" };
+  const sup = d => String(d).split("").map(c => SUP[c] || c).join("");
+
+  // repère : fenêtre [xmin, xmax, ymin, ymax], pas des graduations
+  function repere(fen, pas = [1, 1], cadre = [55, 20, 20, 30]) {
+    const [a, b, c, d] = fen, [gx, dx, hy, by] = cadre;
+    const X = x => gx + (W - gx - dx) * (x - a) / (b - a), Y = y => H - by - (H - hy - by) * (y - c) / (d - c);
+    const id = "clip" + Math.random().toString(36).slice(2, 7);
+    const cp = el("clipPath", { id }); cp.appendChild(el("rect", { x: gx, y: hy, width: W - gx - dx, height: H - hy - by })); svg.appendChild(cp);
+    const g = el("g", { "clip-path": `url(#${id})` }); svg.appendChild(g);
+    const ax = Math.min(Math.max(Y(0), hy), H - by), ay = Math.min(Math.max(X(0), gx), W - dx);
+    for (let x = Math.ceil(a / pas[0]) * pas[0]; x <= b + 1e-9; x += pas[0]) {
+      g.appendChild(el("line", { x1: X(x), y1: hy, x2: X(x), y2: H - by, stroke: "var(--grille)" }));
+      if (Math.abs(x) > 1e-9) texte(X(x), Math.min(ax + 18, H - by + 18), fr(x, 2), { "font-size": 13, fill: "var(--discret)" });
+    }
+    for (let y = Math.ceil(c / pas[1]) * pas[1]; y <= d + 1e-9; y += pas[1]) {
+      g.appendChild(el("line", { x1: gx, y1: Y(y), x2: W - dx, y2: Y(y), stroke: "var(--grille)" }));
+      if (Math.abs(y) > 1e-9) texte(Math.max(ay - 7, gx - 7), Y(y) + 5, fr(y, 2), { "font-size": 13, fill: "var(--discret)", "text-anchor": "end" });
+    }
+    g.appendChild(el("line", { x1: gx, y1: ax, x2: W - dx, y2: ax, stroke: "var(--encre)", "stroke-width": 1.2 }));
+    g.appendChild(el("line", { x1: ay, y1: hy, x2: ay, y2: H - by, stroke: "var(--encre)", "stroke-width": 1.2 }));
+    if (a < 0 && b > 0 && c < 0 && d > 0) texte(X(0) - 9, Y(0) + 17, "O", { "font-size": 14, fill: "var(--discret)", "font-style": "italic" });
+    const R = { X, Y, g, fen, gx, dx, hy, by };
+    // une courbe, éventuellement colorée selon le signe de la fonction
+    R.courbe = (f, o = {}) => {
+      const N = 600, [u, v] = o.dom || [a, b]; let d0 = "", coul = null;
+      const vider = () => { if (d0) g.appendChild(el("path", { d: d0, fill: "none", stroke: coul, "stroke-width": o.ep || 3.2, "stroke-dasharray": o.tirets || "", "stroke-linejoin": "round", "stroke-linecap": "round" })); d0 = ""; };
+      for (let i = 0; i <= N; i++) {
+        const x = u + (v - u) * i / N, y = f(x);
+        if (!isFinite(y) || Math.abs(y) > 1e6 || Math.abs(Y(y)) > 4000) { vider(); continue; }
+        const cc = o.signe ? (y > 1e-9 ? "var(--plus)" : y < -1e-9 ? "var(--moins)" : coul || "var(--plus)") : (o.c || "var(--courbe)");
+        if (cc !== coul && d0) { d0 += `L${X(x)},${Y(y)}`; vider(); }
+        coul = cc; d0 += (d0 ? "L" : "M") + `${X(x)},${Y(y)}`;
+      }
+      vider();
+      if (o.nom) { const xe = o.xNom ?? (u + (v - u) * 0.88); texte(X(xe) + (o.dxNom || 8), Y(f(xe)) + (o.dyNom ?? -10), o.nom, { "text-anchor": "start", fill: o.c || "var(--courbe)", "font-style": "italic" }); }
+    };
+    R.droite = (m, p, o = {}) => { R.courbe(x => m * x + p, Object.assign({ ep: 2.2 }, o)); };
+    R.point = (x, y, nom, o = {}) => {
+      g.appendChild(el("circle", { cx: X(x), cy: Y(y), r: o.r || 5.5, fill: o.c || "var(--encre)" }));
+      if (nom) texte(X(x) + (o.dx ?? 10), Y(y) + (o.dy ?? -10), nom, { "text-anchor": o.ancre || "start", fill: o.c || "var(--encre)", "font-size": 16 });
+    };
+    R.seg = (x1, y1, x2, y2, o = {}) => g.appendChild(el("line", { x1: X(x1), y1: Y(y1), x2: X(x2), y2: Y(y2), stroke: o.c || "var(--encre)", "stroke-width": o.ep || 2, "stroke-dasharray": o.tirets || "" }));
+    // ensemble de solutions sur l'axe des abscisses (intervalles)
+    R.solution = (test, o = {}) => {
+      const N = 900, h = (b - a) / N, bornes = []; let deb = null;
+      const tr = (x1, x2) => g.appendChild(el("line", { x1: X(x1), y1: ax, x2: X(x2), y2: ax, stroke: o.c || "var(--sol)", "stroke-width": 7, "stroke-linecap": "butt", opacity: 0.85 }));
+      const affine = (u, v) => { for (let k = 0; k < 50; k++) { const m = (u + v) / 2; (test(m) === test(u)) ? u = m : v = m; } const r = Math.round((u + v) / 2 * 1000) / 1000; return Math.abs(r - (u + v) / 2) < 1e-6 ? r : (u + v) / 2; };
+      for (let i = 0; i <= N; i++) {
+        const x = a + h * i, ok = test(x);
+        if (ok && deb === null) { deb = i === 0 ? x : affine(x - h, x); if (i > 0) bornes.push(deb); }
+        if ((!ok || i === N) && deb !== null) { const fin = ok ? x : affine(x - h, x); tr(deb, fin); if (!ok) bornes.push(fin); deb = null; }
+      }
+      bornes.forEach(r => { const inclus = test(r); g.appendChild(el("circle", { cx: X(r), cy: ax, r: 6.5, fill: inclus ? (o.c || "var(--sol)") : "var(--carte)", stroke: o.c || "var(--sol)", "stroke-width": 2.5 })); });
+    };
+    return R;
+  }
+  const racines = (A, B, C) => { if (Math.abs(A) < 1e-12) return Math.abs(B) < 1e-12 ? [] : [-C / B]; const D = B * B - 4 * A * C; if (D < -1e-12) return []; if (Math.abs(D) < 1e-12) return [-B / (2 * A)]; return [(-B - Math.sqrt(D)) / (2 * A), (-B + Math.sqrt(D)) / (2 * A)].sort((p, q) => p - q); };
+  // curseur générique
+  function curseur(c, nom, min, max, pas, val, maj, fmt = frac) {
+    const l = document.createElement("label"), b = document.createElement("b");
+    b.style.cssText = "font-family:var(--math);font-size:17px;color:var(--encre);min-width:2.8em"; b.textContent = fmt(val);
+    l.append(nom + " = ", b);
+    const r = document.createElement("input"); r.type = "range"; r.min = min; r.max = max; r.step = pas; r.value = val;
+    r.oninput = () => { let v = Math.round(+r.value / pas) * pas; if (Math.abs(v - Math.round(v)) < 1e-9) v = Math.round(v); v = Number(v.toFixed(6)); b.textContent = fmt(v); maj(v); };
+    l.appendChild(r); c.appendChild(l);
+  }
+  function boutons(c, liste, actif, choisir) {
+    liste.forEach((n, i) => { const b = document.createElement("button"); b.type = "button"; b.innerHTML = n; b.setAttribute("aria-pressed", i === actif); b.onclick = () => choisir(i); c.appendChild(b); });
+  }
+  // aiguillage par l'ancre #eN
+  function lancer(SCENES, defaut, dessiner) {
+    const etat = { scene: defaut, vue: 0 };
+    function choisir(cle) {
+      etat.scene = SCENES[cle] ? cle : defaut; etat.vue = 0;
+      const S = SCENES[etat.scene];
+      $("titre").innerHTML = S.titre; $("chapeau").innerHTML = S.chapeau; $("choix").value = etat.scene;
+      const o = $("onglets"); o.textContent = "";
+      if (S.vues.length > 1) boutons(o, S.vues.map(v => v.nom), 0, i => { etat.vue = i; [...o.children].forEach((x, j) => x.setAttribute("aria-pressed", j === i)); ouvrir(); });
+      o.hidden = S.vues.length < 2;
+      ouvrir();
+    }
+    function ouvrir() { const v = SCENES[etat.scene].vues[etat.vue]; v.p = v.curseur ? v.curseur[4] : v.p; v.ev = 0; dessiner(v, SCENES[etat.scene]); }
+    for (const k in SCENES) { const op = document.createElement("option"); op.value = k; op.textContent = SCENES[k].titre.replace(/<[^>]+>/g, ""); $("choix").appendChild(op); }
+    $("choix").onchange = () => { choisir($("choix").value); try { history.replaceState(null, "", "#" + $("choix").value); } catch (e) {} };
+    const ancre = () => (location.hash.match(/e\d+/) || [defaut])[0];
+    window.addEventListener("hashchange", () => choisir(ancre()));
+    choisir(ancre());
+  }
+
+  // ---------- 1re spé, TD4 : second degré (partie 2) ----------
+  const tri = (A, B, C) => x => A * x * x + B * x + C;
+  const ecrit = (A, B, C, v = "x") => {   // a x² + b x + c écrit à la française
+    let s = "";
+    const t = (k, m) => { if (Math.abs(k) < 1e-12) return; const sg = k < 0 ? " − " : (s ? " + " : ""), a = Math.abs(k); s += (s ? sg : (k < 0 ? "−" : "")) + (m && Math.abs(a - 1) < 1e-12 ? "" : frac(a)) + m; };
+    t(A, v + "²"); t(B, v); t(C, ""); return s || "0";
+  };
+  const sommet = (R, A, B, C, nom = "S") => { const x = -B / (2 * A); R.point(x, tri(A, B, C)(x), nom + `(${frac(x)} ; ${frac(tri(A, B, C)(x))})`, { c: "var(--encre)", r: 4.5 }); };
+  const marquerRacines = (R, A, B, C) => racines(A, B, C).forEach(r => R.point(r, 0, null, { c: "var(--zero)", r: 6 }));
+  const signeTexte = (A, B, C, v) => {
+    const r = racines(A, B, C), sa = A > 0 ? "positif" : "négatif", so = A > 0 ? "négatif" : "positif";
+    const rt = x => { const t = frac(x); return t.includes(",") ? "≈ " + t : t; };
+    if (r.length === 2) return `Racines ${rt(r[0])} et ${rt(r[1])} ; a = ${frac(A)} : ${ecrit(A, B, C, v)} est ${sa} à l'extérieur des racines, ${so} entre elles.`;
+    if (r.length === 1) return `Racine double ${frac(r[0])} ; a = ${frac(A)} : ${ecrit(A, B, C, v)} est ${sa} sur ℝ, et s'annule en ${frac(r[0])}.`;
+    return `Pas de racine (Δ < 0) ; a = ${frac(A)} : ${ecrit(A, B, C, v)} est ${A > 0 ? "strictement positif" : "strictement négatif"} sur ℝ.`;
+  };
+  const vueSigne = (nom, A, B, C, v, fen, pas) => ({ nom: `${nom}(${v})`, fen, pas,
+    trace: R => { R.courbe(tri(A, B, C), { signe: true }); marquerRacines(R, A, B, C); },
+    constat: () => `${nom}(${v}) = ${ecrit(A, B, C, v)}<span class="petit">${signeTexte(A, B, C, v)} En bleu : positif ; en violet : négatif.</span>` });
+  const ineq = (txt, A, B, C, op, fen, pas, solTxt) => ({ nom: txt, fen, pas,
+    trace: R => { const f = tri(A, B, C); R.courbe(f, { signe: true }); R.solution(x => op(f(x))); racines(A, B, C).forEach(r => { const inclus = op(f(r)); R.g.appendChild(el("circle", { cx: R.X(r), cy: R.Y(0), r: 6.5, fill: inclus ? "var(--sol)" : "var(--carte)", stroke: "var(--sol)", "stroke-width": 2.5 })); }); },
+    constat: () => `${txt} : 𝒮 = <b class="o">${solTxt}</b><span class="petit">La solution se lit sur l'axe des abscisses, en orange : les x pour lesquels la parabole est ${txt.includes(">") || txt.includes("≥") ? "au-dessus" : "en dessous"} de l'axe${txt.includes("≤") || txt.includes("≥") ? " ou le touche" : ""}.</span>` });
+  const deux = (txt, f, g, op, fen, pas, solTxt, nf, ng) => ({ nom: txt, fen, pas,
+    trace: R => { R.courbe(f, { c: "var(--plus)", nom: nf }); R.courbe(g, { c: "var(--zero)", nom: ng, tirets: "10 7" }); R.solution(x => op(f(x), g(x))); },
+    constat: () => `${txt} : 𝒮 = <b class="o">${solTxt}</b><span class="petit">On compare les deux courbes : la solution, en orange sur l'axe, est l'ensemble des abscisses où la condition est vraie.</span>` });
+
+  const SCENES = {
+    e2: { titre: "Exercice 2 · Trois formes d'un même trinôme", chapeau: "f(x) = 2x² − 8x + 6 : la forme canonique donne le sommet, la forme factorisée donne les racines.",
+      vues: [{ fen: [-1, 5, -3, 8], trace: R => { R.courbe(tri(2, -8, 6), { signe: true }); sommet(R, 2, -8, 6); marquerRacines(R, 2, -8, 6); },
+        constat: () => `f(x) = 2x² − 8x + 6 = 2(x − 2)² − 2 = 2(x − 1)(x − 3)<span class="petit">Sommet S(2 ; −2), racines 1 et 3 (en orange).</span>` }] },
+    e3: { titre: "Exercice 3 · Choisir la bonne forme", chapeau: "f(x) = (x + 1)(3x − 2) − 5(x + 1)² : développée, factorisée, canonique.",
+      vues: [{ fen: [-5, 1.5, -8, 4.5], trace: R => { R.courbe(tri(-2, -9, -7), { signe: true }); sommet(R, -2, -9, -7); marquerRacines(R, -2, -9, -7); R.point(0, -7, "(0 ; −7)", { r: 4 }); },
+        constat: () => `f(x) = −2x² − 9x − 7 = (x + 1)(−2x − 7) = −2(x + 9/4)² + 25/8<span class="petit">Racines −1 et −7/2 ; sommet (−9/4 ; 25/8) ; f(0) = −7.</span>` }] },
+    e4: { titre: "Exercice 4 · Racines −2 et 5, et f(0) = 20", chapeau: "Toutes les paraboles a(x + 2)(x − 5) ont les racines −2 et 5 ; une seule passe par le point (0 ; 20).",
+      vues: [{ curseur: ["a", -3, 3, 0.5, 1], fen: [-4, 7, -30, 30], pas: [1, 5], trace: (R, a) => { R.courbe(x => a * (x + 2) * (x - 5), { signe: true }); R.point(-2, 0, null, { c: "var(--zero)" }); R.point(5, 0, null, { c: "var(--zero)" }); R.point(0, 20, "(0 ; 20)", { c: "var(--vert)" }); R.point(0, -10 * a, null, { r: 4 }); },
+        constat: a => `a = ${frac(a)} : f(0) = a × 2 × (−5) = ${frac(-10 * a)}` + (a === -2 ? ` : <b class="o">c'est la parabole cherchée</b>, f(x) = −2(x + 2)(x − 5) = −2x² + 6x + 20.` : "") }] },
+    e7: { titre: "Exercice 7 · Somme S et produit P", chapeau: "Deux réels de somme S et de produit P sont les racines du trinôme X² − SX + P, s'il en a.",
+      vues: [[7, 12, "3 et 4"], [-1, -6, "−3 et 2"], [6, 9, "3 et 3"], [2, 5, null]].map(([S, P, rep], i) => ({ nom: "abcd"[i] + ")", fen: [-5, 7, -8, 8],
+        trace: R => { R.courbe(tri(1, -S, P), { signe: true }); marquerRacines(R, 1, -S, P); },
+        constat: () => `S = ${frac(S)}, P = ${frac(P)} : X² − SX + P = ${ecrit(1, -S, P, "X")}<span class="petit">` + (rep ? `Les deux réels cherchés sont ${rep}.` : `Δ = 4 − 20 < 0 : le trinôme n'a pas de racine, ces deux réels n'existent pas.`) + "</span>" })) },
+    e10: { titre: "Exercice 10 · Le rectangle", chapeau: "Périmètre 34 cm : si une dimension vaut ℓ, l'autre vaut 17 − ℓ. Pour quelle valeur l'aire vaut-elle 72 cm² ?",
+      vues: [{ nom: "Périmètre 34", curseur: ["ℓ", 0, 17, 0.5, 4], fen: [0, 17.5, 0, 85], pas: [1, 10], trace: (R, l) => {
+          R.courbe(x => x * (17 - x), { c: "var(--plus)", dom: [0, 17], nom: "aire" }); R.droite(0, 72, { c: "var(--zero)", tirets: "8 6", ep: 1.6 }); R.point(l, l * (17 - l), null, { c: "var(--plus)" });
+          const k = 9, X0 = R.X(8.5) - l * k / 2, Y0 = R.Y(2);   // 9 pixels par centimètre, dans les deux sens
+          R.g.appendChild(el("rect", { x: X0, y: Y0 - (17 - l) * k, width: Math.max(l * k, 1), height: Math.max((17 - l) * k, 1), fill: "var(--plus)", "fill-opacity": .15, stroke: "var(--plus)", "stroke-width": 2 }));
+          if (l > 0.4) texte(X0 + l * k / 2, Y0 + 16, "ℓ", { "font-size": 15, "font-style": "italic", fill: "var(--plus)" });
+          if (l < 16.6) texte(X0 - 6, Y0 - (17 - l) * k / 2 + 5, "17 − ℓ", { "font-size": 15, "font-style": "italic", "text-anchor": "end", fill: "var(--plus)" }); },
+        constat: l => `ℓ = ${frac(l)} cm, L = ${frac(17 - l)} cm : aire = <b class="${l * (17 - l) === 72 ? "o" : ""}">${frac(l * (17 - l))} cm²</b>` + (l * (17 - l) === 72 ? " : ce sont les dimensions cherchées, 8 cm et 9 cm." : "") },
+        { nom: "Périmètre 20", curseur: ["ℓ", 0, 10, 0.5, 3], fen: [0, 10.5, 0, 35], pas: [1, 5], trace: (R, l) => { R.courbe(x => x * (10 - x), { c: "var(--plus)", dom: [0, 10], nom: "aire" }); R.droite(0, 30, { c: "var(--zero)", tirets: "8 6", ep: 1.6 }); R.point(l, l * (10 - l), null, { c: "var(--plus)" }); },
+          constat: l => `ℓ = ${frac(l)} cm : aire = ${frac(l * (10 - l))} cm²<span class="petit">L'aire ne dépasse jamais 25 cm² (carré de côté 5) : un rectangle de périmètre 20 cm et d'aire 30 cm² n'existe pas.</span>` }] },
+    e12: { titre: "Exercice 12 · L'équation x² + mx − 1 = 0", chapeau: "Quel que soit m, la parabole passe par (0 ; −1) : elle coupe l'axe des abscisses de part et d'autre de 0.",
+      vues: [{ curseur: ["m", -5, 5, 0.5, 1], fen: [-6, 6, -8, 8], trace: (R, m) => { R.courbe(tri(1, m, -1), { signe: true }); marquerRacines(R, 1, m, -1); R.point(0, -1, "(0 ; −1)", { r: 4, ancre: "end", dx: -8, dy: 20 }); },
+        constat: m => { const r = racines(1, m, -1); return `m = ${frac(m)} : Δ = m² + 4 = ${frac(m * m + 4)} > 0, racines ≈ ${fr(r[0])} et ${fr(r[1])}<span class="petit">Leur produit vaut c/a = −1 < 0 : elles sont de signes contraires.</span>`; } }] },
+    e13: { titre: "Exercice 13 · Signe d'un trinôme", chapeau: "La parabole est bleue au-dessus de l'axe (trinôme positif), violette en dessous (négatif). Les racines sont en orange.",
+      vues: [vueSigne("f", 1, -5, 4, "x", [-1, 6, -3, 6]), vueSigne("g", -3, 1, 1, "x", [-1.5, 1.5, -4, 2], [0.5, 1]), vueSigne("h", 2, -8, 8, "t", [-0.5, 4.5, -2, 8]), vueSigne("k", -1, 6, -9, "x", [0, 6, -8, 2]), vueSigne("l", 3, 2, 5, "x", [-2.5, 2, -2, 12], [0.5, 2]), vueSigne("m", -1, 3, -3, "t", [-1, 4, -6, 2])] },
+    e17: { titre: "Exercice 17 · x² + mx + 4 > 0 pour tout x", chapeau: "La parabole doit rester entièrement au-dessus de l'axe : pas de racine, c'est-à-dire Δ = m² − 16 < 0.",
+      vues: [{ curseur: ["m", -7, 7, 0.5, 2], fen: [-7, 7, -6, 12], pas: [1, 2], trace: (R, m) => { R.courbe(tri(1, m, 4), { signe: true }); marquerRacines(R, 1, m, 4); },
+        constat: m => `m = ${frac(m)} : Δ = m² − 16 = ${frac(m * m - 16)}` + (m * m < 16 ? ` < 0 : <b class="b">x² + mx + 4 > 0 pour tout x</b>.` : m * m === 16 ? " = 0 : le trinôme s'annule une fois, il n'est pas strictement positif partout." : " > 0 : le trinôme prend des valeurs négatives.") + `<span class="petit">L'ensemble cherché est ]−4 ; 4[.</span>` }] },
+    e18: { titre: "Exercice 18 · Inéquations du second degré", chapeau: "Résoudre ax² + bx + c < 0, c'est chercher où la parabole est sous l'axe des abscisses.",
+      vues: [ineq("x² − 5x + 6 < 0", 1, -5, 6, y => y < 0, [-1, 6, -2, 6], [1, 1], "]2 ; 3["), ineq("−x² + 3x + 4 ≤ 0", -1, 3, 4, y => y <= 1e-9, [-3, 6, -8, 7], [1, 1], "]−∞ ; −1] ∪ [4 ; +∞["),
+        ineq("−t² + 2t − 1 < 0", -1, 2, -1, y => y < -1e-9, [-2, 4, -6, 2], [1, 1], "ℝ \\ {1} = ]−∞ ; 1[ ∪ ]1 ; +∞["), ineq("x² − 4x + 4 ≥ 0", 1, -4, 4, y => y >= -1e-9, [-1, 5, -2, 6], [1, 1], "ℝ"),
+        ineq("x² + 4x + 5 < 0", 1, 4, 5, y => y < 0, [-5, 1, -2, 6], [1, 1], "∅"), ineq("−2t² + 3t − 5 ≤ 0", -2, 3, -5, y => y <= 0, [-2, 3, -10, 2], [1, 2], "ℝ")] },
+    e19: { titre: "Exercice 19 · Comparer deux expressions", chapeau: "Chaque inéquation compare deux courbes : la parabole (en bleu) et l'autre membre (en orange).",
+      vues: [deux("2x² ≤ 8", x => 2 * x * x, () => 8, (a, b) => a <= b + 1e-9, [-3.5, 3.5, -1, 12], [1, 2], "[−2 ; 2]", "y = 2x²", "y = 8"),
+        deux("x² < 3x", x => x * x, x => 3 * x, (a, b) => a < b, [-2, 5, -3, 12], [1, 2], "]0 ; 3[", "y = x²", "y = 3x"),
+        deux("(t − 1)² ≥ 4", x => (x - 1) ** 2, () => 4, (a, b) => a >= b - 1e-9, [-3, 5, -1, 10], [1, 1], "]−∞ ; −1] ∪ [3 ; +∞[", "y = (t − 1)²", "y = 4")] },
+    e20: { titre: "Exercice 20 · Une suite sur une parabole", chapeau: "uₙ = f(n) avec f(x) = x² − 6x + 10 : les termes de la suite sont des points de la parabole.",
+      vues: [{ fen: [-0.5, 8.5, -1, 30], pas: [1, 5], trace: R => { R.courbe(tri(1, -6, 10), { c: "var(--discret)", ep: 1.6 }); for (let n = 0; n <= 8; n++) R.point(n, n * n - 6 * n + 10, n <= 4 ? `u${"₀₁₂₃₄"[n]}` : null, { c: n >= 3 ? "var(--plus)" : "var(--moins)", dy: -12, dx: -4, ancre: "middle" }); },
+        constat: () => `u₀ = 10, u₁ = 5, u₂ = 2, u₃ = 1, u₄ = 2<span class="petit">uₙ₊₁ − uₙ = 2n − 5 > 0 pour n ≥ 3 : la suite est croissante à partir du rang 3 (en bleu).</span>` }] },
+    e22: { titre: "Exercice 22 · f(x) = mx² + 4x + 2(m − 1)", chapeau: "Selon m, la courbe coupe l'axe des abscisses en 0, 1 ou 2 points (m = 0 donne une droite).",
+      vues: [{ curseur: ["m", -4, 4, 0.5, 1], fen: [-6, 6, -12, 12], pas: [1, 2], trace: (R, m) => { R.courbe(tri(m, 4, 2 * (m - 1)), { signe: true }); marquerRacines(R, m, 4, 2 * (m - 1)); },
+        constat: m => { const r = racines(m, 4, 2 * (m - 1)); const D = 16 - 8 * m * (m - 1); return `m = ${frac(m)} : ` + (m === 0 ? "f(x) = 4x − 2 est affine : une seule solution, x = 1/2." : `Δ = ${frac(D)}, ${r.length === 0 ? "aucune solution" : r.length === 1 ? "une unique solution" : "deux solutions"}` + (m < -1 ? ' ; <b class="m">f(x) &lt; 0 pour tout x</b>' : "")) + `<span class="petit">Une unique solution pour m ∈ {−1 ; 0 ; 2} ; deux racines distinctes pour m ∈ ]−1 ; 0[ ∪ ]0 ; 2[ ; f(x) &lt; 0 pour tout x si m &lt; −1.</span>`; } }] },
+    e23: { titre: "Exercice 23 · Confitures : coût, recette, bénéfice", chapeau: "C(x) = 0,25x² + 500 et R(x) = 30x : le bénéfice est positif quand la recette dépasse le coût.",
+      vues: [{ nom: "C et R", fen: [0, 160, 0, 7000], pas: [20, 1000], trace: R => { R.courbe(x => 0.25 * x * x + 500, { c: "var(--plus)", nom: "C", dom: [0, 160] }); R.courbe(x => 30 * x, { c: "var(--zero)", nom: "R", tirets: "10 7", dom: [0, 160] }); R.solution(x => 30 * x > 0.25 * x * x + 500); },
+        constat: () => `R(x) > C(x) pour x ∈ ]20 ; 100[<span class="petit">Entre 20 et 100 cartons, la recette (en orange) dépasse le coût (en bleu).</span>` },
+        { nom: "Bénéfice B", fen: [0, 160, -3000, 500], pas: [20, 500], trace: R => { R.courbe(x => -0.25 * (x - 100) * (x - 20), { signe: true, dom: [0, 160] }); R.point(20, 0, null, { c: "var(--zero)" }); R.point(100, 0, null, { c: "var(--zero)" }); R.point(60, 400, "(60 ; 400)", { r: 4 }); },
+          constat: () => `B(x) = −0,25(x − 100)(x − 20)<span class="petit">Bénéfice positif pour x ∈ [20 ; 100], maximal (400 €) pour 60 cartons.</span>` }] },
+    e24: { titre: "Exercice 24 · La balle lancée vers le haut", chapeau: "h(t) = −5t² + 20t. Faites avancer le temps : quand la balle est-elle à au moins 15 m ?",
+      vues: [{ curseur: ["t", 0, 4, 0.1, 0.5], fen: [-0.2, 5.4, -1, 23], pas: [1, 5], trace: (R, t) => {
+          R.courbe(tri(-5, 20, 0), { c: "var(--plus)", dom: [0, 4] }); R.droite(0, 15, { c: "var(--zero)", tirets: "8 6", ep: 1.6 }); R.solution(x => x >= 1 && x <= 3);
+          const h = -5 * t * t + 20 * t; R.point(t, h, null, { c: "var(--plus)" }); R.seg(4.8, 0, 4.8, 22, { c: "var(--discret)", ep: 1 }); R.g.appendChild(el("circle", { cx: R.X(4.8), cy: R.Y(h), r: 11, fill: "var(--zero)" })); },
+        constat: t => { const h = -5 * t * t + 20 * t; return `t = ${fr(t, 1)} s : h(t) = ${fr(h, 2)} m` + (h >= 15 - 1e-9 ? ' <b class="o">(au moins 15 m)</b>' : "") + `<span class="petit">La balle retombe au bout de 4 s, monte à 20 m (à t = 2 s) et reste à au moins 15 m pendant 2 s, de t = 1 à t = 3.</span>`; } }] },
+    e25: { titre: "Exercice 25 · Composants électroniques", chapeau: "C(x) = x² − 4x + 18 et R(x) = 7x (en milliers) : l'entreprise est bénéficiaire quand R(x) > C(x).",
+      vues: [{ fen: [0, 12, 0, 120], pas: [1, 10], trace: R => { R.courbe(tri(1, -4, 18), { c: "var(--plus)", nom: "C", dom: [0, 12] }); R.courbe(x => 7 * x, { c: "var(--zero)", nom: "R", tirets: "10 7", dom: [0, 12] }); R.solution(x => 7 * x > x * x - 4 * x + 18); },
+        constat: () => `R(x) > C(x) ⟺ x² − 11x + 18 &lt; 0 ⟺ x ∈ ]2 ; 9[<span class="petit">Entre 2 000 et 9 000 articles, la recette dépasse le coût.</span>` }] },
+    e26: { titre: "Exercice 26 · Le téléphone qui tombe", chapeau: "h(t) = −5t² + 20 : le téléphone touche le sol quand h(t) = 0.",
+      vues: [{ curseur: ["t", 0, 2, 0.1, 0.5], fen: [-0.2, 2.8, -1, 22], pas: [0.5, 5], trace: (R, t) => { R.courbe(tri(-5, 0, 20), { c: "var(--plus)", dom: [0, 2] }); const h = 20 - 5 * t * t; R.point(t, h, null, { c: "var(--plus)" }); R.seg(2.5, 0, 2.5, 20, { c: "var(--discret)", ep: 1 }); R.g.appendChild(el("rect", { x: R.X(2.5) - 7, y: R.Y(h) - 11, width: 14, height: 22, rx: 3, fill: "var(--zero)" })); },
+        constat: t => `t = ${fr(t, 1)} s : h(t) = ${fr(20 - 5 * t * t, 2)} m<span class="petit">h(t) = 0 ⟺ t² = 4 ⟺ t = 2 (t ≥ 0) : le téléphone touche le sol au bout de 2 secondes.</span>` }] },
+    e27: { titre: "Exercice 27 · La balle de tennis", chapeau: "y = −0,05x² + 0,4x + 1 : la balle passe-t-elle au-dessus du filet (1 m de haut, à 5 m) ?",
+      vues: [{ fen: [-0.5, 11.5, -0.3, 2.5], pas: [1, 0.5], trace: R => { R.courbe(tri(-0.05, 0.4, 1), { c: "var(--plus)", dom: [0, 10] }); R.seg(5, 0, 5, 1, { c: "var(--encre)", ep: 4 }); R.point(5, 1.75, "(5 ; 1,75)", { r: 4.5, c: "var(--plus)" }); R.point(10, 0, "10", { c: "var(--zero)", dy: -12 }); },
+        constat: () => `y(5) = 1,75 > 1 : la balle passe au-dessus du filet.<span class="petit">Elle retombe à 10 m du joueur : −0,05x² + 0,4x + 1 = 0 ⟺ x² − 8x − 20 = 0 ⟺ x = 10 (x ≥ 0).</span>` }] },
+    e31: { titre: "Exercice 31 · Racines −1 et 3, sommet C(1 ; 8)", chapeau: "f(x) = a(x + 1)(x − 3) passe par C(1 ; 8) pour a = −2. Puis on résout f(x) ≥ 6.",
+      vues: [{ fen: [-2, 4, -2, 10], pas: [1, 2], trace: R => { const f = x => -2 * (x + 1) * (x - 3); R.courbe(f, { c: "var(--plus)" }); R.droite(0, 6, { c: "var(--zero)", tirets: "8 6", ep: 1.6 }); R.point(1, 8, "C(1 ; 8)", { r: 4.5 }); R.solution(x => f(x) >= 6 - 1e-9); },
+        constat: () => `f(x) = −2x² + 4x + 6 ≥ 6 ⟺ x(−2x + 4) ≥ 0 ⟺ x ∈ [0 ; 2]` }] },
+    e32: { titre: "Exercice 32 · L'enclos le long d'un mur", chapeau: "40 m de grillage sur trois côtés : l'aire vaut A(x) = x(40 − 2x). Déplacez x.",
+      vues: [{ curseur: ["x", 0, 20, 0.5, 6], fen: [0, 21, -20, 230], pas: [2, 20], trace: (R, x) => {
+          R.courbe(x => x * (40 - 2 * x), { c: "var(--plus)", dom: [0, 20] }); R.point(x, x * (40 - 2 * x), null, { c: "var(--plus)" });
+          const k = 5, X0 = R.X(13.3), Y0 = R.Y(212); svg.appendChild(el("line", { x1: X0 - 6, y1: Y0, x2: X0 + 40 * k + 6, y2: Y0, stroke: "var(--encre)", "stroke-width": 6 }));
+          svg.appendChild(el("rect", { x: X0 + (40 - (40 - 2 * x)) * k / 2, y: Y0, width: (40 - 2 * x) * k, height: x * k, fill: "var(--plus)", "fill-opacity": .14, stroke: "var(--zero)", "stroke-width": 2.5 }));
+          texte(X0 - 10, Y0 + 5, "mur", { "font-size": 13, fill: "var(--discret)", "font-family": "var(--ui)", "text-anchor": "end" }); },
+        constat: x => `x = ${frac(x)} m : l'autre côté mesure ${frac(40 - 2 * x)} m, A(x) = <b>${frac(x * (40 - 2 * x))} m²</b><span class="petit">L'aire est maximale pour x = 10 m : 200 m².</span>` }] },
+    e35: { titre: "Exercice 35 · Une parabole et des droites", chapeau: "𝒫 : y = x² − 3x + 1 et dₘ : y = mx − 3 passant par (0 ; −3). Combien de points communs selon m ?",
+      vues: [{ curseur: ["m", -10, 4, 0.5, -2], fen: [-4, 6, -10, 14], pas: [1, 2], trace: (R, m) => { R.courbe(tri(1, -3, 1), { c: "var(--plus)", nom: "𝒫" }); R.droite(m, -3, { c: "var(--zero)" }); R.point(0, -3, null, { r: 4 }); racines(1, -(m + 3), 4).forEach(x => R.point(x, m * x - 3, null, { c: "var(--moins)", r: 6.5 })); },
+        constat: m => { const n = racines(1, -(m + 3), 4).length; return `m = ${frac(m)} : Δ = (m − 1)(m + 7) = ${frac((m - 1) * (m + 7))}, <b>${n} point${n > 1 ? "s" : ""} d'intersection</b><span class="petit">Deux points si m &lt; −7 ou m > 1, un seul (tangente) si m = −7 ou m = 1, aucun entre les deux.</span>`; } }] },
+    e36: { titre: "Exercice 36 · Le point de d le plus proche de A", chapeau: "M parcourt la droite d : y = 2x + 3 ; f(x) = AM² est un trinôme du second degré.",
+      vues: [{ nom: "La figure", curseur: ["x", -3, 2, 0.1, 0.5], fen: [-4, 4, -3, 5], trace: (R, x) => { R.droite(2, 3, { c: "var(--plus)", nom: "d" }); R.point(1, 1, "A(1 ; 1)"); R.point(-0.6, 1.8, null, { c: "var(--discret)", r: 3 }); R.seg(1, 1, x, 2 * x + 3, { c: "var(--zero)", ep: 2.6 }); R.point(x, 2 * x + 3, "M", { c: "var(--zero)" }); },
+          constat: x => `x = ${fr(x, 1)} : AM² = 5x² + 6x + 5 = <b>${fr(5 * x * x + 6 * x + 5, 2)}</b><span class="petit">AM² est minimal pour x = −0,6 : la distance minimale vaut √3,2.</span>` },
+        { nom: "La fonction f", curseur: ["x", -3, 2, 0.1, 0.5], fen: [-3.2, 2.2, 0, 40], pas: [1, 5], trace: (R, x) => { R.courbe(tri(5, 6, 5), { c: "var(--plus)" }); R.point(x, 5 * x * x + 6 * x + 5, null, { c: "var(--zero)" }); R.point(-0.6, 3.2, "(−0,6 ; 3,2)", { r: 4 }); },
+          constat: x => `f(${fr(x, 1)}) = ${fr(5 * x * x + 6 * x + 5, 2)}` }] },
+    e37: { titre: "Exercice 37 · Position relative de deux paraboles", chapeau: "f(x) − g(x) = 2(x + 1)(x − 3) : son signe dit laquelle des deux courbes est au-dessus.",
+      vues: [{ fen: [-3, 5, -4, 10], pas: [1, 2], trace: R => { const f = tri(1, -2, -1), g = tri(-1, 2, 5); R.courbe(f, { c: "var(--plus)", nom: "𝒞f" }); R.courbe(g, { c: "var(--zero)", nom: "𝒞g", tirets: "10 7", xNom: 1.5, dyNom: -14 }); R.point(-1, 2, "(−1 ; 2)", { c: "var(--moins)", ancre: "end", dx: -10 }); R.point(3, 2, "(3 ; 2)", { c: "var(--moins)" }); R.solution(x => f(x) > g(x), { c: "var(--plus)" }); },
+        constat: () => `𝒞f est au-dessus de 𝒞g sur ]−∞ ; −1[ et sur ]3 ; +∞[ (en bleu sur l'axe), en dessous entre −1 et 3.` }] },
+  };
+  const fmtP = x => fr(x, 2);
+  function rendu(v) {
+    svg.textContent = ""; H = v.H || 500; svg.setAttribute("viewBox", `0 0 900 ${H}`);
+    const p = v.p, R = repere(typeof v.fen === "function" ? v.fen(p) : v.fen, v.pas || [1, 1]);
+    v.trace(R, p);
+    $("constat").innerHTML = v.constat(p);
+  }
+  function dessiner(v) {   // les commandes ne sont construites qu'à l'ouverture : un curseur qu'on fait glisser n'est jamais remplacé
+    const c = $("commandes"); c.textContent = "";
+    if (v.curseur) curseur(c, v.curseur[0], v.curseur[1], v.curseur[2], v.curseur[3], v.p, val => { v.p = val; rendu(v); }, fmtP);
+    rendu(v);
+  }
+  lancer(SCENES, "e13", dessiner);
+
+})();
+</script>
+
+<!-- plein-ecran : bouton commun à toutes les pages interactives -->
+<style>
+#pleinEcran { position: fixed; top: calc(10px + env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); z-index: 50; font: 500 13px var(--ui, system-ui, sans-serif); padding: 6px 12px; border-radius: 999px; border: 1px solid var(--filet, #d9dee5); background: var(--carte, #fff); color: var(--encre, #1b1f24); cursor: pointer; opacity: .9; }
+#pleinEcran:hover { opacity: 1; }
+body.plein-ecran .niveau, body.plein-ecran h1 + .chapeau { display: none !important; }
+body.plein-ecran .page { max-width: none !important; min-height: 100vh; padding-top: 48px !important; align-content: start; }
+body.plein-ecran .page svg:not(.mini) { max-height: 66vh; }
+body.plein-ecran .constat { font-size: clamp(20px, 2.6vw, 30px); }
+</style>
+<script>
+(() => {
+  const b = document.createElement("button");
+  b.type = "button"; b.id = "pleinEcran"; document.body.appendChild(b);
+  function etat(on) { document.body.classList.toggle("plein-ecran", on); b.textContent = on ? "✕ Quitter le plein écran" : "⛶ Plein écran"; b.setAttribute("aria-pressed", on); window.dispatchEvent(new Event("resize")); }
+  b.addEventListener("click", async () => {
+    const on = !document.body.classList.contains("plein-ecran");
+    etat(on);
+    try { on ? await document.documentElement.requestFullscreen() : (document.fullscreenElement && await document.exitFullscreen()); } catch (e) {}
+  });
+  document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement && document.body.classList.contains("plein-ecran")) etat(false); });
+  window.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("plein-ecran")) etat(false); });
+  etat(location.hash === "#plein");
+})();
+</script>
+
+</body></html>

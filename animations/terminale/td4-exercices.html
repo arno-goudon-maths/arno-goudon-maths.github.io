@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;box-sizing:border-box}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head><body>
+<title>TD4 en images</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Terminale, chapitre 4, TD4 : une figure de l'espace par exercice, qu'on fait tourner au doigt,
+   choisie par l'ancre de l'adresse (#e3 = exercice 3), pour les QR codes placés à côté des exercices.
+   Couleurs des autres pages du chapitre : bleu et orange pour les deux objets comparés,
+   violet pour un point d'intersection, arêtes cachées en pointillés. */
+:root {
+  --papier: #f7f8fa; --carte: #ffffff; --encre: #1b1f24; --discret: #5d6672; --filet: #d9dee5; --grille: #e7eaef;
+  --bleu: #1a56db; --orange: #f07800; --rouge: #d81b2c; --violet: #7b2cbf; --vert: #0b8a3a;
+  --math: "STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --ui: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #252b34; --bleu: #6fa3f0; --orange: #ffa040; --rouge: #ff6b6b; --violet: #c49bff; --vert: #5fd38a; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #252b34; --bleu: #6fa3f0; --orange: #ffa040; --rouge: #ff6b6b; --violet: #c49bff; --vert: #5fd38a; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--papier); color: var(--encre); font-family: var(--ui); font-size: 15px; line-height: 1.5; margin: 0; }
+.page { max-width: 920px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 40px; display: grid; gap: 12px; }
+.tete { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; padding-right: 140px; }
+.niveau { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--discret); }
+select { font: 500 13px var(--ui); padding: 3px 8px; border-radius: 8px; border: 1px solid var(--filet); background: var(--carte); color: var(--encre); max-width: 100%; }
+h1 { font-family: var(--math); font-weight: 600; font-size: clamp(24px, 3.6vw, 34px); line-height: 1.15; margin: 0; text-wrap: balance; }
+.chapeau { margin: 0; color: var(--discret); max-width: 70ch; }
+.onglets, .commandes { display: flex; gap: 6px 12px; flex-wrap: wrap; align-items: center; }
+.onglets button, .commandes button { font: 500 13px var(--ui); padding: 4px 12px; border-radius: 999px; border: 1px solid var(--filet); background: var(--carte); color: var(--encre); cursor: pointer; }
+.onglets button[aria-pressed="true"], .commandes button[aria-pressed="true"] { background: var(--encre); color: var(--carte); border-color: var(--encre); }
+.commandes label { font: 500 13px var(--ui); color: var(--discret); display: flex; align-items: center; gap: 8px; }
+.commandes input[type=range] { width: min(300px, 55vw); accent-color: var(--bleu); }
+.aide { font-size: 13px; color: var(--discret); }
+.figure { background: var(--carte); border: 1px solid var(--filet); border-radius: 10px; overflow: hidden; touch-action: none; cursor: grab; }
+.figure:active { cursor: grabbing; }
+svg { display: block; width: 100%; height: auto; user-select: none; -webkit-user-select: none; }
+.constat { font-family: var(--math); font-size: clamp(16px, 2.1vw, 19px); margin: 0; padding: 10px 14px; border-radius: 10px; border: 1.5px solid var(--filet); background: var(--carte); text-align: center; }
+.constat .conclu { display: block; margin-top: 4px; font-family: var(--ui); font-size: 15px; color: var(--encre); }
+.vec { font-style: italic; position: relative; display: inline-block; padding-top: .16em; }
+.vec::before { content: ""; position: absolute; left: .02em; right: -.04em; top: .04em; border-top: 1.3px solid currentColor; }
+.vec::after { content: ""; position: absolute; right: -.08em; top: -.12em; border: .18em solid transparent; border-left: .3em solid currentColor; border-right: 0; }
+.b { color: var(--bleu); } .o { color: var(--orange); } .vi { color: var(--violet); }
+</style>
+
+<div class="page">
+  <div class="tete">
+    <span class="niveau">Terminale · Chapitre 4 · TD4</span>
+    <select id="choix" aria-label="Exercice"></select>
+  </div>
+  <h1 id="titre"></h1>
+  <p class="chapeau" id="chapeau"></p>
+  <div class="onglets" id="onglets"></div>
+  <div class="figure" id="fig"><svg id="g" viewBox="0 0 900 520" role="img" aria-label="Figure de l'espace de l'exercice"></svg></div>
+  <div class="commandes" id="commandes"></div>
+  <p class="constat" id="constat" aria-live="polite"></p>
+</div>
+
+<script>
+(() => {
+  const NS = "http://www.w3.org/2000/svg", $ = id => document.getElementById(id);
+  const el = (t, a, txt) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); if (txt != null) e.textContent = txt; return e; };
+  const svg = $("g"), W = 900, H = 520;
+  const add = (a, b) => a.map((x, i) => x + b[i]), sub = (a, b) => a.map((x, i) => x - b[i]), mul = (a, k) => a.map(x => x * k);
+  const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+  const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+  const fr = (x, d = 2) => { const r = Number(x.toFixed(d)); return (r < 0 ? "−" : "") + String(Math.abs(r)).replace(".", ","); };
+  const frac = x => { for (const q of [1, 2, 3, 4, 5, 6, 8]) { const p = Math.round(x * q); if (Math.abs(p / q - x) < 1e-9) return q === 1 ? fr(p, 0) : (p < 0 ? "−" : "") + Math.abs(p) + "/" + q; } return fr(x, 2); };
+  const coord = P => `(${frac(P[0])} ; ${frac(P[1])} ; ${frac(P[2])})`;
+
+  // ---------- solides, dans les coordonnées de leur repère ----------
+  const SOLIDES = {
+    cube: { pts: { A: [0, 0, 0], B: [1, 0, 0], C: [1, 1, 0], D: [0, 1, 0], E: [0, 0, 1], F: [1, 0, 1], G: [1, 1, 1], H: [0, 1, 1] }, faces: ["ABCD", "EFGH", "ABFE", "BCGF", "CDHG", "DAEH"], base: [[1, 0, 0], [0, 1, 0], [0, 0, 1]] },
+    // exercice 1 : la figure du TD nomme le cube en miroir (B en avant à gauche, A en avant à droite)
+    cubeMiroir: { pts: { B: [0, 0, 0], A: [1, 0, 0], D: [1, 1, 0], C: [0, 1, 0], F: [0, 0, 1], E: [1, 0, 1], H: [1, 1, 1], G: [0, 1, 1] }, faces: ["ABCD", "EFGH", "ABFE", "BCGF", "CDHG", "DAEH"], base: [[1, 0, 0], [0, 1, 0], [0, 0, 1]] },
+    tetra: { pts: { A: [0, 0, 0], B: [1, 0, 0], C: [0, 1, 0], D: [0, 0, 1] }, faces: ["ABC", "ACD", "ABD", "BCD"], origine: [0.9, 0.35, 1.55], base: [[-0.9, -0.35, -1.55], [0.15, -0.95, -1.55], [1.0, -0.15, -1.55]] },
+    pyramide: { pts: { A: [0, 0, 0], B: [1, 0, 0], C: [1, 1, 0], D: [0, 1, 0], S: [0, 0, 1] }, faces: ["ABCD", "SAB", "SBC", "SCD", "SDA"], base: [[1, 0, 0], [0, 1, 0], [0.5, 0.5, 1.25]] },
+    pave: { pts: { A: [0, 0, 0], B: [1, 0, 0], C: [1, 1, 0], D: [0, 1, 0], E: [0, 0, 1], F: [1, 0, 1], G: [1, 1, 1], H: [0, 1, 1] }, faces: ["ABCD", "EFGH", "ABFE", "BCGF", "CDHG", "DAEH"], base: [[1.6, 0, 0], [0, 1.1, 0], [0, 0, 1]] },
+  };
+  const ID = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
+
+  // ---------- caméra et projection ----------
+  const cam = { az: -0.5, el: 0.38 };
+  let S = null, V = null, monde = null, proj = null, ech = 1, centre = [0, 0, 0];
+  function versMonde(P) { const b = S.solideDef ? S.solideDef.base : ID, o = S.solideDef && S.solideDef.origine || [0, 0, 0]; return add(o, add(mul(b[0], P[0]), add(mul(b[1], P[1]), mul(b[2], P[2])))); }
+  function projeter(w) {
+    const p = sub(w, centre), ca = Math.cos(cam.az), sa = Math.sin(cam.az), ce = Math.cos(cam.el), se = Math.sin(cam.el);
+    const x1 = p[0] * ca - p[1] * sa, y1 = p[0] * sa + p[1] * ca;
+    return [W / 2 + ech * x1, H / 2 + 10 - ech * (p[2] * ce + y1 * se), y1 * ce - p[2] * se];
+  }
+  const vue = () => [Math.sin(cam.az) * Math.cos(cam.el), Math.cos(cam.az) * Math.cos(cam.el), -Math.sin(cam.el)];
+
+  // ---------- dessin ----------
+  const trait = (a, b, o) => svg.appendChild(el("line", Object.assign({ x1: a[0], y1: a[1], x2: b[0], y2: b[1], "stroke-linecap": "round" }, o)));
+  const texte = (x, y, t, o = {}) => svg.appendChild(el("text", Object.assign({ x, y, "text-anchor": "middle", "font-family": "var(--math)", "font-style": "italic", "font-size": 19, fill: "var(--encre)", "paint-order": "stroke", stroke: "var(--carte)", "stroke-width": 4.5 }, o), t));
+  function fleche(a, b, coul, ep = 3) {
+    const L = Math.hypot(b[0] - a[0], b[1] - a[1]); if (L < 2) return;
+    const ux = (b[0] - a[0]) / L, uy = (b[1] - a[1]) / L, t = 14;
+    trait(a, [b[0] - ux * t * .8, b[1] - uy * t * .8], { stroke: coul, "stroke-width": ep });
+    svg.appendChild(el("path", { d: `M${b[0]},${b[1]} L${b[0] - ux * t - uy * t * .4},${b[1] - uy * t + ux * t * .4} L${b[0] - ux * t + uy * t * .4},${b[1] - uy * t - ux * t * .4} Z`, fill: coul }));
+  }
+  const COUL = { b: "var(--bleu)", o: "var(--orange)", v: "var(--violet)", r: "var(--rouge)", g: "var(--vert)", n: "var(--encre)", d: "var(--discret)" };
+
+  // le plan passant par trois points, découpé dans une boîte (coordonnées du repère)
+  function planDansBoite(P, Q, R, bo) {
+    const n = cross(sub(Q, P), sub(R, P)), d = dot(n, P), pts = [];
+    const [[x0, x1], [y0, y1], [z0, z1]] = bo, coins = [];
+    for (const x of [x0, x1]) for (const y of [y0, y1]) for (const z of [z0, z1]) coins.push([x, y, z]);
+    for (let i = 0; i < 8; i++) for (let j = i + 1; j < 8; j++) {
+      const a = coins[i], b = coins[j], diff = sub(b, a).filter(v => Math.abs(v) > 1e-12).length; if (diff !== 1) continue;
+      const fa = dot(n, a) - d, fb = dot(n, b) - d; if (fa * fb > 1e-12 || (Math.abs(fa) < 1e-12 && Math.abs(fb) < 1e-12)) continue;
+      if (Math.abs(fa - fb) < 1e-12) continue;
+      pts.push(add(a, mul(sub(b, a), fa / (fa - fb))));
+    }
+    const u = pts.filter((p, i) => pts.findIndex(q => Math.hypot(...sub(p, q)) < 1e-6) === i);
+    if (u.length < 3) return [];
+    const c = mul(u.reduce((s, p) => add(s, p), [0, 0, 0]), 1 / u.length), e1 = sub(u[0], c), e2 = cross(n, e1);
+    return u.sort((p, q) => Math.atan2(dot(sub(p, c), e2), dot(sub(p, c), e1)) - Math.atan2(dot(sub(q, c), e2), dot(sub(q, c), e1)));
+  }
+
+  function resoudre(x, pts) { return typeof x === "string" ? pts[x] : x; }
+
+  function dessiner() {
+    svg.textContent = "";
+    const val = etat.val;
+    const r = typeof V.f === "function" ? V.f(val) : V;
+    const pts = Object.assign({}, S.solideDef ? S.solideDef.pts : {}, S.points || {}, r.points || {});
+    const elems = r.elems || [];
+    // cadrage : sur les points de la scène (calculé à l'ouverture de la vue, puis fixe)
+    if (!monde) {
+      const bouts = elems.filter(e => e.t === "droite").flatMap(e => { const A = resoudre(e.P, pts), u = e.u || sub(resoudre(e.Q, pts), A), [t1, t2] = e.t12 || [-0.7, 1.7]; return [add(A, mul(u, t1)), add(A, mul(u, t2))]; });
+      const L = Object.values(pts).concat(V.cadre || [], S.axes ? bouts : []).map(versMonde);
+      centre = mul(L.reduce((s, p) => add(s, p), [0, 0, 0]), 1 / L.length);
+      const R = Math.max(...L.map(p => Math.hypot(...sub(p, centre))), 0.5);
+      ech = Math.min(W, H) * 0.4 / R * (V.zoom || S.zoom || 1);
+      monde = true;
+    }
+    const P2 = k => projeter(versMonde(resoudre(k, pts)));
+    // repère : axes et vecteurs de base
+    if (S.axes) {
+      const O = projeter(versMonde([0, 0, 0])), L = S.axesL || 1;
+      [["x", [L, 0, 0]], ["y", [0, L, 0]], ["z", [0, 0, L]]].forEach(([n, v]) => { const a = projeter(versMonde(mul(v, -1))), b = projeter(versMonde(v)); trait(a, b, { stroke: "var(--discret)", "stroke-width": 1, "stroke-dasharray": "2 4" }); fleche(O, projeter(versMonde(mul(v, 1 / L))), "var(--discret)", 1.6); });
+      texte(O[0] - 12, O[1] + 18, "O", { fill: "var(--discret)", "font-size": 16 });
+    }
+    // solide : faces vues ou cachées, arêtes cachées en pointillés
+    if (S.solideDef) {
+      const Sd = S.solideDef, cG = mul(Object.values(Sd.pts).map(versMonde).reduce((s, p) => add(s, p), [0, 0, 0]), 1 / Object.keys(Sd.pts).length);
+      const d = vue(), vis = {};
+      Sd.faces.forEach(f => {
+        const W3 = f.split("").map(k => versMonde(Sd.pts[k]));
+        let n = cross(sub(W3[1], W3[0]), sub(W3[2], W3[0])); if (dot(n, sub(W3[0], cG)) < 0) n = mul(n, -1);
+        const visible = dot(n, d) < 0;
+        for (let i = 0; i < f.length; i++) { const k = [f[i], f[(i + 1) % f.length]].sort().join(""); vis[k] = vis[k] || visible; }
+      });
+      for (const k in vis) trait(P2(k[0]), P2(k[1]), vis[k] ? { stroke: "var(--encre)", "stroke-width": 1.6 } : { stroke: "var(--discret)", "stroke-width": 1.2, "stroke-dasharray": "5 5" });
+    }
+    // éléments de la vue, dans l'ordre : plans, polygones, droites, segments, vecteurs, points
+    const ordre = ["plan", "poly", "droite", "seg", "vec", "pt"];
+    const boite = V.boite || S.boite || [[-0.35, 1.35], [-0.35, 1.35], [-0.35, 1.35]];
+    elems.slice().sort((a, b) => ordre.indexOf(a.t) - ordre.indexOf(b.t)).forEach(e => {
+      const c = COUL[e.c || "b"];
+      if (e.t === "plan") {
+        const poly = planDansBoite(...e.pts.map(k => resoudre(k, pts)), e.boite || boite).map(p => projeter(versMonde(p)));
+        if (poly.length) svg.appendChild(el("polygon", { points: poly.map(p => p.slice(0, 2).join(",")).join(" "), fill: c, "fill-opacity": 0.13, stroke: c, "stroke-opacity": 0.5, "stroke-width": 1 }));
+        if (e.nom) { const m = poly.reduce((s, p) => [s[0] + p[0] / poly.length, s[1] + p[1] / poly.length], [0, 0]); texte(m[0], m[1], e.nom, { fill: c, "font-size": 17 }); }
+      } else if (e.t === "poly") {
+        const poly = e.pts.map(P2);
+        svg.appendChild(el("polygon", { points: poly.map(p => p.slice(0, 2).join(",")).join(" "), fill: c, "fill-opacity": 0.22, stroke: c, "stroke-width": 2.6, "stroke-linejoin": "round" }));
+      } else if (e.t === "droite") {
+        const A = resoudre(e.P, pts), u = e.u || sub(resoudre(e.Q, pts), A), [t1, t2] = e.t12 || [-0.7, 1.7];
+        trait(projeter(versMonde(add(A, mul(u, t1)))), projeter(versMonde(add(A, mul(u, t2)))), { stroke: c, "stroke-width": e.ep || 2.4 });
+        if (e.nom) { const q = projeter(versMonde(add(A, mul(u, e.tNom ?? t2)))); texte(q[0] + 10, q[1] - 8, e.nom, { fill: c, "text-anchor": "start", "font-size": 18 }); }
+      } else if (e.t === "seg") {
+        trait(P2(e.P), P2(e.Q), { stroke: c, "stroke-width": e.ep || 3.4, "stroke-dasharray": e.tirets ? "6 5" : "" });
+      } else if (e.t === "vec") {
+        fleche(P2(e.P), P2(e.Q), c, e.ep || 3);
+        if (e.nom) { const a = P2(e.P), b = P2(e.Q); texte((a[0] + b[0]) / 2 + 12, (a[1] + b[1]) / 2 - 10, e.nom, { fill: c, "font-size": 17, "font-style": "normal" }); }
+      }
+    });
+    // noms des points, écartés du centre de la figure
+    const noms = new Set([...(S.solideDef ? Object.keys(S.solideDef.pts) : []), ...Object.keys(S.points || {}), ...Object.keys(r.points || {})]);
+    (r.cacher || []).forEach(k => noms.delete(k));
+    const cE = projeter(centre);
+    noms.forEach(k => {
+      const p = P2(k), e = elems.find(x => x.t === "pt" && x.P === k), c = e ? COUL[e.c || "v"] : "var(--encre)";
+      const dx = p[0] - cE[0], dy = p[1] - cE[1], L = Math.hypot(dx, dy) || 1;
+      svg.appendChild(el("circle", { cx: p[0], cy: p[1], r: e ? 5.5 : 3.2, fill: c }));
+      texte(p[0] + 17 * dx / L, p[1] + 17 * dy / L + 6, k, { fill: c, "font-size": e ? 20 : 18 });
+    });
+    // texte
+    let html = r.texte || "";
+    if (r.conclusion) html += etat.conclu ? `<span class="conclu">${r.conclusion}</span>` : "";
+    $("constat").innerHTML = html || "&nbsp;";
+    $("constat").hidden = !html;
+    const bc = $("btnConclu"); if (bc) bc.hidden = !r.conclusion;
+  }
+
+  // ---------- rotation au doigt ----------
+  (() => {
+    let x0 = null, y0 = null;
+    $("fig").addEventListener("pointerdown", e => { x0 = e.clientX; y0 = e.clientY; $("fig").setPointerCapture(e.pointerId); });
+    $("fig").addEventListener("pointermove", e => { if (x0 == null) return; cam.az -= (e.clientX - x0) * 0.008; cam.el = Math.max(-1.2, Math.min(1.4, cam.el + (e.clientY - y0) * 0.008)); x0 = e.clientX; y0 = e.clientY; dessiner(); });
+    const fin = () => { x0 = null; }; $("fig").addEventListener("pointerup", fin); $("fig").addEventListener("pointercancel", fin);
+  })();
+
+  // ---------- les exercices (numéros du TD4) ----------
+  const m = (P, Q, k = 0.5) => add(P, mul(sub(Q, P), k));
+  const CU = SOLIDES.cube.pts, CM = SOLIDES.cubeMiroir.pts, TE = SOLIDES.tetra.pts, PY = SOLIDES.pyramide.pts;
+  const pt = (P, c = "v") => ({ t: "pt", P, c });
+  const SCENES = {
+    e1: { titre: "Exercice 1 · Positions relatives dans le cube", chapeau: "L, M et N sont les milieux de [BC], [CD] et [DH]. Choisissez une question : les deux objets sont tracés en bleu et en orange.",
+      solide: "cubeMiroir", points: { L: m(CM.B, CM.C), M: m(CM.C, CM.D), N: m(CM.D, CM.H) },
+      vues: [
+        { nom: "1", texte: '<span class="b">(ML)</span> et <span class="o">(HF)</span>', elems: [{ t: "droite", P: "M", Q: "L", c: "b" }, { t: "droite", P: "H", Q: "F", c: "o" }, { t: "droite", P: "B", Q: "D", c: "d", ep: 1.2 }], conclusion: "(ML) est parallèle à (BD) (droite des milieux dans le triangle BCD), et (BD) est parallèle à (HF) : (ML) et (HF) sont strictement parallèles." },
+        { nom: "2", texte: '<span class="b">(AD)</span> et <span class="o">(GM)</span>', elems: [{ t: "droite", P: "A", Q: "D", c: "b" }, { t: "droite", P: "G", Q: "M", c: "o", t12: [-0.6, 1.5] }], conclusion: "Ces droites ne sont ni parallèles ni sécantes : elles sont non coplanaires. Tournez la figure pour le voir." },
+        { nom: "3", texte: '<span class="b">(HM)</span> et <span class="o">(CG)</span>', points: { I: [0, 1, -1] }, elems: [{ t: "droite", P: "H", Q: "M", c: "b", t12: [-0.3, 2.3] }, { t: "droite", P: "C", Q: "G", c: "o", t12: [-1.4, 1.5] }, pt("I")], cadre: [[0, 1, -1]], conclusion: "(HM) et (CG) sont dans le plan (DCG) et ne sont pas parallèles : elles sont sécantes, en un point I extérieur au cube." },
+        { nom: "4", texte: '<span class="b">(EL)</span> et <span class="o">(FGC)</span>', elems: [{ t: "droite", P: "E", Q: "L", c: "b", t12: [-0.3, 1.4] }, { t: "plan", pts: ["F", "G", "C"], c: "o" }, pt("L")], conclusion: "L appartient au plan (FGC) mais E non : la droite (EL) coupe le plan (FGC) en L." },
+        { nom: "5", texte: '<span class="b">(CD)</span> et <span class="o">(EMN)</span>', elems: [{ t: "droite", P: "C", Q: "D", c: "b" }, { t: "plan", pts: ["E", "M", "N"], c: "o" }, pt("M")], conclusion: "M appartient à (CD) et au plan (EMN), C non : la droite (CD) coupe le plan (EMN) en M." },
+        { nom: "6", texte: '<span class="b">(MN)</span> et <span class="o">(AEF)</span>', elems: [{ t: "droite", P: "M", Q: "N", c: "b" }, { t: "plan", pts: ["A", "E", "F"], c: "o" }, { t: "droite", P: "B", Q: "E", c: "d", ep: 1.2 }, { t: "seg", P: "C", Q: "H", c: "d", ep: 1.2, tirets: true }], conclusion: "(MN) est parallèle à (CH) (droite des milieux dans CDH), elle-même parallèle à (BE), contenue dans (AEF) : (MN) est strictement parallèle au plan (AEF)." },
+        { nom: "7", texte: '<span class="b">(BGF)</span> et <span class="o">(ANH)</span>', elems: [{ t: "plan", pts: ["B", "G", "F"], c: "b" }, { t: "plan", pts: ["A", "N", "H"], c: "o" }], conclusion: "(BGF) est le plan de la face BCGF, (ANH) celui de la face ADHE : deux faces opposées du cube, donc deux plans strictement parallèles." },
+        { nom: "8", texte: '<span class="b">(NMA)</span> et <span class="o">(ECH)</span>', boite: [[-0.3, 1.3], [-0.3, 2.4], [-0.3, 1.3]], cadre: [[1, 2, 1], [0, 2, 0]], points: {}, elems: [{ t: "plan", pts: ["N", "M", "A"], c: "b" }, { t: "plan", pts: ["E", "C", "H"], c: "o" }, { t: "droite", P: [1, 2, 1], Q: [0, 2, 0], c: "v", t12: [-0.3, 1.3] }], conclusion: "Les deux plans ne sont pas parallèles : ils sont sécants, selon une droite (en violet) qui passe à l'extérieur du cube." },
+      ] },
+    e2: { titre: "Exercice 2 · Plans parallèles et intersections", chapeau: "I est un point de [AE] : déplacez-le avec le curseur, les réponses ne dépendent pas de sa position.",
+      solide: "cube", curseur: { nom: "position de I", min: 0.1, max: 0.9, pas: 0.05, val: 0.4 },
+      vues: [
+        { nom: "1", f: t => ({ points: { I: [0, 0, t] }, texte: 'Un plan parallèle à <span class="b">(BFG)</span>', elems: [{ t: "plan", pts: ["B", "F", "G"], c: "b" }, { t: "plan", pts: ["A", "E", "H"], c: "o" }], conclusion: "(BFG) est le plan de la face BCGF : le plan (AEH), celui de la face opposée, lui est parallèle." }) },
+        { nom: "2", f: t => ({ points: { I: [0, 0, t] }, texte: 'Un plan parallèle à <span class="b">(IEB)</span>', elems: [{ t: "plan", pts: ["I", "E", "B"], c: "b" }, { t: "plan", pts: ["D", "C", "G"], c: "o" }], conclusion: "I, E et B sont dans le plan de la face ABFE : (IEB) = (ABF), parallèle au plan (DCG)." }) },
+        { nom: "3", f: t => ({ points: { I: [0, 0, t] }, texte: '<span class="b">(EFH)</span> ∩ <span class="o">(ADH)</span>', elems: [{ t: "plan", pts: ["E", "F", "H"], c: "b" }, { t: "plan", pts: ["A", "D", "H"], c: "o" }, { t: "droite", P: "E", Q: "H", c: "v" }], conclusion: "E et H appartiennent aux deux plans : leur intersection est la droite (EH)." }) },
+        { nom: "4", f: t => ({ points: { I: [0, 0, t] }, texte: '<span class="b">(IFB)</span> ∩ <span class="o">(HDB)</span>', elems: [{ t: "plan", pts: ["I", "F", "B"], c: "b" }, { t: "plan", pts: ["H", "D", "B"], c: "o" }, { t: "droite", P: "B", Q: "F", c: "v" }], conclusion: "B et F appartiennent aux deux plans (F est dans (HDB) car (BF) ∥ (DH)) : l'intersection est la droite (BF)." }) },
+        { nom: "5", f: t => ({ points: { I: [0, 0, t] }, texte: '<span class="b">(GIC)</span> ∩ <span class="o">(HAD)</span>', elems: [{ t: "plan", pts: ["G", "I", "C"], c: "b" }, { t: "plan", pts: ["H", "A", "D"], c: "o" }, { t: "droite", P: "A", Q: "E", c: "v" }, pt("I")], conclusion: "(GIC) contient (CG) ; la face ADHE est parallèle à (CG) et contient I : l'intersection est la parallèle à (CG) passant par I, c'est-à-dire la droite (AE)." }) },
+      ] },
+    e3: { titre: "Exercice 3 · Section du cube par le plan (MNP)", chapeau: "Cube d'arête 8 cm, EN = MG = PB = 2 cm. La construction, étape par étape : deux faces parallèles sont coupées selon deux droites parallèles.",
+      solide: "cube", points: { M: [6 / 8, 1, 1], N: [2 / 8, 0, 1], P: [6 / 8, 0, 0] },
+      vues: (() => {
+        const Q = [1, 0.5, 0], R = [1, 1, 0.5], s = (P, R2, c = "b") => ({ t: "seg", P, Q: R2, c, ep: 4 });
+        const etapes = [
+          { nom: "Étape 1", points: {}, elems: [s("M", "N")], texte: "M et N sont dans la face EFGH : on trace [MN]." },
+          { nom: "Étape 2", points: { Q }, elems: [s("M", "N", "d"), { t: "droite", P: "P", u: [0.5, 1, 0], c: "o", ep: 1.4, t12: [-0.4, 0.9] }, s("P", "Q"), pt("Q")], texte: "Les faces ABCD et EFGH sont parallèles : la section coupe ABCD selon la parallèle à (MN) passant par P. Elle coupe [BC] en Q." },
+          { nom: "Étape 3", points: { Q }, elems: [s("M", "N", "d"), s("P", "Q", "d"), s("N", "P")], texte: "N et P sont dans la face ABFE : on trace [NP]." },
+          { nom: "Étape 4", points: { Q, R }, elems: [s("M", "N", "d"), s("P", "Q", "d"), s("N", "P", "d"), { t: "droite", P: "M", u: [2 / 8, 0, -4 / 8], c: "o", ep: 1.4, t12: [-0.3, 1.3] }, s("M", "R"), pt("R")], texte: "Les faces ABFE et DCGH sont parallèles : la section coupe DCGH selon la parallèle à (NP) passant par M. Elle coupe [CG] en R." },
+          { nom: "Section", points: { Q, R }, elems: [{ t: "poly", pts: ["M", "N", "P", "Q", "R"], c: "b" }], texte: "On relie Q et R, dans la face BCGF : la section est le pentagone MNPQR." },
+        ];
+        return etapes;
+      })() },
+    e5: { titre: "Exercice 5 · Placer un point", chapeau: "Chaque égalité vectorielle se lit comme un trajet à partir d'un point de départ.",
+      solide: "cube",
+      vues: [
+        { nom: "M", points: { M: [0, 0.5, 1] }, elems: [{ t: "vec", P: "E", Q: "H", c: "d", ep: 1.4 }, { t: "vec", P: "E", Q: "M", c: "b" }, pt("M")], texte: "<span class='vec'>EM</span> = ½ <span class='vec'>EH</span> : M est le milieu de [EH]." },
+        { nom: "N", points: { "N = G": [1, 1, 1] }, elems: [{ t: "vec", P: "B", Q: "C", c: "b" }, { t: "vec", P: "B", Q: "F", c: "o" }, { t: "vec", P: "B", Q: "N = G", c: "v" }, pt("N = G")], cacher: ["G"], texte: "<span class='vec'>BN</span> = <span class='vec'>BC</span> + <span class='vec'>BF</span> : règle du parallélogramme dans la face BCGF, N est le point G." },
+        { nom: "P", points: { P: [-0.5, 1, 0] }, elems: [{ t: "vec", P: "D", Q: "C", c: "d", ep: 1.4 }, { t: "vec", P: "D", Q: "P", c: "b" }, pt("P")], cadre: [[-0.5, 1, 0]], texte: "<span class='vec'>DP</span> = −½ <span class='vec'>DC</span> : on part de D dans le sens opposé à C, sur la moitié de la longueur DC." },
+        { nom: "Q", points: { Q: [0.5, 0, 1] }, elems: [{ t: "vec", P: "A", Q: "E", c: "b" }, { t: "vec", P: "E", Q: "Q", c: "o" }, { t: "vec", P: "A", Q: "Q", c: "v" }, pt("Q")], texte: "<span class='vec'>AQ</span> = <span class='vec'>AE</span> + ½ <span class='vec'>AB</span> : de A on monte en E, puis on avance de la moitié de AB. Q est le milieu de [EF]." },
+      ] },
+    e5b: { titre: "Exercice 5 · Placer un point (tétraèdre)", chapeau: "La suite de l'exercice 5, dans le tétraèdre ABCD.", cache: true,
+      solide: "tetra",
+      vues: [
+        { nom: "R", points: { R: [0.5, 0.5, 0] }, elems: [{ t: "vec", P: "A", Q: [0.5, 0, 0], c: "b" }, { t: "vec", P: [0.5, 0, 0], Q: "R", c: "o" }, { t: "vec", P: "A", Q: "R", c: "v" }, pt("R")], texte: "<span class='vec'>AR</span> = ½ <span class='vec'>AB</span> + ½ <span class='vec'>AC</span> : R est le milieu de [BC]." },
+        { nom: "S", points: { S: [0, 2, -1] }, elems: [{ t: "vec", P: "D", Q: "C", c: "d", ep: 1.4 }, { t: "vec", P: "D", Q: "S", c: "b" }, pt("S")], cadre: [[0, 2, -1]], texte: "<span class='vec'>DS</span> = 2 <span class='vec'>DC</span> : S est sur la demi-droite [DC), deux fois plus loin que C : C est le milieu de [DS]." },
+      ] },
+    e7: { titre: "Exercice 7 · Colinéaires, coplanaires ?", chapeau: "I et J sont les milieux de [AB] et [BC].",
+      solide: "cube", points: { I: [0.5, 0, 0], J: [1, 0.5, 0] },
+      vues: [
+        { nom: "1", texte: '<span class="b vec">EF</span> et <span class="o vec">DC</span>', elems: [{ t: "vec", P: "E", Q: "F", c: "b" }, { t: "vec", P: "D", Q: "C", c: "o" }], conclusion: "<span class='vec'>EF</span> = <span class='vec'>DC</span> : les vecteurs sont égaux, donc colinéaires." },
+        { nom: "2", texte: '<span class="b vec">IJ</span> et <span class="o vec">AC</span>', elems: [{ t: "vec", P: "I", Q: "J", c: "b" }, { t: "vec", P: "A", Q: "C", c: "o" }], conclusion: "<span class='vec'>IJ</span> = ½ <span class='vec'>AC</span> (droite des milieux dans ABC) : les vecteurs sont colinéaires." },
+        { nom: "3", texte: '<span class="b vec">EH</span>, <span class="o vec">DC</span> et <span class="vi vec">FB</span>', elems: [{ t: "vec", P: "E", Q: "H", c: "b" }, { t: "vec", P: "D", Q: "C", c: "o" }, { t: "vec", P: "F", Q: "B", c: "v" }], conclusion: "Ces vecteurs suivent les trois directions des arêtes du cube : ils ne sont pas coplanaires." },
+        { nom: "4", texte: "A, C, G et E", elems: [{ t: "poly", pts: ["A", "C", "G", "E"], c: "b" }], conclusion: "ACGE est un rectangle : les quatre points sont coplanaires." },
+        { nom: "5", texte: "I, J, G et E", elems: [{ t: "poly", pts: ["I", "J", "G", "E"], c: "b" }, { t: "seg", P: "A", Q: "C", c: "d", ep: 1.2, tirets: true }], conclusion: "(IJ) ∥ (AC) ∥ (EG) : IJGE est un trapèze, les quatre points sont coplanaires." },
+      ] },
+    e9: { titre: "Exercice 9 · Les milieux des arêtes d'un tétraèdre", chapeau: "I, J, K et L sont les milieux de [AB], [BC], [CD] et [DA].",
+      solide: "tetra", points: { I: [0.5, 0, 0], J: [0.5, 0.5, 0], K: [0, 0.5, 0.5], L: [0, 0, 0.5] },
+      vues: [{ nom: "IJKL", texte: '<span class="b vec">IJ</span> = ½ <span class="o vec">AC</span> = <span class="b vec">LK</span>', elems: [{ t: "vec", P: "A", Q: "C", c: "o" }, { t: "vec", P: "I", Q: "J", c: "b" }, { t: "vec", P: "L", Q: "K", c: "b" }, { t: "poly", pts: ["I", "J", "K", "L"], c: "v" }], conclusion: "<span class='vec'>IJ</span> = <span class='vec'>LK</span> : IJKL est un parallélogramme, donc I, J, K et L sont coplanaires." }] },
+    e16: { titre: "Exercice 16 · Pyramide et plan (IJK)", chapeau: "Repère (A ; AB, AD, AS). I, J et K sont les milieux de [SB], [SC] et [SD].",
+      solide: "pyramide", points: { I: [0.5, 0, 0.5], J: [0.5, 0.5, 0.5], K: [0, 0.5, 0.5] },
+      vues: [
+        { nom: "(IJ) et (AD)", texte: '<span class="b">(IJ)</span> et <span class="o">(AD)</span>', elems: [{ t: "droite", P: "I", Q: "J", c: "b", t12: [-0.6, 1.8] }, { t: "droite", P: "A", Q: "D", c: "o", t12: [-0.3, 1.3] }], conclusion: "<span class='vec'>IJ</span>(0 ; ½ ; 0) = ½ <span class='vec'>AD</span> : les droites (IJ) et (AD) sont parallèles." },
+        { nom: "(IJK) et (ABC)", texte: '<span class="b">(IJK)</span> et <span class="o">(ABC)</span>', boite: [[-0.3, 1.3], [-0.3, 1.3], [-0.05, 0.75]], elems: [{ t: "plan", pts: ["I", "J", "K"], c: "b" }, { t: "plan", pts: ["A", "B", "C"], c: "o" }, { t: "poly", pts: ["I", "J", "K"], c: "b" }], conclusion: "Les trois points I, J, K ont pour cote ½ : le plan (IJK) est parallèle au plan (ABC)." },
+      ] },
+    e18: { titre: "Exercice 18 · Une droite parallèle à un plan", chapeau: "Repère (A ; AB, AC, AD). I et J sont les milieux de [AB] et [AC].",
+      solide: "tetra", points: { I: [0.5, 0, 0], J: [0, 0.5, 0] },
+      vues: [{ nom: "(IJ) et (BCD)", texte: '<span class="b">(IJ)</span>, <span class="o">(BC)</span> et le plan (BCD)', elems: [{ t: "plan", pts: ["B", "C", "D"], c: "o" }, { t: "droite", P: "I", Q: "J", c: "b", t12: [-0.8, 1.8] }, { t: "droite", P: "B", Q: "C", c: "o", t12: [-0.3, 1.3] }], conclusion: "<span class='vec'>IJ</span> = ½ <span class='vec'>BC</span> : (IJ) est parallèle à (BC), contenue dans (BCD), donc (IJ) est parallèle au plan (BCD)." }] },
+    e19: { titre: "Exercice 19 · Dans un pavé droit", chapeau: "Repère (A ; AB, AD, AE). I et J sont les milieux de [EF] et [FG].",
+      solide: "pave", points: { I: [0.5, 0, 1], J: [1, 0.5, 1] },
+      vues: [
+        { nom: "(IJ) et (EG)", texte: '<span class="b">(IJ)</span> et <span class="o">(EG)</span>', elems: [{ t: "droite", P: "I", Q: "J", c: "b", t12: [-0.6, 1.6] }, { t: "droite", P: "E", Q: "G", c: "o", t12: [-0.2, 1.2] }], conclusion: "<span class='vec'>IJ</span> = ½ <span class='vec'>EG</span> : les droites sont parallèles." },
+        { nom: "Plan (ACE)", texte: '<span class="b">(IJ)</span> et le plan <span class="o">(ACE)</span>', elems: [{ t: "plan", pts: ["A", "C", "E"], c: "o" }, { t: "droite", P: "I", Q: "J", c: "b", t12: [-0.6, 1.6] }], conclusion: "(EG) est contenue dans (ACE) et (IJ) ∥ (EG) : (IJ) est parallèle au plan (ACE)." },
+        { nom: "Plan (ABE)", texte: '<span class="b">(IJ)</span> et le plan <span class="o">(ABE)</span>', elems: [{ t: "plan", pts: ["A", "B", "E"], c: "o" }, { t: "droite", P: "I", Q: "J", c: "b", t12: [-0.6, 1.6] }, pt("I")], conclusion: "I appartient à [EF], donc au plan (ABE), mais J non : (IJ) coupe le plan (ABE) en I, elle ne lui est pas parallèle." },
+      ] },
+    e26: { titre: "Exercice 26 · Quatre milieux coplanaires", chapeau: "Repère (A ; AB, AC, AD). I, J, K et L sont les milieux de [BC], [AD], [BD] et [AC].",
+      solide: "tetra", points: { I: [0.5, 0.5, 0], J: [0, 0, 0.5], K: [0.5, 0, 0.5], L: [0, 0.5, 0] },
+      vues: [{ nom: "IKJL", texte: '<span class="b vec">LI</span> = <span class="b vec">JK</span> = ½ <span class="o vec">AB</span>', elems: [{ t: "vec", P: "A", Q: "B", c: "o" }, { t: "vec", P: "L", Q: "I", c: "b" }, { t: "vec", P: "J", Q: "K", c: "b" }, { t: "poly", pts: ["I", "K", "J", "L"], c: "v" }], conclusion: "<span class='vec'>LI</span> = <span class='vec'>JK</span> = (½ ; 0 ; 0) : LIKJ est un parallélogramme, donc I, J, K et L sont coplanaires." }] },
+    e27: { titre: "Exercice 27 · <span class='vec'>MK</span> = ⅔ <span class='vec'>EB</span> + <span class='vec'>FG</span>", chapeau: "Repère (A ; AB, AD, AE). EM = ⅓ EF et CK = ⅓ CG.",
+      solide: "cube", points: { M: [1 / 3, 0, 1], K: [1, 1, 1 / 3] },
+      vues: [{ nom: "Décomposition", points: { T: [1, 0, 1 / 3] }, cacher: ["T"], texte: 'De M, on suit <span class="b">⅔ <span class="vec">EB</span></span> puis <span class="o vec">FG</span> : on arrive en K.', elems: [{ t: "vec", P: "E", Q: "B", c: "d", ep: 1.3 }, { t: "vec", P: "M", Q: "T", c: "b" }, { t: "vec", P: "T", Q: "K", c: "o" }, { t: "vec", P: "M", Q: "K", c: "v" }, pt("M"), pt("K")], conclusion: "<span class='vec'>MK</span> s'écrit avec <span class='vec'>EB</span> et <span class='vec'>FG</span> : les vecteurs <span class='vec'>MK</span>, <span class='vec'>EB</span> et <span class='vec'>FG</span> sont coplanaires." }] },
+    e34: { titre: "Exercice 34 · La droite (EC)", chapeau: "Repère (A ; AB, AD, AE). Le point M(t ; t ; 1 − t) parcourt la droite (EC) quand t décrit ℝ.",
+      solide: "cube", curseur: { nom: "t", min: -0.25, max: 1.25, pas: 0.25, val: 0.25 },
+      vues: [{ nom: "(EC)", f: t => ({ points: { M: [t, t, 1 - t], "Ω": [0.5, 0.5, 0.5] }, elems: [{ t: "droite", P: "E", Q: "C", c: "b", t12: [-0.4, 1.4] }, { t: "seg", P: "A", Q: "G", c: "d", ep: 1.2, tirets: true }, pt("M", "o"), pt("Ω")],
+        texte: `t = ${frac(t)} : M${coord([t, t, 1 - t])}` + (t === 0.5 ? " : c'est le centre Ω du cube." : t === 0.75 ? " : la cote vaut ¼, c'est le point P." : t === 0 ? " : c'est E." : t === 1 ? " : c'est C." : "") }) }] },
+    e33: { titre: "Exercice 33 · Intersection de deux droites", chapeau: "Les droites d (en bleu) et d′ (en orange), tracées dans un repère de l'espace. Tournez la figure.",
+      axes: true, axesL: 6,
+      vues: [
+        { nom: "1", points: { I: [-5, 15, 13] }, cadre: [[1, 3, -5], [-5, 15, 13], [-9, 13, 16]], elems: [{ t: "droite", P: [1, 3, -5], u: [-2, 4, 6], c: "b", t12: [-0.5, 3.6], nom: "d" }, { t: "droite", P: [-5, 15, 13], u: [-4, -2, 3], c: "o", t12: [-2, 1.2], nom: "d′" }, pt("I")], conclusion: "Sécantes en I(−5 ; 15 ; 13), pour k = 3 et t = 0." },
+        { nom: "2", points: { I: [-2, 0, 2] }, cadre: [[1, 3, -4], [-2, 0, 2]], elems: [{ t: "droite", P: [1, 3, -4], u: [1, 1, -2], c: "b", t12: [-4.5, 1.5], nom: "d" }, { t: "droite", P: [0, 1, 3], u: [2, 1, 1], c: "o", t12: [-2.5, 1.5], nom: "d′" }, pt("I")], conclusion: "Sécantes en I(−2 ; 0 ; 2), pour k = −3 et t = −1." },
+        { nom: "3", cadre: [[1, 2, 0], [2, 0, -1], [-2, 3.5, 4.5]], elems: [{ t: "droite", P: [1, 2, 0], u: [-2, 1, 3], c: "b", t12: [-1.5, 1.5], nom: "d" }, { t: "droite", P: [2, 0, -1], u: [-4, -2, 1], c: "o", t12: [-1, 1.2], nom: "d′" }], conclusion: "Les vecteurs directeurs ne sont pas colinéaires et le système n'a pas de solution : d et d′ sont non coplanaires." },
+        { nom: "4", cadre: [[4, -3, 0], [0, 3, -1]], elems: [{ t: "droite", P: [4, -3, 0], u: [-1, 1, -1], c: "b", t12: [-2, 6], nom: "d" }, { t: "droite", P: [0, 3, -1], u: [2, -2, 2], c: "o", t12: [-2, 2], nom: "d′" }], conclusion: "<span class='vec'>u′</span> = −2<span class='vec'>u</span> : les droites sont parallèles, et le point (0 ; 3 ; −1) de d′ n'est pas sur d : elles sont strictement parallèles." },
+      ] },
+    e35: { titre: "Exercice 35 · Parallèles ou confondues ?", chapeau: "Les droites d (en bleu) et d′ (en orange) ont des vecteurs directeurs colinéaires. Ont-elles un point commun ?",
+      axes: true, axesL: 4,
+      vues: [
+        { nom: "1", cadre: [[1, 0, 3], [5, 2, 0]], elems: [{ t: "droite", P: [1, 0, 3], u: [2, -1, 4], c: "b", t12: [-1.2, 1.2], nom: "d" }, { t: "droite", P: [5, 2, 0], u: [-4, 2, -8], c: "o", t12: [-0.2, 1], nom: "d′" }], conclusion: "Le point (5 ; 2 ; 0) de d′ n'appartient pas à d : les droites sont strictement parallèles." },
+        { nom: "2", cadre: [[0, 1, 0], [2, 3, 4]], elems: [{ t: "droite", P: [0, 1, 0], u: [1, 1, 2], c: "b", t12: [-1.5, 3], nom: "d", ep: 6 }, { t: "droite", P: [2, 3, 4], u: [3, 3, 6], c: "o", t12: [-1.2, 0.5], nom: "d′", ep: 2.4 }], conclusion: "Le point (2 ; 3 ; 4) de d′ est le point de d de paramètre 2 : les droites sont confondues." },
+      ] },
+    e36: { titre: "Exercice 36 · Pour quelle valeur de m ?", chapeau: "La droite d′ se déplace quand m varie : pour une seule valeur, elle rencontre d.",
+      axes: true, axesL: 4, curseur: { nom: "m", min: -9, max: 3, pas: 1, val: 0 },
+      vues: [{ nom: "d et d′", cadre: [[1, 0, 3], [3, 4, 1], [0, 1, -5], [4, 5, 3]], f: mm => {
+        const A = [1, 0, 3], u = [1, 2, -1], B = [0, 1, mm], v = [1, 1, 2], n = cross(u, v), dist = Math.abs(dot(sub(B, A), n)) / Math.hypot(...n);
+        return { points: mm === -5 ? { I: [3, 4, 1] } : {}, elems: [{ t: "droite", P: A, u, c: "b", t12: [-1.5, 3.5], nom: "d" }, { t: "droite", P: B, u: v, c: "o", t12: [-1, 4], nom: "d′" }].concat(mm === -5 ? [pt("I")] : []),
+          texte: `m = ${fr(mm, 0)} : distance entre d et d′ ≈ ${fr(dist, 2)}` + (mm === -5 ? " : les droites sont sécantes en I(3 ; 4 ; 1)." : "") }; } }] },
+    e37: { titre: "Exercice 37 · Le point Mₜ traverse le plan (ABC)", chapeau: "A(1 ; 0 ; 0), B(0 ; 1 ; 0), C(0 ; 0 ; 1). Faites varier t : pour quelle valeur Mₜ est-il dans le plan (ABC) ?",
+      axes: true, axesL: 3, curseur: { nom: "t", min: -2, max: 1, pas: 1 / 3, val: 0 }, points: { A: [1, 0, 0], B: [0, 1, 0], C: [0, 0, 1] },
+      boite: [[-1, 2.5], [-0.5, 3.5], [-2.5, 1.5]],
+      vues: [{ nom: "d et (ABC)", cadre: [[1, 2, 0], [0, 3, -3], [2, 1, 3]], f: t => {
+        const M = [1 + t, 2 - t, 3 * t], dans = Math.abs(M[0] + M[1] + M[2] - 1) < 1e-9;
+        return { points: { "Mₜ": M }, elems: [{ t: "plan", pts: ["A", "B", "C"], c: "o" }, { t: "poly", pts: ["A", "B", "C"], c: "o" }, { t: "droite", P: [1, 2, 0], u: [1, -1, 3], c: "b", t12: [-1.2, 1.2], nom: "d" }, pt("Mₜ", dans ? "v" : "b")],
+          texte: `t = ${frac(t)} : Mₜ${coord(M)}, x + y + z = ${frac(M[0] + M[1] + M[2])}` + (dans ? " : Mₜ est dans le plan (ABC), d'équation x + y + z = 1." : "") }; } }] },
+    e38: { titre: "Exercice 38 · La droite (AB) et ses voisines", chapeau: "A(1 ; 2 ; −1), B(3 ; 3 ; 1), C(0 ; 1 ; 3), D(2 ; 0 ; 1).",
+      axes: true, axesL: 4, points: { A: [1, 2, -1], B: [3, 3, 1], C: [0, 1, 3], D: [2, 0, 1] }, curseur: { nom: "m", min: -5, max: 1, pas: 1, val: 0 },
+      vues: [
+        { nom: "(AB) et d", cadre: [[5, 4, 3]], f: () => ({ points: { I: [5, 4, 3] }, elems: [{ t: "droite", P: "A", Q: "B", c: "b", t12: [-0.6, 2.5], nom: "(AB)" }, { t: "droite", P: [3, 1, 4], u: [2, 3, -1], c: "o", t12: [-1, 1.6], nom: "d" }, pt("I")], texte: '<span class="b">(AB)</span> et <span class="o">d</span>', conclusion: "Sécantes en I(5 ; 4 ; 3), pour k = 2 et s = 1." }) },
+        { nom: "(AB) et (CD)", f: () => ({ elems: [{ t: "droite", P: "A", Q: "B", c: "b", t12: [-0.8, 1.8], nom: "(AB)" }, { t: "droite", P: "C", Q: "D", c: "o", t12: [-0.6, 1.6], nom: "(CD)" }], texte: '<span class="b">(AB)</span> et <span class="o">(CD)</span>', conclusion: "Ni parallèles (vecteurs non colinéaires) ni sécantes (système impossible) : elles sont non coplanaires." }) },
+        { nom: "Le point Mₘ", cadre: [[-5, -2, -7]], f: mm => ({ points: { "Mₘ": [mm, mm + 3, mm - 2] }, elems: [{ t: "droite", P: "A", Q: "B", c: "b", t12: [-2.8, 1.5], nom: "(AB)" }, pt("Mₘ", mm === -3 ? "v" : "o")], texte: `m = ${fr(mm, 0)} : Mₘ(${fr(mm, 0)} ; ${fr(mm + 3, 0)} ; ${fr(mm - 2, 0)})` + (mm === -3 ? " : Mₘ est sur la droite (AB)." : "") }) },
+      ] },
+    e39: { titre: "Exercice 39 · Le parallélogramme AIGJ", chapeau: "Repère (A ; AB, AD, AE). I et J sont les milieux de [BF] et [DH].",
+      solide: "cube", points: { I: [1, 0, 0.5], J: [0, 1, 0.5] },
+      vues: [
+        { nom: "AIGJ", texte: "<span class='vec'>AI</span> = <span class='vec'>JG</span> : AIGJ est un parallélogramme", elems: [{ t: "poly", pts: ["A", "I", "G", "J"], c: "b" }, { t: "vec", P: "A", Q: "I", c: "o" }, { t: "vec", P: "J", Q: "G", c: "o" }] },
+        { nom: "(AG) ∩ (IJ)", points: { "Ω": [0.5, 0.5, 0.5] }, texte: '<span class="b">(AG)</span> et <span class="o">(IJ)</span>', elems: [{ t: "droite", P: "A", Q: "G", c: "b", t12: [-0.2, 1.2] }, { t: "droite", P: "I", Q: "J", c: "o", t12: [-0.2, 1.2] }, pt("Ω")], conclusion: "Les diagonales du parallélogramme se coupent en leur milieu, le centre Ω(½ ; ½ ; ½) du cube." },
+        { nom: "E et (AIJ)", texte: "Le plan (AIJ) et le point E", elems: [{ t: "plan", pts: ["A", "I", "J"], c: "b" }, pt("E", "o")], conclusion: "Le plan (AIJ) passe par G mais pas par E." },
+      ] },
+    e40: { titre: "Exercice 40 · Médianes d'un tétraèdre", chapeau: "Repère (A ; AB, AC, AD). I, J, K et L sont les milieux de [BC], [CD], [AB] et [AD].",
+      solide: "tetra", points: { I: [0.5, 0.5, 0], J: [0, 0.5, 0.5], K: [0.5, 0, 0], L: [0, 0, 0.5] },
+      vues: [
+        { nom: "(DI) ∩ (BJ)", points: { G: [1 / 3, 1 / 3, 1 / 3] }, texte: '<span class="b">(DI)</span> et <span class="o">(BJ)</span>', elems: [{ t: "seg", P: "D", Q: "I", c: "b", ep: 2.6 }, { t: "seg", P: "B", Q: "J", c: "o", ep: 2.6 }, { t: "poly", pts: ["B", "C", "D"], c: "d" }, pt("G")], conclusion: "Les médianes (DI) et (BJ) du triangle BCD se coupent en G(⅓ ; ⅓ ; ⅓), centre de gravité de BCD." },
+        { nom: "(KJ) ∩ (LI)", points: { "Ω": [0.25, 0.25, 0.25] }, texte: '<span class="b">(KJ)</span> et <span class="o">(LI)</span>', elems: [{ t: "seg", P: "K", Q: "J", c: "b", ep: 2.6 }, { t: "seg", P: "L", Q: "I", c: "o", ep: 2.6 }, pt("Ω")], conclusion: "(KJ) et (LI) se coupent en leur milieu commun Ω(¼ ; ¼ ; ¼)." },
+      ] },
+    e41: { titre: "Exercice 41 · La droite d et trois voisines", chapeau: "d (en bleu) comparée à d₁, d₂ et d₃ (en orange).",
+      axes: true, axesL: 4,
+      vues: [
+        { nom: "d et d₁", cadre: [[1, 2, 3], [0, 1, -1], [2, 2, 7]], elems: [{ t: "droite", P: [1, 2, 3], u: [1, -1, 2], c: "b", t12: [-2, 2.5], nom: "d" }, { t: "droite", P: [0, 1, -1], u: [2, 1, 4], c: "o", t12: [-0.5, 2], nom: "d₁" }], conclusion: "Vecteurs directeurs non colinéaires et système impossible : d et d₁ sont non coplanaires." },
+        { nom: "d et d₂", points: { I: [3, 0, 7] }, cadre: [[1, 2, 3], [3, 0, 7]], elems: [{ t: "droite", P: [1, 2, 3], u: [1, -1, 2], c: "b", t12: [-2, 3], nom: "d" }, { t: "droite", P: [3, 0, 7], u: [1, 4, -1], c: "o", t12: [-1, 1], nom: "d₂" }, pt("I")], conclusion: "Sécantes en I(3 ; 0 ; 7), pour t = 2 et r = 0." },
+        { nom: "d et d₃", cadre: [[1, 2, 3], [-1, 4, -1]], elems: [{ t: "droite", P: [1, 2, 3], u: [1, -1, 2], c: "b", t12: [-3, 2], nom: "d", ep: 6 }, { t: "droite", P: [-1, 4, -1], u: [-2, 2, -4], c: "o", t12: [-2.5, 1.5], nom: "d₃" }], conclusion: "<span class='vec'>u₃</span> = −2<span class='vec'>u</span> et le point (−1 ; 4 ; −1) de d₃ est le point de d de paramètre −2 : d et d₃ sont confondues." },
+      ] },
+    e42: { titre: "Exercice 42 · Le quadrilatère ABDC", chapeau: "A(2 ; 1 ; −1), B(0 ; 3 ; 1), C(1 ; −1 ; 2), D(−1 ; 1 ; 4).",
+      axes: true, axesL: 3, points: { A: [2, 1, -1], B: [0, 3, 1], C: [1, -1, 2], D: [-1, 1, 4] }, curseur: { nom: "m", min: -2, max: 2, pas: 0.2, val: 0 },
+      boite: [[-2, 3], [-2, 4], [-2, 5]],
+      vues: [
+        { nom: "Δ et (AD)", f: () => ({ elems: [{ t: "droite", P: "C", u: [-2, 2, 2], c: "b", t12: [-0.6, 1.6], nom: "Δ" }, { t: "droite", P: "A", Q: "D", c: "o", t12: [-0.3, 1.3], nom: "(AD)" }, { t: "poly", pts: ["A", "B", "D", "C"], c: "v" }, pt("D")], texte: '<span class="b">Δ</span>, parallèle à (AB) passant par C, et <span class="o">(AD)</span>', conclusion: "Δ et (AD) se coupent en D : <span class='vec'>CD</span> = <span class='vec'>AB</span>, donc ABDC est un parallélogramme." }) },
+        { nom: "Le point E", cadre: [[-2, 2, 1], [2, 2, 1]], f: mm => { const v = 5 * mm + 4 + 3; const dans = Math.abs(v - 9) < 1e-9; return { points: { E: [mm, 2, 1] }, elems: [{ t: "plan", pts: ["A", "B", "C"], c: "o" }, pt("E", dans ? "v" : "b")], texte: `m = ${fr(mm, 1)} : 5x + 2y + 3z = ${fr(v, 1)}` + (dans ? " : E est dans le plan (ABC), d'équation 5x + 2y + 3z = 9." : " (le plan (ABC) a pour équation 5x + 2y + 3z = 9)") }; } },
+      ] },
+    e43: { cam: [-1.05, 0.45], titre: "Exercice 43 · Deux droites de la pyramide", chapeau: "Repère (A ; AB, AD, AS). P et Q sont les milieux de [SC] et [SB].",
+      solide: "pyramide", points: { P: [0.5, 0.5, 0.5], Q: [0.5, 0, 0.5] },
+      vues: [
+        { nom: "(AP) ∩ (DQ)", points: { G: [1 / 3, 1 / 3, 1 / 3] }, texte: '<span class="b">(AP)</span> et <span class="o">(DQ)</span>', elems: [{ t: "droite", P: "A", Q: "P", c: "b", t12: [-0.2, 1.3] }, { t: "droite", P: "D", Q: "Q", c: "o", t12: [-0.2, 1.3] }, pt("G")], conclusion: "Sécantes en G(⅓ ; ⅓ ; ⅓)." },
+        { nom: "(SC) et (BD)", texte: '<span class="b">(SC)</span> et <span class="o">(BD)</span>', elems: [{ t: "droite", P: "S", Q: "C", c: "b", t12: [-0.3, 1.3] }, { t: "droite", P: "B", Q: "D", c: "o", t12: [-0.3, 1.3] }], conclusion: "Ni parallèles ni sécantes : (SC) et (BD) sont non coplanaires." },
+      ] },
+  };
+  // l'exercice 5 réunit le cube et le tétraèdre : la partie tétraèdre en onglets supplémentaires
+  SCENES.e5.vues = SCENES.e5.vues.concat(SCENES.e5b.vues.map(v => Object.assign({ solide: "tetra" }, v)));
+  delete SCENES.e5b;
+
+  const etat = { scene: "e1", vue: 0, val: 0, conclu: false };
+  function ouvrirVue(i) {
+    etat.vue = i; V = S.vues[i]; monde = null; etat.conclu = false;
+    S.solideDef = SOLIDES[V.solide || S.solide] || null;
+    [...$("onglets").children].forEach((x, j) => x.setAttribute("aria-pressed", j === i));
+    commandes(); dessiner();
+  }
+  function commandes() {
+    const c = $("commandes"); c.textContent = "";
+    if (S.curseur && typeof V.f === "function" && V.f.length > 0) {
+      const l = document.createElement("label"), b = document.createElement("b");
+      b.style.cssText = "font-family:var(--math);font-size:17px;color:var(--encre);min-width:2.6em"; b.textContent = frac(etat.val);
+      l.append(S.curseur.nom + " = ", b);
+      const r = document.createElement("input"); r.type = "range"; r.min = S.curseur.min; r.max = S.curseur.max; r.step = S.curseur.pas; r.value = etat.val;
+      r.oninput = () => { etat.val = Math.round(+r.value / S.curseur.pas) * S.curseur.pas; if (Math.abs(etat.val - Math.round(etat.val)) < 1e-9) etat.val = Math.round(etat.val); b.textContent = frac(etat.val); dessiner(); };
+      l.appendChild(r); c.appendChild(l);
+    }
+    const bc = document.createElement("button"); bc.type = "button"; bc.id = "btnConclu"; bc.textContent = "Conclusion"; bc.setAttribute("aria-pressed", "false");
+    bc.onclick = () => { etat.conclu = !etat.conclu; bc.setAttribute("aria-pressed", etat.conclu); dessiner(); };
+    c.appendChild(bc);
+    const a = document.createElement("span"); a.className = "aide"; a.textContent = "Faites glisser la figure pour la tourner."; c.appendChild(a);
+  }
+  function choisir(cle) {
+    etat.scene = SCENES[cle] ? cle : "e1"; S = SCENES[etat.scene];
+    etat.val = S.curseur ? S.curseur.val : 0;
+    cam.az = S.cam ? S.cam[0] : -0.5; cam.el = S.cam ? S.cam[1] : (S.solide === "tetra" ? 0.55 : 0.38);
+    $("titre").innerHTML = S.titre; $("chapeau").innerHTML = S.chapeau; $("choix").value = etat.scene;
+    const o = $("onglets"); o.textContent = "";
+    S.vues.forEach((v, i) => { const b = document.createElement("button"); b.type = "button"; b.textContent = v.nom; b.onclick = () => ouvrirVue(i); o.appendChild(b); });
+    o.hidden = S.vues.length < 2;
+    ouvrirVue(0);
+  }
+  for (const k in SCENES) { const op = document.createElement("option"); op.value = k; op.textContent = SCENES[k].titre.replace(/<[^>]+>/g, ""); $("choix").appendChild(op); }
+  $("choix").onchange = () => { choisir($("choix").value); try { history.replaceState(null, "", "#" + $("choix").value); } catch (e) {} };
+  const ancre = () => (location.hash.match(/e\d+/) || ["e1"])[0];
+  window.addEventListener("hashchange", () => choisir(ancre()));
+  choisir(ancre());
+})();
+</script>
+
+<!-- plein-ecran : bouton commun à toutes les pages interactives -->
+<style>
+#pleinEcran { position: fixed; top: calc(10px + env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); z-index: 50; font: 500 13px var(--ui, system-ui, sans-serif); padding: 6px 12px; border-radius: 999px; border: 1px solid var(--filet, #d9dee5); background: var(--carte, #fff); color: var(--encre, #1b1f24); cursor: pointer; opacity: .9; }
+#pleinEcran:hover { opacity: 1; }
+body.plein-ecran .niveau, body.plein-ecran h1 + .chapeau { display: none !important; }
+body.plein-ecran .page { max-width: none !important; min-height: 100vh; padding-top: 48px !important; align-content: start; }
+body.plein-ecran .page svg:not(.mini) { max-height: 68vh; }
+body.plein-ecran .constat { font-size: clamp(20px, 2.6vw, 28px); }
+</style>
+<script>
+(() => {
+  const b = document.createElement("button");
+  b.type = "button"; b.id = "pleinEcran"; document.body.appendChild(b);
+  function etat(on) { document.body.classList.toggle("plein-ecran", on); b.textContent = on ? "✕ Quitter le plein écran" : "⛶ Plein écran"; b.setAttribute("aria-pressed", on); window.dispatchEvent(new Event("resize")); }
+  b.addEventListener("click", async () => {
+    const on = !document.body.classList.contains("plein-ecran");
+    etat(on);
+    try { on ? await document.documentElement.requestFullscreen() : (document.fullscreenElement && await document.exitFullscreen()); } catch (e) {}
+  });
+  document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement && document.body.classList.contains("plein-ecran")) etat(false); });
+  window.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("plein-ecran")) etat(false); });
+  etat(location.hash === "#plein");
+})();
+</script>
+
+</body></html>
