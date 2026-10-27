@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;box-sizing:border-box}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head><body>
+<title>Croissances comparées avec ln</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Page épurée : une barre de commandes, le grand graphique au centre, une ligne de constat ; le reste replié.
+   Couleurs du cours (chapitre 9) : f(x) = eˣ (ou ln(x)) en bleu, g(x) = xⁿ en rouge ;
+   le quotient ou le produit, replié sous « Pour aller plus loin », en violet. */
+:root {
+  --papier: #f7f8fa;
+  --carte: #ffffff;
+  --encre: #1b1f24;
+  --discret: #5d6672;
+  --filet: #d9dee5;
+  --grille: #eceff3;
+  --bleu: #1f5fbf;
+  --rouge: #c62828;
+  --violet: #6a4bb5;
+  --surligne: #fbf0b4;
+  --math: "STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --ui: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1;
+    --filet: #313844; --grille: #252b34; --bleu: #6fa3f0; --rouge: #f07a7a;
+    --violet: #b39cf0; --surligne: #4a4320; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1;
+  --filet: #313844; --grille: #252b34; --bleu: #6fa3f0; --rouge: #f07a7a;
+  --violet: #b39cf0; --surligne: #4a4320; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { background: var(--papier); color: var(--encre); font-family: var(--ui); font-size: 15px; line-height: 1.5; }
+.page { max-width: 1040px; margin: 0 auto; padding-inline: 16px; padding-block: 20px 40px; display: grid; gap: 14px; }
+header { display: grid; gap: 4px; }
+.niveau { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--discret); }
+h1 { font-family: var(--math); font-weight: 600; font-size: clamp(26px, 4vw, 34px); line-height: 1.15; margin: 0; }
+.chapeau { margin: 0; color: var(--discret); max-width: 75ch; }
+.barre { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; }
+.reglage { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.reglage.large { flex: 1 1 240px; }
+.reglage label { font-family: var(--math); font-size: 19px; white-space: nowrap; }
+.reglage output { font-family: var(--math); font-size: 19px; min-width: 2.5ch; font-variant-numeric: tabular-nums; }
+select, button { font: inherit; color: var(--encre); background: var(--carte); border: 1px solid var(--filet); border-radius: 7px; padding: 6px 10px; }
+select { font-family: var(--math); font-size: 17px; max-width: 100%; }
+button { cursor: pointer; }
+button:hover { border-color: var(--bleu); }
+button.principal { background: var(--bleu); border-color: var(--bleu); color: var(--carte); font-weight: 600; }
+:focus-visible { outline: 2px solid var(--bleu); outline-offset: 2px; }
+input[type="range"] { width: 100%; accent-color: var(--bleu); }
+.scene { background: var(--carte); border: 1px solid var(--filet); border-radius: 12px; padding: 8px; }
+.scene svg { display: block; width: 100%; height: auto; }
+.constat { font-size: 18px; text-align: center; min-height: 1.6em; }
+.constat b { font-weight: 600; }
+.theoreme { font-family: var(--math); font-size: 19px; text-align: center; color: var(--discret); display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 28px; }
+.theoreme .on { color: var(--encre); background: var(--surligne); border-radius: 5px; padding: 0 6px; }
+.lim { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; line-height: 1.05; margin-right: 4px; }
+.lim small { font-size: 11px; }
+.frac { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; margin-inline: 2px; font-size: 16px; }
+.frac > span:first-child { border-bottom: 1.3px solid currentColor; padding-inline: 3px; }
+.frac > span { line-height: 1.2; }
+details { background: var(--carte); border: 1px solid var(--filet); border-radius: 10px; padding: 10px 16px; }
+summary { cursor: pointer; color: var(--discret); font-weight: 500; }
+.plus { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 16px; padding-top: 12px; align-items: start; }
+@media (max-width: 760px) { .plus { grid-template-columns: minmax(0, 1fr); } }
+.plus svg { display: block; width: 100%; height: auto; }
+.plus p { margin: 0 0 6px; }
+.tableau { overflow-x: auto; }
+table { border-collapse: collapse; font-family: var(--math); font-size: 16px; font-variant-numeric: tabular-nums; width: 100%; }
+th, td { padding: 4px 8px; border-bottom: 1px solid var(--filet); text-align: right; white-space: nowrap; }
+th { font-family: var(--ui); font-size: 12px; font-weight: 600; color: var(--discret); }
+th:first-child, td:first-child { text-align: left; }
+.note { font-size: 13px; color: var(--discret); }
+</style>
+
+<div class="page">
+  <header>
+    <span class="niveau">Terminale spécialité · Chapitre 9 · Limite d'une fonction</span>
+    <h1>Croissances comparées avec ln</h1>
+    <p class="chapeau" id="chapeau"></p>
+  </header>
+
+  <div class="barre">
+    <select id="mode" aria-label="Situation étudiée">
+      <option value="lnP">ln(x) face à xⁿ en +∞</option>
+      <option value="ln0">xⁿ ln(x) en 0⁺</option>
+    </select>
+    <div class="reglage">
+      <label for="nn"><i>n</i> =</label>
+      <input type="range" id="nn" min="1" max="10" step="1" value="1" style="width: 130px">
+      <output id="nn-sortie" for="nn"></output>
+    </div>
+    <div class="reglage large">
+      <label for="fen" id="fen-label">fenêtre</label>
+      <input type="range" id="fen" min="0" max="1000" step="1" value="200">
+    </div>
+    <div class="reglage">
+      <label for="vitesse" style="font-family: var(--ui); font-size: 14px; color: var(--discret)">vitesse</label>
+      <input type="range" id="vitesse" min="1" max="10" step="1" value="5" style="width: 110px">
+    </div>
+    <button type="button" class="principal" id="anim">Dézoomer</button>
+  </div>
+
+  <div class="scene">
+    <svg id="g1" viewBox="0 0 1000 480" role="img" aria-label="Les deux fonctions comparées"></svg>
+  </div>
+
+  <div class="constat" id="constat" role="status" aria-live="polite"></div>
+  <div class="theoreme" id="theoreme"></div>
+
+  <details>
+    <summary>Pour aller plus loin</summary>
+    <div class="plus">
+      <div>
+        <p id="titre2"></p>
+        <svg id="g2" viewBox="0 0 720 260" role="img" aria-label="Quotient ou produit des deux fonctions"></svg>
+      </div>
+      <div>
+        <div class="tableau"><table id="tableau"></table></div>
+        <p class="note">Valeurs calculées par logarithmes : la plupart dépassent les capacités d'une calculatrice.</p>
+      </div>
+    </div>
+  </details>
+</div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const NS = "http://www.w3.org/2000/svg";
+  const UI = "IBM Plex Sans, Segoe UI, system-ui, sans-serif", MATH = "STIX Two Text, Cambria Math, Times New Roman, serif";
+  const LOG10E = Math.LOG10E;
+
+  // ---------------------------------------------------------------
+  // Écriture des nombres à la française, y compris les très grands et très petits
+  // ---------------------------------------------------------------
+  function fr(x, d = 3) {
+    if (Math.abs(x) < 1e-12) x = 0;
+    let s = x.toFixed(d);
+    if (s.includes(".")) s = s.replace(/0+$/, "").replace(/\.$/, "");
+    return s.replace(".", ",").replace("-", "−");
+  }
+  const EXP = { "-": "⁻", 0: "⁰", 1: "¹", 2: "²", 3: "³", 4: "⁴", 5: "⁵", 6: "⁶", 7: "⁷", 8: "⁸", 9: "⁹" };
+  const exposant = k => String(k).split("").map(c => EXP[c]).join("");
+  // un nombre donné par son signe et le logarithme décimal de sa valeur absolue
+  function sci(signe, lg) {
+    if (lg === -Infinity) return "0";
+    if (lg > -3 && lg < 5) return fr(signe * Math.pow(10, lg), lg < 0 ? 4 : 2);
+    let k = Math.floor(lg), m = Math.pow(10, lg - k);
+    if (m >= 9.995) { m = 1; k++; }
+    return `${signe < 0 ? "−" : ""}${fr(m, 2)} × 10${exposant(k)}`;
+  }
+  const sciNb = v => v === 0 ? "0" : sci(Math.sign(v), Math.log10(Math.abs(v)));
+  const xn = n => n === 1 ? "x" : `x${exposant(n)}`;
+  const xnH = n => n === 1 ? "<i>x</i>" : `<i>x</i><sup>${n}</sup>`;
+
+  // ---------------------------------------------------------------
+  // Les quatre situations du cours
+  // ---------------------------------------------------------------
+  const etat = { mode: "lnP", n: 1, s: 0 };
+  const MODES = {
+    expP: {
+      fen: [2, 60, 5], sens: "+",
+      courbes: n => [
+        { f: x => Math.exp(x), coul: "var(--bleu)", nom: "f(x) = eˣ" },
+        { f: x => Math.pow(x, n), coul: "var(--rouge)", nom: `g(x) = ${xn(n)}` }],
+      combi: n => ({ f: x => Math.exp(x) / Math.pow(x, n), nom: `eˣ / ${xn(n)}`, debut: W => Math.min(0.5, W / 10) }),
+      lg: (n, x) => ({ s: 1, lg: x * LOG10E - n * Math.log10(x) }),
+      pts: [10, 20, 50, 100, 500],
+      titre2: n => `Le quotient e<sup>x</sup> / ${xnH(n)}`,
+    },
+    expM: {
+      fen: [2, 60, 5], sens: "-",
+      courbes: n => [
+        { f: x => Math.pow(x, n), coul: "var(--rouge)", nom: xn(n) },
+        { f: x => Math.exp(x), coul: "var(--bleu)", nom: "eˣ" }],
+      combi: n => ({ f: x => Math.pow(x, n) * Math.exp(x), nom: `${xn(n)}eˣ` }),
+      lg: (n, x) => ({ s: n % 2 ? -1 : 1, lg: n * Math.log10(-x) + x * LOG10E }),
+      pts: [-10, -20, -50, -100, -500],
+      titre2: n => `Le produit ${xnH(n)}e<sup>x</sup>`,
+    },
+    lnP: {
+      fen: [3, 3000, 10], sens: "+",
+      courbes: n => [
+        { f: x => Math.log(x), coul: "var(--bleu)", nom: "ln(x)" },
+        { f: x => Math.pow(x, n), coul: "var(--rouge)", nom: xn(n) }],
+      combi: n => ({ f: x => Math.log(x) / Math.pow(x, n), nom: `ln(x) / ${xn(n)}`, debut: () => 1 }),
+      lg: (n, x) => ({ s: 1, lg: Math.log10(Math.log(x)) - n * Math.log10(x) }),
+      pts: [10, 100, 1e3, 1e6, 1e12],
+      titre2: n => `Le quotient ln(<i>x</i>) / ${xnH(n)}`,
+    },
+    ln0: {
+      fen: [1, 0.0005, 1], sens: "0",
+      courbes: n => [
+        { f: x => Math.log(x), coul: "var(--bleu)", nom: "ln(x)" },
+        { f: x => Math.pow(x, n), coul: "var(--rouge)", nom: xn(n) }],
+      combi: n => ({ f: x => Math.pow(x, n) * Math.log(x), nom: `${xn(n)} ln(x)` }),
+      lg: (n, x) => ({ s: -1, lg: n * Math.log10(x) + Math.log10(-Math.log(x)) }),
+      pts: [0.1, 0.01, 1e-3, 1e-6, 1e-12],
+      titre2: n => `Le produit ${xnH(n)} ln(<i>x</i>)`,
+    },
+  };
+  const mode = () => MODES[etat.mode];
+  // la fenêtre : curseur de 0 à 1000, échelle logarithmique entre deux bornes
+  const largeur = () => { const [a, b] = mode().fen; return a * Math.pow(b / a, etat.s / 1000); };
+  const curseurPour = W => { const [a, b] = mode().fen; return Math.round(1000 * Math.log(W / a) / Math.log(b / a)); };
+
+  // ---------------------------------------------------------------
+  // Tracé d'un graphique
+  // ---------------------------------------------------------------
+  function el(svg, nom, attrs, texte) {
+    const e = document.createElementNS(NS, nom);
+    for (const [c, v] of Object.entries(attrs)) e.setAttribute(c, v);
+    if (texte !== undefined) e.textContent = texte;
+    svg.appendChild(e);
+    return e;
+  }
+  function pasJoli(etendue, cible) {
+    const brut = etendue / cible, p = Math.pow(10, Math.floor(Math.log10(brut))), r = brut / p;
+    return (r < 1.5 ? 1 : r < 3.5 ? 2 : r < 7.5 ? 5 : 10) * p;
+  }
+  function etiquette(v, pas) {
+    if (Math.abs(v) < pas * 1e-6) return "0";
+    if (Math.abs(v) >= 1e5 || Math.abs(v) < 1e-3) return sciNb(v);
+    return fr(v, Math.max(0, -Math.floor(Math.log10(pas))));
+  }
+  function graphique(svg, Wv, Hv, a, b, courbes, opts = {}) {
+    svg.replaceChildren();
+    const G = 92, D = 20, HAUT = 18, BAS = 34, N = 600, fs = opts.taille ?? 14;
+    const xs = [];
+    for (let i = 0; i <= N; i++) xs.push(a + (b - a) * i / N);
+    const series = courbes.map(c => xs.map(x => { const y = c.f(x); return Number.isFinite(y) ? y : NaN; }));
+    let ymin = 0, ymax = 0;
+    for (const s of series) for (const y of s) if (!Number.isNaN(y)) { ymin = Math.min(ymin, y); ymax = Math.max(ymax, y); }
+    if (opts.plancher !== undefined) ymin = Math.max(ymin, opts.plancher);
+    if (opts.yfixe) [ymin, ymax] = opts.yfixe;
+    if (ymax - ymin < 1e-12) ymax = ymin + 1;
+    const marge = (ymax - ymin) * 0.06;
+    if (ymin < 0) ymin -= marge;
+    ymax += marge;
+    const X = x => G + (x - a) / (b - a) * (Wv - G - D);
+    const Y = y => Hv - BAS - (y - ymin) / (ymax - ymin) * (Hv - BAS - HAUT);
+    const py = pasJoli(ymax - ymin, 5), px = pasJoli(b - a, 8);
+    for (let y = Math.ceil(ymin / py) * py; y <= ymax; y += py) {
+      el(svg, "line", { x1: G, x2: Wv - D, y1: Y(y), y2: Y(y), stroke: "var(--grille)", "stroke-width": 1 });
+      el(svg, "text", { x: G - 10, y: Y(y) + 5, "text-anchor": "end", "font-size": fs, fill: "var(--discret)", "font-family": UI }, etiquette(y, py));
+    }
+    for (let x = Math.ceil(a / px) * px; x <= b + 1e-12; x += px) {
+      el(svg, "line", { x1: X(x), x2: X(x), y1: HAUT, y2: Hv - BAS, stroke: "var(--grille)", "stroke-width": 1 });
+      el(svg, "text", { x: X(x), y: Hv - BAS + 20, "text-anchor": "middle", "font-size": fs, fill: "var(--discret)", "font-family": UI }, etiquette(x, px));
+    }
+    el(svg, "line", { x1: G, x2: Wv - D, y1: Y(0), y2: Y(0), stroke: "var(--encre)", "stroke-width": 1.5 });
+    if (a <= 0 && b >= 0) el(svg, "line", { x1: X(0), x2: X(0), y1: HAUT, y2: Hv - BAS, stroke: "var(--encre)", "stroke-width": 1.5 });
+    if (opts.repere && opts.repere.x > a && opts.repere.x < b) {
+      const xr = X(opts.repere.x), adroite = xr < Wv - 260;
+      el(svg, "line", { x1: xr, x2: xr, y1: HAUT, y2: Hv - BAS, stroke: "var(--encre)", "stroke-width": 1.4, "stroke-dasharray": "6 5" });
+      el(svg, "text", { x: xr + (adroite ? 8 : -8), y: Hv - BAS - 12, "text-anchor": adroite ? "start" : "end", "font-size": 17, fill: "var(--encre)", "font-family": MATH }, opts.repere.texte);
+    }
+    const id = `${svg.id}-cadre`;
+    const defs = el(svg, "defs", {});
+    const cp = document.createElementNS(NS, "clipPath"); cp.setAttribute("id", id);
+    const r = document.createElementNS(NS, "rect");
+    for (const [c, v] of Object.entries({ x: G, y: HAUT - 2, width: Wv - G - D, height: Hv - BAS - HAUT + 4 })) r.setAttribute(c, v);
+    cp.appendChild(r); defs.appendChild(cp);
+    series.forEach((s, k) => {
+      let d = "", leve = true;
+      s.forEach((y, i) => {
+        if (Number.isNaN(y)) { leve = true; return; }
+        const yy = Math.max(HAUT - 60, Math.min(Hv - BAS + 60, Y(y)));
+        d += `${leve ? "M" : "L"} ${X(xs[i]).toFixed(1)} ${yy.toFixed(1)} `;
+        leve = false;
+      });
+      el(svg, "path", { d, fill: "none", stroke: courbes[k].coul, "stroke-width": opts.epaisseur ?? 3.2, "stroke-linejoin": "round", "clip-path": `url(#${id})` });
+    });
+    courbes.forEach((c, k) => {
+      el(svg, "text", { x: G + 14, y: HAUT + 26 + 26 * k, "font-size": fs + 6, fill: c.coul, "font-family": MATH, "font-weight": 600 }, c.nom);
+    });
+  }
+
+  // le point au-delà duquel eˣ > xⁿ pour toujours : la plus grande solution de x = n ln(x)
+  function depassement(n) {
+    if (n <= 2) return null;
+    let a = n, b = n;
+    while (b - n * Math.log(b) < 0) b *= 2;
+    for (let i = 0; i < 80; i++) { const m = (a + b) / 2; if (m - n * Math.log(m) < 0) a = m; else b = m; }
+    return (a + b) / 2;
+  }
+
+  // ---------------------------------------------------------------
+  // Mise à jour
+  // ---------------------------------------------------------------
+  function tout() {
+    const M = mode(), n = etat.n, W = largeur();
+    $("nn-sortie").textContent = n;
+    $("fen").value = etat.s;
+    $("fen-label").textContent = M.sens === "0" ? "zoom vers 0" : "fenêtre";
+    $("anim").textContent = M.sens === "0" ? "Zoomer vers 0" : "Dézoomer";
+    $("chapeau").innerHTML = {
+      expP: "Dans une petite fenêtre, <i>x</i><sup>n</sup> semble l'emporter sur e<sup>x</sup>. Dézoomez pour voir qui gagne vraiment.",
+      expM: "En −∞, <i>x</i><sup>n</sup> grossit et e<sup>x</sup> s'écrase vers 0. Dézoomez pour voir lequel impose sa limite au produit.",
+      lnP: "ln(<i>x</i>) tend vers +∞, mais à quelle vitesse face à <i>x</i><sup>n</sup> ? Dézoomez.",
+      ln0: "En 0, ln(<i>x</i>) plonge vers −∞ et <i>x</i><sup>n</sup> tend vers 0. Zoomez vers 0 pour voir lequel l'emporte.",
+    }[etat.mode];
+
+    // le grand graphique : les deux fonctions face à face pour eˣ et xⁿ en +∞,
+    // sinon le produit ou le quotient, sur une échelle fixe pour qu'on le voie s'écraser vers 0
+    const bornes = M.sens === "-" ? [-W, 0] : [M.sens === "0" ? W / 2000 : 0, W];
+    const x2 = etat.mode === "expP" ? depassement(n) : null;
+    const C = M.combi(n), violet = [{ f: C.f, coul: "var(--violet)", nom: C.nom }];
+    const a2 = C.debut ? C.debut(W) : bornes[0];
+    const ext = { expM: (n % 2 ? -1 : 1) * Math.pow(n / Math.E, n), lnP: 1 / (n * Math.E), ln0: -1 / (n * Math.E) }[etat.mode];
+    const yfixe = ext === undefined ? null : [Math.min(0, ext) * 1.12 - Math.abs(ext) * 0.04, Math.max(0, ext) * 1.12 + Math.abs(ext) * 0.04];
+    if (etat.mode === "expP" || etat.mode === "lnP") {
+      graphique($("g1"), 1000, 480, etat.mode === "lnP" ? 0.05 : bornes[0], bornes[1], M.courbes(n), { repere: x2 ? { x: x2, texte: `x ≈ ${fr(x2, 2)}` } : null, taille: 15, plancher: etat.mode === "lnP" ? -3 : undefined });
+      $("titre2").innerHTML = M.titre2(n);
+      graphique($("g2"), 720, 260, a2, bornes[1], violet, { plancher: 0, epaisseur: 2.6 });
+    } else {
+      graphique($("g1"), 1000, 480, a2, bornes[1], violet, { yfixe, taille: 15 });
+      $("titre2").innerHTML = "Les deux facteurs, séparément";
+      graphique($("g2"), 720, 260, bornes[0], bornes[1], M.courbes(n), { plancher: M.sens === "0" ? -12 : undefined, epaisseur: 2.6 });
+    }
+
+    // le constat, en une ligne
+    let c;
+    if (etat.mode === "expP") {
+      if (!x2) c = `Pour <i>n</i> = ${n}, e<sup>x</sup> est au-dessus de ${xnH(n)} dès le départ.`;
+      else if (W < x2) c = `Ici, ${xnH(n)} <b>semble</b> l'emporter… Dézoomez au-delà de <i>x</i> ≈ ${fr(x2, 2)}.`;
+      else c = `Au-delà de <i>x</i> ≈ ${fr(x2, 2)}, e<sup>x</sup> dépasse ${xnH(n)} <b>pour toujours</b>, et l'écart explose.`;
+    } else if (etat.mode === "expM") {
+      const v = M.lg(n, -W);
+      c = `En <i>x</i> = ${fr(-W, 0)}, ${xnH(n)}e<sup>x</sup> ≈ ${sci(v.s, v.lg)} : l'exponentielle écrase la puissance, le produit tend vers 0.`;
+    } else if (etat.mode === "lnP") {
+      const v = M.lg(n, W);
+      c = `En <i>x</i> = ${fr(W, 0)}, ln(<i>x</i>) / ${xnH(n)} ≈ ${sci(v.s, v.lg)} : la puissance écrase le logarithme, le quotient tend vers 0.`;
+    } else {
+      const v = M.lg(n, W / 2000);
+      c = `En <i>x</i> = ${sciNb(W / 2000)}, ${xnH(n)} ln(<i>x</i>) ≈ ${sci(v.s, v.lg)} : la puissance l'emporte, le produit tend vers 0.`;
+    }
+    $("constat").innerHTML = c;
+
+    // le théorème du cours, la limite du moment surlignée
+    const lim = (sous, corps, res, cle) => `<span class="${cle === etat.mode ? "on" : ""}"><span class="lim">lim<small>${sous}</small></span>${corps} = ${res}</span>`;
+    $("theoreme").innerHTML = etat.mode === "expP" || etat.mode === "expM"
+      ? lim("x→+∞", ` <span class="frac"><span>e<sup>x</sup></span><span><i>x</i><sup>n</sup></span></span>`, "+∞", "expP")
+        + lim("x→−∞", ` (<i>x</i><sup>n</sup>e<sup>x</sup>)`, "0", "expM")
+      : lim("x→+∞", ` <span class="frac"><span>ln(<i>x</i>)</span><span><i>x</i><sup>n</sup></span></span>`, "0", "lnP")
+        + lim("x→0⁺", ` <i>x</i><sup>n</sup>ln(<i>x</i>)`, "0", "ln0");
+
+    // pour aller plus loin : un tableau de valeurs
+    $("tableau").innerHTML = `<tr><th><i>x</i></th><th>${C.nom}</th></tr>`
+      + M.pts.map(x => { const r = M.lg(n, x); return `<tr><td>${sciNb(x)}</td><td>${sci(r.s, r.lg)}</td></tr>`; }).join("");
+  }
+
+  // ---------------------------------------------------------------
+  // Commandes
+  // ---------------------------------------------------------------
+  let anim = null;
+  const arreter = () => { if (anim) cancelAnimationFrame(anim); anim = null; };
+  const depart = () => { etat.s = curseurPour(mode().fen[2]); };
+  $("mode").addEventListener("change", e => { arreter(); etat.mode = e.target.value; depart(); tout(); });
+  $("nn").addEventListener("input", e => { etat.n = +e.target.value; tout(); });
+  $("fen").addEventListener("input", e => { arreter(); etat.s = +e.target.value; tout(); });
+  $("anim").addEventListener("click", () => {
+    arreter();
+    if (etat.s >= 990) depart();   // déjà au bout : on repart de la fenêtre du cours
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) { etat.s = 1000; tout(); return; }
+    // étapes (curseur, durée en ms) ; pour eˣ face à xⁿ, la traversée du point
+    // de dépassement se fait au ralenti pour qu'on voie eˣ passer au-dessus
+    const s0 = etat.s, x2 = etat.mode === "expP" ? depassement(etat.n) : null;
+    const etapes = [];
+    if (x2) {
+      const sA = Math.max(s0, Math.min(1000, curseurPour(0.8 * x2)));
+      const sB = Math.max(sA, Math.min(1000, curseurPour(1.5 * x2)));
+      if (sA > s0) etapes.push([sA, 1800 * (sA - s0) / 400 + 300]);
+      if (sB > sA) etapes.push([sB, 7000]);
+      if (1000 > sB) etapes.push([1000, 2500]);
+    } else etapes.push([1000, (5000 * (1000 - s0) / 1000 + 300) * 5 / +$("vitesse").value]);
+    let t0 = null, k = 0, debut = s0;
+    const pas = t => {
+      if (t0 === null) t0 = t;
+      const [cible, duree] = etapes[k];
+      const u = Math.min(1, (t - t0) / duree);
+      // départ et arrivée en douceur, vitesse constante dans la traversée lente
+      const v = etapes.length > 1 ? (k === 0 ? u * (2 - u) * 0.5 + u * 0.5 : k === etapes.length - 1 ? u * u * 0.5 + u * 0.5 : u) : u * u * (3 - 2 * u);
+      etat.s = debut + (cible - debut) * v;
+      tout();
+      if (u >= 1) { k++; debut = cible; t0 = t; }
+      anim = k < etapes.length ? requestAnimationFrame(pas) : null;
+    };
+    anim = requestAnimationFrame(pas);
+  });
+
+  depart();
+  tout();
+})();
+</script>
+
+<!-- plein-ecran : bouton commun à toutes les pages interactives -->
+<style>
+#pleinEcran { position: fixed; top: calc(10px + env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); z-index: 50; font: 500 13px var(--ui, system-ui, sans-serif); padding: 6px 12px; border-radius: 999px; border: 1px solid var(--filet, #d9dee5); background: var(--carte, #fff); color: var(--encre, #1b1f24); cursor: pointer; opacity: .9; }
+#pleinEcran:hover { opacity: 1; }
+body.plein-ecran .niveau, body.plein-ecran h1, body.plein-ecran h1 + .chapeau { display: none !important; }
+body.plein-ecran .page { max-width: none !important; min-height: 100vh; padding-top: 48px !important; align-content: start; }
+body.plein-ecran .page svg:not(.mini) { max-height: 76vh; }
+body.plein-ecran.plein-multi .page svg:not(.mini) { max-height: 46vh; }
+body.plein-ecran .constat { font-size: clamp(20px, 2.6vw, 30px); }
+</style>
+<script>
+(() => {
+  const b = document.createElement("button");
+  b.type = "button"; b.id = "pleinEcran"; document.body.appendChild(b);
+  function etat(on) { document.body.classList.toggle("plein-ecran", on); b.textContent = on ? "✕ Quitter le plein écran" : "⛶ Plein écran"; b.setAttribute("aria-pressed", on); window.dispatchEvent(new Event("resize")); }
+  b.addEventListener("click", async () => {
+    const on = !document.body.classList.contains("plein-ecran");
+    etat(on);
+    try { on ? await document.documentElement.requestFullscreen() : (document.fullscreenElement && await document.exitFullscreen()); } catch (e) {}
+  });
+  document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement && document.body.classList.contains("plein-ecran")) etat(false); });
+  window.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("plein-ecran")) etat(false); });
+  if (document.querySelectorAll(".page svg:not(.mini), .page canvas").length > 1) document.body.classList.add("plein-multi");
+  etat(location.hash === "#plein");
+})();
+</script>
+
+</body></html>
