@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;box-sizing:border-box}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head><body>
+<title>Suites en images</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Première spécialité, chapitre 7, TD7 : une scène par exercice (ancre #eN pour les QR codes).
+   Bleu / orange pour les deux suites comparées, rouge vif pour les lectures et les seuils. */
+:root {
+  --papier: #f7f8fa; --carte: #ffffff; --encre: #1b1f24; --discret: #5d6672; --filet: #d9dee5; --grille: #e7eaef;
+  --bleu: #1a56db; --orange: #f07800; --rouge: #e0181b; --violet: #7b4fa0; --bleu-fond: #dbe6fb; --orange-fond: #fde3c8;
+  --math: "STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --ui: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #252b34;
+    --bleu: #6fa3f0; --orange: #ffa040; --rouge: #ff5a5c; --violet: #c49be6; --bleu-fond: #1f3050; --orange-fond: #4a2f12; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #252b34;
+    --bleu: #6fa3f0; --orange: #ffa040; --rouge: #ff5a5c; --violet: #c49be6; --bleu-fond: #1f3050; --orange-fond: #4a2f12; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--papier); color: var(--encre); font-family: var(--ui); font-size: 15px; line-height: 1.5; margin: 0; }
+.page { max-width: 920px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 40px; display: grid; gap: 12px; }
+.tete { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; padding-right: 140px; }
+.niveau { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--discret); }
+select { font: 500 13px var(--ui); padding: 3px 8px; border-radius: 8px; border: 1px solid var(--filet); background: var(--carte); color: var(--encre); max-width: 100%; }
+h1 { font-family: var(--math); font-weight: 600; font-size: clamp(24px, 3.6vw, 34px); line-height: 1.15; margin: 0; text-wrap: balance; }
+.chapeau { margin: 0; color: var(--discret); max-width: 70ch; }
+.onglets, .commandes { display: flex; gap: 8px 14px; flex-wrap: wrap; align-items: center; }
+.onglets button, .commandes button { font: 500 13px var(--ui); padding: 4px 12px; border-radius: 999px; border: 1px solid var(--filet); background: var(--carte); color: var(--encre); cursor: pointer; }
+.onglets button[aria-pressed="true"], .commandes button[aria-pressed="true"] { background: var(--encre); color: var(--carte); border-color: var(--encre); }
+.commandes label { font: 500 13px var(--ui); color: var(--discret); display: flex; align-items: center; gap: 8px; }
+.commandes label b { font-family: var(--math); font-size: 17px; color: var(--encre); min-width: 3.2em; }
+.commandes input[type=range] { width: min(260px, 55vw); accent-color: var(--bleu); }
+.figure { background: var(--carte); border: 1px solid var(--filet); border-radius: 10px; overflow: hidden; }
+svg { display: block; width: 100%; height: auto; user-select: none; -webkit-user-select: none; }
+.constat { font-family: var(--math); font-size: clamp(17px, 2.3vw, 21px); margin: 0; padding: 10px 14px; border-radius: 10px; border: 1.5px solid var(--filet); background: var(--carte); text-align: center; }
+.constat .petit { display: block; font-family: var(--ui); font-size: 14px; color: var(--discret); margin-top: 2px; }
+.b { color: var(--bleu); } .o { color: var(--orange); } .r { color: var(--rouge); }
+</style>
+
+<div class="page">
+  <div class="tete">
+    <span class="niveau">Première spécialité · Chapitre 7 · TD7</span>
+    <select id="choix" aria-label="Exercice"></select>
+  </div>
+  <h1 id="titre"></h1>
+  <p class="chapeau" id="chapeau"></p>
+  <div class="onglets" id="onglets" hidden></div>
+  <div class="figure"><svg id="g" viewBox="0 0 900 500" role="img" aria-label="Figure de l'exercice"></svg></div>
+  <div class="commandes" id="commandes"></div>
+  <p class="constat" id="constat" aria-live="polite"></p>
+</div>
+
+<script>
+(() => {
+  const NS = "http://www.w3.org/2000/svg", $ = id => document.getElementById(id);
+  const el = (t, a, txt) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); if (txt != null) e.textContent = txt; return e; };
+  const svg = $("g"), W = 900, H = 500;
+  const fr = (x, d = 2) => { const r = Number((+x).toFixed(d)); let s = Math.abs(r).toFixed(d); if (s.includes(".")) s = s.replace(/\.?0+$/, ""); const [e, f] = s.split("."); return (r < 0 ? "−" : "") + e.replace(/\B(?=(\d{3})+(?!\d))/g, " ") + (f ? "," + f : ""); };
+  const ent = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  const texte = (x, y, t, o = {}) => svg.appendChild(el("text", Object.assign({ x, y, "text-anchor": "middle", "font-family": "var(--math)", "font-size": 17, fill: "var(--encre)", "paint-order": "stroke", stroke: "var(--carte)", "stroke-width": 4 }, o), t));
+  const SUP = { "-": "⁻", 0: "⁰", 1: "¹", 2: "²", 3: "³", 4: "⁴", 5: "⁵", 6: "⁶", 7: "⁷", 8: "⁸", 9: "⁹" };
+  const sup = d => String(d).split("").map(c => SUP[c] || c).join("");
+
+  // repère [xmin, xmax, ymin, ymax], pas des graduations ; échelle logarithmique en y si log
+  function repere(fen, pas = [1, 1], o = {}) {
+    const [a, b, c, d] = fen, gx = o.gx ?? 62, dx = o.dx ?? 20, hy = o.hy ?? 18, by = o.by ?? 34;
+    const X = x => gx + (W - gx - dx) * (x - a) / (b - a);
+    const Y = o.log ? (y => H - by - (H - hy - by) * (Math.log10(Math.max(y, 1e-300)) - c) / (d - c)) : (y => H - by - (H - hy - by) * (y - c) / (d - c));
+    const g = el("g"); svg.appendChild(g);
+    for (let x = Math.ceil(a / pas[0]) * pas[0]; x <= b + 1e-9; x += pas[0]) {
+      g.appendChild(el("line", { x1: X(x), y1: hy, x2: X(x), y2: H - by, stroke: "var(--grille)" }));
+      texte(X(x), H - by + 20, o.fx ? o.fx(x) : fr(x), { "font-size": 13, fill: "var(--discret)" });
+    }
+    if (o.log) for (let k = Math.ceil(c); k <= d; k += pas[1]) {
+      const y = Y(10 ** k); g.appendChild(el("line", { x1: gx, y1: y, x2: W - dx, y2: y, stroke: "var(--grille)" }));
+      texte(gx - 8, y + 5, "10" + sup(k), { "font-size": 13, fill: "var(--discret)", "text-anchor": "end" });
+    } else for (let y = Math.ceil(c / pas[1]) * pas[1]; y <= d + 1e-9; y += pas[1]) {
+      g.appendChild(el("line", { x1: gx, y1: Y(y), x2: W - dx, y2: Y(y), stroke: "var(--grille)" }));
+      texte(gx - 8, Y(y) + 5, o.fy ? o.fy(y) : fr(y), { "font-size": 13, fill: "var(--discret)", "text-anchor": "end" });
+    }
+    g.appendChild(el("line", { x1: gx, y1: H - by, x2: W - dx, y2: H - by, stroke: "var(--encre)", "stroke-width": 1.2 }));
+    g.appendChild(el("line", { x1: gx, y1: hy, x2: gx, y2: H - by, stroke: "var(--encre)", "stroke-width": 1.2 }));
+    if (o.nx) texte(W - dx - 4, H - by - 8, o.nx, { "text-anchor": "end", "font-style": "italic", fill: "var(--discret)", "font-size": 15 });
+    if (o.ny) texte(gx + 8, hy + 14, o.ny, { "text-anchor": "start", "font-style": "italic", fill: "var(--discret)", "font-size": 15 });
+    const R = { X, Y };
+    R.point = (x, y, c = "var(--bleu)", r = 4.5) => svg.appendChild(el("circle", { cx: X(x), cy: Y(y), r, fill: c }));
+    R.seg = (x1, y1, x2, y2, c = "var(--encre)", ep = 2, tir = "") => svg.appendChild(el("line", { x1: X(x1), y1: Y(y1), x2: X(x2), y2: Y(y2), stroke: c, "stroke-width": ep, "stroke-dasharray": tir }));
+    R.horiz = (y, c, nom, tir = "8 6") => { R.seg(a, y, b, y, c, 1.8, tir); if (nom) texte(W - dx - 6, Y(y) - 8, nom, { "text-anchor": "end", fill: c, "font-size": 15 }); };
+    R.courbe = (f, c, ep = 2.6, tir = "", u = a, v = b) => { let s = ""; for (let i = 0; i <= 400; i++) { const x = u + (v - u) * i / 400; s += (i ? "L" : "M") + X(x) + "," + Y(f(x)); } svg.appendChild(el("path", { d: s, fill: "none", stroke: c, "stroke-width": ep, "stroke-dasharray": tir })); };
+    return R;
+  }
+
+  // commandes
+  function curseur(c, nom, min, max, pas, val, maj, fmt = v => fr(v, 3)) {
+    const l = document.createElement("label"), b = document.createElement("b"); b.textContent = fmt(val);
+    l.append(nom + " = ", b);
+    const r = document.createElement("input"); r.type = "range"; r.min = min; r.max = max; r.step = pas; r.value = val;
+    r.oninput = () => { const v = Number((Math.round(+r.value / pas) * pas).toFixed(6)); b.textContent = fmt(v); maj(v); };
+    l.appendChild(r); c.appendChild(l); return r;
+  }
+  function bouton(c, nom, f) { const b = document.createElement("button"); b.type = "button"; b.textContent = nom; b.onclick = () => f(b); c.appendChild(b); return b; }
+  // animation : bouton Animer / Pause et curseur de vitesse
+  let anim = null;
+  function stopAnim() { if (anim) { cancelAnimationFrame(anim.id); anim = null; } }
+  function animateur(c, pas, finie, vit0 = 1) {
+    let vitesse = vit0;
+    const b = bouton(c, "▶ Animer", () => { if (anim) { stopAnim(); b.textContent = "▶ Animer"; } else lancer(); });
+    curseur(c, "vitesse", 0.25, 4, 0.25, vit0, v => vitesse = v, v => "×" + fr(v, 2));
+    function lancer() {
+      if (finie()) return;
+      b.textContent = "⏸ Pause"; let t0 = null;
+      const boucle = t => { if (t0 === null) t0 = t; const dt = Math.min((t - t0) / 1000, 0.1) * vitesse; t0 = t; pas(dt); if (finie()) { anim = null; b.textContent = "▶ Animer"; return; } anim.id = requestAnimationFrame(boucle); };
+      anim = { id: requestAnimationFrame(boucle) };
+    }
+    return { relancer: () => { stopAnim(); b.textContent = "▶ Animer"; } };
+  }
+
+  // ------------------------------------------------------------------ scènes
+  const S = {};
+
+  S.e13 = { titre: "Exercice 13 · La salle de spectacle", chapeau: "La rangée n compte s<sub>n</sub> = 20 + 2(n − 1) sièges : chaque rangée a 2 sièges de plus que la précédente. Le total se lit en appariant la première et la dernière rangée.",
+    init(c) {
+      let k = 25;
+      curseur(c, "rangées", 1, 25, 1, k, v => { k = v; draw(); }, v => fr(v, 0));
+      function draw() {
+        svg.textContent = "";
+        const top = 30, hRang = 17, larg = 13;
+        for (let n = 1; n <= 25; n++) {
+          const s = 20 + 2 * (n - 1), y = top + (n - 1) * hRang, x0 = W / 2 - s * larg / 2, on = n <= k;
+          for (let j = 0; j < s; j++) svg.appendChild(el("rect", { x: x0 + j * larg + 1.5, y, width: larg - 3, height: hRang - 5, rx: 2.5, fill: on ? (n === k ? "var(--orange)" : "var(--bleu)") : "var(--grille)" }));
+          if (n === 1 || n === k || n === 25) texte(x0 - 12, y + 11, "s" + String(n).split("").map(d => "₀₁₂₃₄₅₆₇₈₉"[d]).join("") + " = " + s, { "text-anchor": "end", "font-size": 14, fill: n === k ? "var(--orange)" : "var(--discret)" });
+        }
+        texte(W / 2, H - 20, "scène", { "font-size": 15, fill: "var(--discret)", "font-style": "italic" });
+        const sk = 20 + 2 * (k - 1), tot = k * (20 + sk) / 2;
+        $("constat").innerHTML = `Rangée ${k} : <b class="o">s<sub>${k}</sub> = 20 + 2 × ${k - 1} = ${sk}</b> sièges · total des ${k} premières rangées : <b class="b">${k} × (20 + ${sk}) / 2 = ${ent(tot)}</b><span class="petit">Pour les 25 rangées : 25 × (20 + 68) / 2 = 1 100 sièges.</span>`;
+      }
+      draw();
+    } };
+
+  S.e27 = { titre: "Exercice 27 · Les grains de blé de l'échiquier", chapeau: "Sur la case k, on pose 2<sup>k−1</sup> grains. Le total des k premières cases vaut 1 + 2 + … + 2<sup>k−1</sup> = 2<sup>k</sup> − 1.",
+    init(c) {
+      let k = 10;
+      curseur(c, "case k", 1, 64, 1, k, v => { k = v; draw(); }, v => fr(v, 0));
+      function draw() {
+        svg.textContent = "";
+        const t = 54, x0 = 40, y0 = 34;
+        for (let i = 0; i < 64; i++) {
+          const lig = Math.floor(i / 8), col = lig % 2 ? 7 - i % 8 : i % 8, n = i + 1;
+          const fond = (lig + col) % 2 ? "var(--grille)" : "var(--carte)";
+          svg.appendChild(el("rect", { x: x0 + col * t, y: y0 + (7 - lig) * t, width: t, height: t, fill: n <= k ? (n === k ? "var(--orange)" : "var(--bleu-fond)") : fond, stroke: "var(--filet)" }));
+          texte(x0 + col * t + t / 2, y0 + (7 - lig) * t + t / 2 + 5, n, { "font-size": 12, fill: n === k ? "var(--carte)" : "var(--discret)", stroke: "none" });
+        }
+        const sur = 2n ** BigInt(k - 1), tot = 2n ** BigInt(k) - 1n, masse = Number(tot) * 0.05 / 1e6;
+        const lx = 500;
+        texte(lx, 80, "Sur la case " + k, { "text-anchor": "start", fill: "var(--orange)", "font-size": 20 });
+        texte(lx, 112, "2" + sup(k - 1) + " = " + ent(sur.toString()), { "text-anchor": "start", "font-size": k > 50 ? 15 : 19 });
+        texte(lx, 172, "Au total (cases 1 à " + k + ")", { "text-anchor": "start", fill: "var(--bleu)", "font-size": 20 });
+        texte(lx, 204, "2" + sup(k) + " − 1 = " + ent(tot.toString()), { "text-anchor": "start", "font-size": k > 50 ? 15 : 19 });
+        texte(lx, 264, "Masse, à 0,05 g le grain :", { "text-anchor": "start", fill: "var(--discret)", "font-size": 16 });
+        texte(lx, 292, masse < 1e-3 ? fr(masse * 1e6, 2) + " g" : masse < 1 ? fr(masse * 1000, 2) + " kg" : fr(masse, 0) + " t", { "text-anchor": "start", "font-size": 19 });
+        $("constat").innerHTML = k === 64 ? `Case 64 : 2⁶³ ≈ <b class="o">9,2 × 10¹⁸</b> grains ; au total 2⁶⁴ − 1 ≈ <b class="b">1,8 × 10¹⁹</b> grains<span class="petit">Environ 920 milliards de tonnes : plus de mille ans de la production mondiale de blé actuelle.</span>`
+          : `Case ${k} : 2<sup>${k - 1}</sup> grains ; total : 2<sup>${k}</sup> − 1 grains<span class="petit">Chaque case contient un grain de plus que toutes les cases précédentes réunies : 2<sup>k−1</sup> = (2<sup>k−1</sup> − 1) + 1.</span>`;
+      }
+      draw();
+    } };
+
+  S.e28 = { titre: "Exercice 28 · La balle qui rebondit", chapeau: "Lâchée de 10 m, la balle remonte à chaque rebond aux 3/5 de la hauteur précédente : après le k-ième rebond, elle monte à 10 × 0,6<sup>k</sup> m.",
+    init(c) {
+      const h = k => 10 * 0.6 ** k, NR = 9;
+      // découpage en phases : chute initiale, puis montée-descente de chaque rebond (durées ∝ √h)
+      const ph = [{ h: 10, t: Math.sqrt(10), monte: false }];
+      for (let k = 1; k <= NR; k++) { ph.push({ h: h(k), t: Math.sqrt(h(k)), monte: true, k }); ph.push({ h: h(k), t: Math.sqrt(h(k)), monte: false, k }); }
+      const T = ph.reduce((s, p) => s + p.t, 0);
+      let temps = 0;
+      const etat = tt => { let s = 0, dist = 0, contacts = 0; for (const p of ph) { if (tt <= s + p.t) { const u = (tt - s) / p.t, y = p.monte ? p.h * (1 - (1 - u) ** 2) : p.h * (1 - u * u); dist += p.monte ? y : p.h - y; return { y, dist, contacts, k: p.k || 0 }; } s += p.t; dist += p.h; if (!p.monte) contacts++; } return { y: 0, dist, contacts, k: NR }; };
+      const a = animateur(c, dt => { temps = Math.min(T, temps + dt * 1.6); draw(); }, () => temps >= T - 1e-9);
+      bouton(c, "↺ Recommencer", () => { a.relancer(); temps = 0; draw(); });
+      function draw() {
+        svg.textContent = "";
+        const R = repere([0, T, 0, 11], [100, 2], { ny: "hauteur (m)", fx: () => "" });
+        let s = 0, d = "", dPasse = "";
+        for (let i = 0; i <= 900; i++) { const tt = T * i / 900, e = etat(tt), pt = (i ? "L" : "M") + R.X(tt) + "," + R.Y(e.y); d += pt; if (tt <= temps) dPasse += pt; }
+        svg.appendChild(el("path", { d, fill: "none", stroke: "var(--grille)", "stroke-width": 2, "stroke-dasharray": "4 4" }));
+        svg.appendChild(el("path", { d: dPasse, fill: "none", stroke: "var(--bleu)", "stroke-width": 2.4 }));
+        let t0 = ph[0].t;
+        for (let k = 1; k <= 4; k++) { const tm = t0 + ph[2 * k - 1].t; R.seg(tm, 0, tm, h(k), "var(--rouge)", 1.4, "5 4"); texte(R.X(tm), R.Y(h(k)) - 8, fr(h(k), 3), { "font-size": 13, fill: "var(--rouge)" }); t0 += ph[2 * k - 1].t + ph[2 * k].t; }
+        const e = etat(temps);
+        svg.appendChild(el("circle", { cx: R.X(temps), cy: R.Y(e.y) - 9, r: 9, fill: "var(--orange)" }));
+        const d6 = 10 + 20 * (0.6 * (1 - 0.6 ** 5) / 0.4);
+        $("constat").innerHTML = `Contacts avec le sol : <b class="o">${e.contacts}</b> · distance parcourue : <b class="b">${fr(e.dist, 2)} m</b>`
+          + `<span class="petit">Après le 4ᵉ rebond, la balle monte à 10 × 0,6⁴ = 1,296 m. Au 6ᵉ contact : 10 + 2 × (6 + 3,6 + 2,16 + 1,296 + 0,7776) ≈ ${fr(d6, 2)} m.</span>`;
+      }
+      draw();
+    } };
+
+  S.e30 = { titre: "Exercice 30 · La rumeur", chapeau: "Le jour n, 3<sup>n</sup> personnes apprennent la rumeur ; au soir du jour n, 1 + 3 + … + 3<sup>n</sup> = (3<sup>n+1</sup> − 1)/2 personnes la connaissent. Échelle logarithmique.",
+    init(c) {
+      let n = 10;
+      curseur(c, "jour n", 0, 20, 1, n, v => { n = v; draw(); }, v => fr(v, 0));
+      function draw() {
+        svg.textContent = "";
+        const R = repere([-0.7, 20.7, 0, 10], [1, 1], { log: true, nx: "jour", fx: x => Number.isInteger(x) && x % 2 === 0 ? fr(x, 0) : "" });
+        const lw = (R.X(1) - R.X(0)) * 0.6;
+        for (let j = 0; j <= 20; j++) { const v = 3 ** j; svg.appendChild(el("rect", { x: R.X(j) - lw / 2, y: R.Y(v), width: lw, height: R.Y(1) - R.Y(v), fill: j <= n ? "var(--bleu)" : "var(--grille)" })); }
+        let s = ""; for (let j = 0; j <= n; j++) s += (j ? "L" : "M") + R.X(j) + "," + R.Y((3 ** (j + 1) - 1) / 2);
+        svg.appendChild(el("path", { d: s, fill: "none", stroke: "var(--orange)", "stroke-width": 2.6 }));
+        for (let j = 0; j <= n; j++) R.point(j, (3 ** (j + 1) - 1) / 2, "var(--orange)", 3.5);
+        R.horiz(68e6, "var(--rouge)", "68 millions");
+        const tot = (3 ** (n + 1) - 1) / 2;
+        $("constat").innerHTML = `Jour ${n} : <b class="b">3<sup>${n}</sup> = ${ent(3 ** n)}</b> nouvelles personnes · au total <b class="o">${ent(tot)}</b>`
+          + `<span class="petit">${tot > 68e6 ? "Plus de 68 millions : la rumeur est connue de toute la France." : "Moins de 68 millions."} Le premier jour où l'on dépasse 68 millions est le jour 17 : (3¹⁸ − 1)/2 = 193 710 244.</span>`;
+      }
+      draw();
+    } };
+
+  const sceneCapital = { titre: "Exercices 32 et 33 · Intérêts simples ou composés", chapeau: "Inès : C<sub>n</sub> = 2000 + 60n (suite arithmétique). Jules : v<sub>n</sub> = 2000 × 1,03<sup>n</sup> (suite géométrique). Les intérêts composés rapportent des intérêts à leur tour.",
+    init(c) {
+      let n = 10;
+      curseur(c, "n", 0, 30, 1, n, v => { n = v; draw(); }, v => fr(v, 0));
+      function draw() {
+        svg.textContent = "";
+        const R = repere([-0.5, 30.5, 1800, 5000], [2, 400], { nx: "année 2026 + n", ny: "capital (€)", fx: x => x % 4 === 0 ? fr(x, 0) : "" });
+        R.horiz(3000, "var(--rouge)", "3 000 €");
+        for (let j = 0; j <= 30; j++) { const on = j <= n; R.point(j, 2000 + 60 * j, on ? "var(--bleu)" : "var(--grille)", on ? 5 : 3.5); R.point(j, 2000 * 1.03 ** j, on ? "var(--orange)" : "var(--grille)", on ? 5 : 3.5); }
+        texte(R.X(29.5), R.Y(2000 + 60 * 29.5) + 24, "Inès", { fill: "var(--bleu)", "text-anchor": "end" });
+        texte(R.X(28), R.Y(2000 * 1.03 ** 28) - 12, "Jules", { fill: "var(--orange)", "text-anchor": "end" });
+        const ci = 2000 + 60 * n, cj = 2000 * 1.03 ** n;
+        $("constat").innerHTML = `En ${2026 + n} : Inès <b class="b">${fr(ci, 2)} €</b> · Jules <b class="o">${fr(cj, 2)} €</b> (écart : ${fr(cj - ci, 2)} €)`
+          + `<span class="petit">3 000 € atteints en 2040 pour Jules (n = 14) et en 2043 pour Inès (n = 17). En 2036 : 2 600 € contre 2 687,83 €.</span>`;
+      }
+      draw();
+    } };
+  S.e32 = sceneCapital;
+
+  S.e34 = { titre: "Exercice 34 · Mathématopolis : deux modèles", chapeau: "Modèle A : u<sub>n</sub> = 10 000 + 200n (+ 200 habitants par an). Modèle B : v<sub>n</sub> = 10 000 × 1,01<sup>n</sup> (+ 1 % par an). Le modèle B finit-il par dépasser le modèle A ?",
+    init(c) {
+      let n = 10;
+      curseur(c, "n", 0, 160, 1, n, v => { n = v; draw(); }, v => fr(v, 0));
+      function draw() {
+        svg.textContent = "";
+        const R = repere([0, 160, 8000, 52000], [20, 4000], { nx: "année 2020 + n", ny: "habitants" });
+        R.courbe(x => 10000 + 200 * x, "var(--bleu)", 2.6);
+        R.courbe(x => 10000 * 1.01 ** x, "var(--orange)", 2.6, "10 6");
+        R.seg(n, 8000, n, 52000, "var(--rouge)", 1.4, "4 4");
+        R.point(n, 10000 + 200 * n, "var(--bleu)"); R.point(n, 10000 * 1.01 ** n, "var(--orange)");
+        texte(R.X(150), R.Y(10000 + 200 * 150) + 26, "A", { fill: "var(--bleu)" }); texte(R.X(150), R.Y(10000 * 1.01 ** 150) - 12, "B", { fill: "var(--orange)" });
+        const u = 10000 + 200 * n, v = 10000 * 1.01 ** n;
+        $("constat").innerHTML = `En ${2020 + n} : A <b class="b">${ent(u)}</b> · B <b class="o">${ent(Math.round(v))}</b> habitants`
+          + `<span class="petit">${v > u ? "Le modèle B a dépassé le modèle A." : "Le modèle A est encore devant."} B dépasse A à partir de n = 128 (en 2148) : une croissance de 1 % par an finit toujours par l'emporter sur + 200 par an.</span>`;
+      }
+      draw();
+    } };
+
+  S.e35 = { titre: "Exercice 35 · Plier une feuille jusqu'à la Lune", chapeau: "Après k pliages, l'épaisseur vaut 0,1 × 2<sup>k</sup> mm. Échelle logarithmique : chaque graduation multiplie la hauteur par 10.",
+    init(c) {
+      let k = 10;
+      curseur(c, "pliages k", 0, 45, 1, k, v => { k = v; draw(); }, v => fr(v, 0));
+      const reperes = [["une personne", 1.7], ["tour Eiffel", 330], ["Everest", 8849], ["station spatiale", 4.0e5], ["Lune", 3.844e8]];
+      function draw() {
+        svg.textContent = "";
+        const R = repere([0, 1, -4, 9], [1, 1], { log: true, fx: () => "", ny: "épaisseur (m)", gx: 70 });
+        const e = 1e-4 * 2 ** k, xb = R.X(0.18), lb = 70;
+        svg.appendChild(el("rect", { x: xb, y: R.Y(e), width: lb, height: R.Y(1e-4) - R.Y(e), fill: e >= 3.844e8 ? "var(--orange)" : "var(--bleu)" }));
+        reperes.forEach(([n, v]) => { R.seg(0.12, v, 0.98, v, "var(--rouge)", 1.2, "6 5"); texte(R.X(0.97), R.Y(v) - 7, n, { "text-anchor": "end", fill: "var(--rouge)", "font-size": 14 }); });
+        const aff = e < 1 ? fr(e * 1000, 1) + " mm" : e < 1000 ? fr(e, 2) + " m" : fr(e / 1000, 0) + " km";
+        texte(xb + lb + 12, R.Y(e) + 5, aff, { "text-anchor": "start", "font-size": 16 });
+        $("constat").innerHTML = `${k} pliage${k > 1 ? "s" : ""} : 0,1 × 2<sup>${k}</sup> mm = <b class="${e >= 3.844e8 ? "o" : "b"}">${aff}</b>`
+          + `<span class="petit">Il faut 42 pliages : 0,1 × 2⁴² mm ≈ 440 000 km &gt; 384 400 km, alors que 2⁴¹ pliages donnent environ 220 000 km.</span>`;
+      }
+      draw();
+    } };
+
+  // suite arithmético-géométrique : escalier sur la droite y = ax + b
+  const escalier = (a, b, u0, fen, pas, l, seuil) => ({
+    init(c) {
+      let n = 0;
+      const a2 = animateur(c, dt => { n = Math.min(12, n + dt * 1.5); draw(); }, () => n >= 12, 1);
+      curseur(c, "termes", 0, 12, 1, 0, v => { a2.relancer(); n = v; draw(); }, v => fr(v, 0));
+      function draw() {
+        svg.textContent = "";
+        const R = repere(fen, pas, { nx: "x", ny: "y" });
+        R.courbe(x => x, "var(--discret)", 1.6, "6 5"); R.courbe(x => a * x + b, "var(--bleu)", 2.6);
+        texte(R.X(fen[1]) - 8, R.Y(fen[1]) + 18, "y = x", { "text-anchor": "end", fill: "var(--discret)", "font-size": 14 });
+        let u = u0; const m = Math.floor(n);
+        for (let k = 0; k < m; k++) { const v = a * u + b; R.seg(u, k ? u : fen[2], u, v, "var(--orange)", 2); R.seg(u, v, v, v, "var(--orange)", 2); u = v; }
+        if (n > m) { const v = a * u + b, f = n - m; R.seg(u, m ? u : fen[2], u, u + (v - u) * Math.min(1, 2 * f), "var(--orange)", 2); if (f > 0.5) R.seg(u, v, u + (v - u) * (2 * f - 1), v, "var(--orange)", 2); }
+        R.seg(l, fen[2], l, l, "var(--rouge)", 1.4, "5 4"); texte(R.X(l), R.Y(fen[2]) - 8, "ℓ = " + l, { fill: "var(--rouge)", "font-size": 15 });
+        if (seuil) { R.seg(seuil, fen[2], seuil, fen[3], "var(--violet)", 1.4, "2 4"); texte(R.X(seuil) + 6, R.Y(fen[3]) + 16, String(seuil), { fill: "var(--violet)", "text-anchor": "start", "font-size": 14 }); }
+        let t = [u0]; for (let k = 0; k < 12; k++) t.push(a * t[k] + b);
+        const ns = seuil ? t.findIndex(x => x <= seuil) : -1;
+        $("constat").innerHTML = `u<sub>${m}</sub> = <b class="o">${fr(t[m], 4)}</b> : les termes se rapprochent de <b class="r">${l}</b>, abscisse du point d'intersection avec y = x`
+          + `<span class="petit">${seuil ? `Plus petit n tel que u<sub>n</sub> ≤ ${seuil} : n = ${ns} (u<sub>${ns}</sub> ≈ ${fr(t[ns], 2)}).` : `u<sub>n</sub> = ${fr(u0 - l, 0)} × ${fr(a, 1)}<sup>n</sup> + ${l} : l'écart à ${l} est multiplié par ${fr(a, 1)} à chaque étape.`}</span>`;
+      }
+      draw();
+    } });
+  S.e36 = Object.assign({ titre: "Exercice 36 · u<sub>n+1</sub> = 0,5u<sub>n</sub> + 10", chapeau: "Construction en escalier à partir de u<sub>0</sub> = 50 : on monte jusqu'à la droite y = 0,5x + 10, puis on revient sur y = x." }, escalier(0.5, 10, 50, [0, 55, 0, 40], [5, 5], 20));
+  S.e37 = Object.assign({ titre: "Exercice 37 · u<sub>n+1</sub> = 0,6u<sub>n</sub> + 40", chapeau: "Escalier à partir de u<sub>0</sub> = 130 : la suite décroît vers 100. L'algorithme cherche le premier terme inférieur ou égal à 105 (droite violette)." }, escalier(0.6, 40, 130, [90, 135, 90, 125], [5, 5], 100, 105));
+
+  S.e38 = { titre: "Exercice 38 · Les donateurs de l'association", chapeau: "u<sub>n+1</sub> = 0,8u<sub>n</sub> + 300 et u<sub>n</sub> = 1500 − 500 × 0,8<sup>n</sup> : le nombre de donateurs augmente, mais reste toujours sous 1 500.",
+    init(c) {
+      let n = 5;
+      curseur(c, "n", 0, 25, 1, n, v => { n = v; draw(); }, v => fr(v, 0));
+      function draw() {
+        svg.textContent = "";
+        const R = repere([-0.5, 25.5, 900, 2100], [5, 200], { nx: "année 2015 + n", ny: "donateurs" });
+        R.horiz(2000, "var(--rouge)", "2 000 : jamais atteint"); R.horiz(1500, "var(--orange)", "1 500", "3 4");
+        for (let j = 0; j <= 25; j++) R.point(j, 1500 - 500 * 0.8 ** j, j <= n ? "var(--bleu)" : "var(--grille)", j === n ? 6.5 : 4.5);
+        const u = 1500 - 500 * 0.8 ** n;
+        $("constat").innerHTML = `En ${2015 + n} : u<sub>${n}</sub> = 1500 − 500 × 0,8<sup>${n}</sup> ≈ <b class="b">${fr(u, 1)}</b> donateurs`
+          + `<span class="petit">Pour tout n, 500 × 0,8ⁿ &gt; 0, donc u<sub>n</sub> &lt; 1 500 &lt; 2 000 : l'association n'atteindra jamais 2 000 donateurs.</span>`;
+      }
+      draw();
+    } };
+
+  S.e39 = { titre: "Exercice 39 · À vélo ou en bus ?", chapeau: "Simulation des trajets de Léo : vélo (bleu) ou bus (orange). La fréquence des jours à vélo se rapproche de 4/7 ≈ 0,57, comme p<sub>n</sub> = 4/7 + 3/7 × 0,3<sup>n</sup>.",
+    init(c) {
+      let jours = [true], tps = 0;
+      const N = 300;
+      const pas = () => { const v = jours[jours.length - 1]; jours.push(Math.random() < (v ? 0.7 : 0.4)); };
+      const a = animateur(c, dt => { tps += dt * 12; while (tps >= 1 && jours.length <= N) { pas(); tps -= 1; } draw(); }, () => jours.length > N, 1);
+      bouton(c, "↺ Recommencer", () => { a.relancer(); jours = [true]; tps = 0; draw(); });
+      function draw() {
+        svg.textContent = "";
+        // bande des 50 derniers jours
+        const der = jours.slice(-50), w = 15.6;
+        der.forEach((v, i) => svg.appendChild(el("rect", { x: 62 + i * w, y: 14, width: w - 2, height: 22, rx: 3, fill: v ? "var(--bleu)" : "var(--orange)" })));
+        const R = repere([0, N, 0, 1], [50, 0.2], { hy: 56, nx: "jour n", ny: "" });
+        R.horiz(4 / 7, "var(--rouge)", "4/7 ≈ 0,571");
+        for (let j = 0; j <= 8; j++) R.point(j, 4 / 7 + 3 / 7 * 0.3 ** j, "var(--orange)", 4);
+        let s = "", k = 0; jours.forEach((v, i) => { if (v) k++; s += (i ? "L" : "M") + R.X(i) + "," + R.Y(k / (i + 1)); });
+        svg.appendChild(el("path", { d: s, fill: "none", stroke: "var(--bleu)", "stroke-width": 2.4 }));
+        const n = jours.length - 1, f = k / jours.length;
+        $("constat").innerHTML = `Jour ${n} : Léo est venu à vélo <b class="b">${k}</b> jour${k > 1 ? "s" : ""} sur ${jours.length}, soit une fréquence de <b class="b">${fr(f, 3)}</b>`
+          + `<span class="petit">Points orange : p<sub>n</sub> = 4/7 + 3/7 × 0,3ⁿ, qui se rapproche très vite de 4/7. La fréquence observée (courbe bleue) fluctue, puis se stabilise autour de 4/7.</span>`;
+      }
+      draw();
+    } };
+
+  S.e40 = { titre: "Exercice 40 · Le café refroidit", chapeau: "Loi de Newton : T<sub>n+1</sub> = 0,8T<sub>n</sub> + 2, d'où T<sub>n</sub> = 10 + 70 × 0,8<sup>n</sup>. La température se rapproche de celle de la pièce, 10 °C.",
+    init(c) {
+      let s = 40, m = 0;
+      const a = animateur(c, dt => { m = Math.min(25, m + dt * 2); draw(); }, () => m >= 25, 1);
+      bouton(c, "↺ Recommencer", () => { a.relancer(); m = 0; draw(); });
+      curseur(c, "seuil s", 11, 79, 1, s, v => { s = v; draw(); }, v => fr(v, 0) + " °C");
+      const T = n => 10 + 70 * 0.8 ** n;
+      function draw() {
+        svg.textContent = "";
+        const R = repere([-0.5, 25.5, 0, 85], [5, 10], { nx: "minutes n", ny: "°C", dx: 150 });
+        R.horiz(10, "var(--discret)", "", "3 4"); R.seg(-0.5, s, 25.5, s, "var(--violet)", 1.6, "6 5");
+        texte(R.X(25.5) - 4, R.Y(s) - 8, "seuil s = " + s + " °C", { "text-anchor": "end", fill: "var(--violet)", "font-size": 15 });
+        let ns = 0; while (T(ns) >= s) ns++;
+        R.seg(ns, 0, ns, T(ns), "var(--rouge)", 1.6, "5 4"); texte(R.X(ns), R.Y(0) - 8, "n = " + ns, { fill: "var(--rouge)", "font-size": 15 });
+        for (let j = 0; j <= 25; j++) R.point(j, T(j), j <= m ? "var(--bleu)" : "var(--grille)", 4.5);
+        // la tasse : couleur du rouge (chaud) au bleu (froid)
+        const tc = T(m), u = (tc - 10) / 70, cx = W - 80, cy = 230;
+        svg.appendChild(el("rect", { x: cx - 38, y: cy - 30, width: 76, height: 70, rx: 10, fill: `hsl(${(1 - u) * 215}, 75%, 50%)` }));
+        svg.appendChild(el("path", { d: `M${cx + 38},${cy - 15} q28,0 28,22 q0,22 -28,22`, fill: "none", stroke: `hsl(${(1 - u) * 215}, 75%, 50%)`, "stroke-width": 8 }));
+        texte(cx, cy + 74, fr(tc, 1) + " °C", { "font-size": 18 });
+        texte(cx, cy - 46, "après " + fr(Math.floor(m), 0) + " min", { "font-size": 14, fill: "var(--discret)" });
+        $("constat").innerHTML = `Premier n tel que T<sub>n</sub> &lt; ${s} : <b class="r">n = ${ns}</b> (T<sub>${ns}</sub> ≈ ${fr(T(ns), 2)} °C, T<sub>${ns - 1 < 0 ? 0 : ns - 1}</sub> ≈ ${fr(T(Math.max(ns - 1, 0)), 2)} °C)`
+          + `<span class="petit">C'est ce que renvoie seuil(${s}) : tant que T ≥ ${s}, on augmente n et on remplace T par 0,8T + 2.</span>`;
+      }
+      draw();
+    } };
+
+  // tableau d'amortissement : C_{n+1} = (1 + t)C_n − M
+  function amortissement(C0, t, M, max = 2000) { const L = [C0]; while (L[L.length - 1] > 1e-6 && L.length <= max) { const c = L[L.length - 1]; L.push(Math.max(0, (1 + t) * c - M)); } return L; }
+
+  S.e41 = { titre: "Exercice 41 · Le prêt de Tom", chapeau: "Tom emprunte 10 000 € à 0,5 % par mois : C<sub>n+1</sub> = 1,005C<sub>n</sub> − M. Faites varier la mensualité M.",
+    init(c) {
+      let M = 500;
+      curseur(c, "mensualité M", 100, 1000, 10, M, v => { M = v; draw(); }, v => fr(v, 0) + " €");
+      function draw() {
+        svg.textContent = "";
+        const L = amortissement(10000, 0.005, M, 400), n = L.length - 1, fini = L[n] <= 1e-6;
+        const xm = Math.max(n, 12);
+        const R = repere([-0.7, xm + 0.7, 0, 10500], [xm > 60 ? 12 : xm > 30 ? 6 : 2, 1000], { nx: "mois n", ny: "reste dû (€)" });
+        const lw = Math.max(1.5, (R.X(1) - R.X(0)) * 0.7);
+        L.forEach((v, i) => svg.appendChild(el("rect", { x: R.X(i) - lw / 2, y: R.Y(v), width: lw, height: R.Y(0) - R.Y(v), fill: i === 12 ? "var(--orange)" : "var(--bleu)" })));
+        const verse = fini ? M * (n - 1) + (1.005 * L[n - 1]) : NaN;
+        $("constat").innerHTML = fini ? `Avec M = ${M} € : prêt remboursé au bout de <b class="b">${n} mois</b> · total versé ≈ <b class="b">${fr(verse, 2)} €</b>, dont <b class="o">${fr(verse - 10000, 2)} €</b> d'intérêts`
+            + `<span class="petit">En orange : C₁₂ ≈ ${fr(L[12] ?? 0, 2)} € reste dû au bout d'un an.${M === 500 ? " Avec 500 € : C<sub>n</sub> = 100 000 − 90 000 × 1,005ⁿ, qui devient négatif pour n = 22." : ""}</span>`
+          : `Avec M = ${M} €, la mensualité ne couvre pas les intérêts du premier mois (50 €)…<span class="petit">Le reste dû ne diminue pas assez vite.</span>`;
+      }
+      draw();
+    } };
+
+  S.e42 = { titre: "Exercice 42 · Le prêt immobilier de Léa", chapeau: "La banque calcule la mensualité M = C<sub>0</sub> × t × (1 + t)<sup>N</sup> / ((1 + t)<sup>N</sup> − 1). Au début, l'essentiel de chaque mensualité paie les intérêts.",
+    vues: ["Capital restant dû", "Composition des mensualités"],
+    init(c, vue) {
+      let C0 = 150000, tp = 0.4, ans = 20;
+      curseur(c, "capital C₀", 50000, 400000, 10000, C0, v => { C0 = v; draw(); }, v => fr(v / 1000, 0) + " k€");
+      curseur(c, "taux mensuel t", 0.1, 0.8, 0.05, tp, v => { tp = v; draw(); }, v => fr(v, 2) + " %");
+      curseur(c, "durée", 5, 30, 1, ans, v => { ans = v; draw(); }, v => fr(v, 0) + " ans");
+      function draw() {
+        svg.textContent = "";
+        const t = tp / 100, N = 12 * ans, q = (1 + t) ** N, M = C0 * t * q / (q - 1);
+        const L = [C0]; for (let n = 0; n < N; n++) L.push((1 + t) * L[n] - M);
+        if (vue === 0) {
+          const R = repere([0, N, 0, C0 * 1.05], [N > 240 ? 60 : 24, C0 > 200000 ? 50000 : 25000], { nx: "mois n", ny: "reste dû (€)", fy: y => fr(y / 1000, 0) + " k" });
+          let s = ""; L.forEach((v, i) => s += (i ? "L" : "M") + R.X(i) + "," + R.Y(Math.max(0, v)));
+          svg.appendChild(el("path", { d: s + `L${R.X(N)},${R.Y(0)}L${R.X(0)},${R.Y(0)}Z`, fill: "var(--bleu-fond)", stroke: "var(--bleu)", "stroke-width": 2.4 }));
+          const mi = L.findIndex(v => v <= C0 / 2);
+          R.seg(mi, 0, mi, C0 / 2, "var(--rouge)", 1.4, "5 4"); R.seg(0, C0 / 2, mi, C0 / 2, "var(--rouge)", 1.4, "5 4");
+          texte(R.X(mi) + 8, R.Y(C0 / 2) - 10, `la moitié est remboursée au mois ${mi}`, { "text-anchor": "start", fill: "var(--rouge)", "font-size": 14 });
+        } else {
+          const R = repere([0, N, 0, M * 1.15], [N > 240 ? 60 : 24, M > 2000 ? 500 : 200], { nx: "mois n", ny: "€ par mois" });
+          let si = "", sc = "";
+          for (let i = 0; i < N; i++) { const int = t * L[i]; si += (i ? "L" : "M") + R.X(i) + "," + R.Y(int); }
+          svg.appendChild(el("path", { d: `M${R.X(0)},${R.Y(0)}` + si.replace(/^M/, "L") + `L${R.X(N - 1)},${R.Y(0)}Z`, fill: "var(--orange-fond)", stroke: "var(--orange)", "stroke-width": 2 }));
+          svg.appendChild(el("path", { d: si + `L${R.X(N - 1)},${R.Y(M)}L${R.X(0)},${R.Y(M)}Z`, fill: "var(--bleu-fond)", stroke: "none" }));
+          R.seg(0, M, N, M, "var(--bleu)", 2.2);
+          texte(R.X(N * 0.75), R.Y(M * 0.75), "part qui rembourse le capital", { fill: "var(--bleu)", "font-size": 15 });
+          texte(R.X(N * 0.2), R.Y(t * C0 * 0.45), "part des intérêts", { fill: "var(--orange)", "font-size": 15 });
+        }
+        $("constat").innerHTML = `Mensualité <b class="b">M ≈ ${fr(M, 2)} €</b> · total versé ≈ ${fr(N * M, 0)} € · intérêts ≈ <b class="o">${fr(N * M - C0, 0)} €</b>`
+          + `<span class="petit">Données de l'énoncé (150 000 €, 0,4 % par mois, 20 ans) : M ≈ 973,44 € et environ 83 625 € d'intérêts. ${vue === 1 ? `Premier mois : ${fr(t * C0, 2)} € d'intérêts sur ${fr(M, 2)} € versés.` : ""}</span>`;
+      }
+      draw();
+    } };
+
+  // ------------------------------------------------------------------ aiguillage par l'ancre #eN
+  const ALIAS = { e33: "e32" };
+  let cle = null, vue = 0;
+  function ouvrir() {
+    stopAnim();
+    const sc = S[cle], c = $("commandes"); c.textContent = ""; svg.textContent = "";
+    sc.init(c, vue);
+  }
+  function choisir(k) {
+    k = ALIAS[k] || k; cle = S[k] ? k : "e42"; vue = 0;
+    const sc = S[cle];
+    $("titre").innerHTML = sc.titre; $("chapeau").innerHTML = sc.chapeau; $("choix").value = cle;
+    const o = $("onglets"); o.textContent = ""; o.hidden = !sc.vues;
+    if (sc.vues) sc.vues.forEach((n, i) => bouton(o, n, () => { vue = i; [...o.children].forEach((x, j) => x.setAttribute("aria-pressed", j === i)); ouvrir(); }).setAttribute("aria-pressed", i === 0));
+    ouvrir();
+  }
+  for (const k in S) { const op = document.createElement("option"); op.value = k; op.textContent = S[k].titre.replace(/<[^>]+>/g, ""); $("choix").appendChild(op); }
+  $("choix").onchange = () => { choisir($("choix").value); try { history.replaceState(null, "", "#" + $("choix").value); } catch (e) {} };
+  const ancre = () => (location.hash.match(/e\d+/) || ["e42"])[0];
+  window.addEventListener("hashchange", () => choisir(ancre()));
+  choisir(ancre());
+})();
+</script>
+
+<!-- plein-ecran : bouton commun à toutes les pages interactives -->
+<style>
+#pleinEcran { position: fixed; top: calc(10px + env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); z-index: 50; font: 500 13px var(--ui, system-ui, sans-serif); padding: 6px 12px; border-radius: 999px; border: 1px solid var(--filet, #d9dee5); background: var(--carte, #fff); color: var(--encre, #1b1f24); cursor: pointer; opacity: .9; }
+#pleinEcran:hover { opacity: 1; }
+body.plein-ecran .niveau, body.plein-ecran h1 + .chapeau { display: none !important; }
+body.plein-ecran .page { max-width: none !important; min-height: 100vh; padding-top: 48px !important; align-content: start; }
+body.plein-ecran .page svg:not(.mini) { max-height: 66vh; }
+body.plein-ecran .constat { font-size: clamp(20px, 2.6vw, 30px); }
+</style>
+<script>
+(() => {
+  const b = document.createElement("button");
+  b.type = "button"; b.id = "pleinEcran"; document.body.appendChild(b);
+  function etat(on) { document.body.classList.toggle("plein-ecran", on); b.textContent = on ? "✕ Quitter le plein écran" : "⛶ Plein écran"; b.setAttribute("aria-pressed", on); window.dispatchEvent(new Event("resize")); }
+  b.addEventListener("click", async () => {
+    const on = !document.body.classList.contains("plein-ecran");
+    etat(on);
+    try { on ? await document.documentElement.requestFullscreen() : (document.fullscreenElement && await document.exitFullscreen()); } catch (e) {}
+  });
+  document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement && document.body.classList.contains("plein-ecran")) etat(false); });
+  window.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("plein-ecran")) etat(false); });
+  etat(location.hash === "#plein");
+})();
+</script>
+
+</body></html>
