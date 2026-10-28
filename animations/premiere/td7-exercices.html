@@ -345,7 +345,7 @@ svg { display: block; width: 100%; height: auto; user-select: none; -webkit-user
   S.e40 = { titre: "Exercice 40 · Le café refroidit", chapeau: "Loi de Newton : T<sub>n+1</sub> = 0,8T<sub>n</sub> + 2, d'où T<sub>n</sub> = 10 + 70 × 0,8<sup>n</sup>. La température se rapproche de celle de la pièce, 10 °C.",
     init(c) {
       let s = 40, m = 0;
-      const a = animateur(c, dt => { m = Math.min(25, m + dt * 2); draw(); }, () => m >= 25, 1);
+      const a = animateur(c, dt => { m = Math.min(25, m + dt * 1.2); draw(); }, () => m >= 25, 1);
       bouton(c, "↺ Recommencer", () => { a.relancer(); m = 0; draw(); });
       curseur(c, "seuil s", 11, 79, 1, s, v => { s = v; draw(); }, v => fr(v, 0) + " °C");
       const T = n => 10 + 70 * 0.8 ** n;
@@ -357,12 +357,24 @@ svg { display: block; width: 100%; height: auto; user-select: none; -webkit-user
         let ns = 0; while (T(ns) >= s) ns++;
         R.seg(ns, 0, ns, T(ns), "var(--rouge)", 1.6, "5 4"); texte(R.X(ns), R.Y(0) - 8, "n = " + ns, { fill: "var(--rouge)", "font-size": 15 });
         for (let j = 0; j <= 25; j++) R.point(j, T(j), j <= m ? "var(--bleu)" : "var(--grille)", 4.5);
-        // la tasse : couleur du rouge (chaud) au bleu (froid)
-        const tc = T(m), u = (tc - 10) / 70, cx = W - 80, cy = 230;
-        svg.appendChild(el("rect", { x: cx - 38, y: cy - 30, width: 76, height: 70, rx: 10, fill: `hsl(${(1 - u) * 215}, 75%, 50%)` }));
-        svg.appendChild(el("path", { d: `M${cx + 38},${cy - 15} q28,0 28,22 q0,22 -28,22`, fill: "none", stroke: `hsl(${(1 - u) * 215}, 75%, 50%)`, "stroke-width": 8 }));
-        texte(cx, cy + 74, fr(tc, 1) + " °C", { "font-size": 18 });
-        texte(cx, cy - 46, "après " + fr(Math.floor(m), 0) + " min", { "font-size": 14, fill: "var(--discret)" });
+        // la tasse : couleur interpolée du rouge (80 °C) au bleu (10 °C), et échelle en dégradé
+        const tc = T(m), u = Math.max(0, Math.min(1, (tc - 10) / 70)), cx = W - 92, cy = 190;
+        const mix = (c1, c2, k) => c1.map((v, i) => Math.round(v * k + c2[i] * (1 - k)));
+        const [rr, gg, bb] = mix([224, 24, 27], [26, 86, 219], u), coul = `rgb(${rr},${gg},${bb})`;
+        svg.appendChild(el("rect", { x: cx - 38, y: cy - 30, width: 76, height: 70, rx: 10, fill: coul }));
+        svg.appendChild(el("path", { d: `M${cx + 38},${cy - 15} q28,0 28,22 q0,22 -28,22`, fill: "none", stroke: coul, "stroke-width": 8 }));
+        if (u > 0.25) for (let j = -1; j <= 1; j++) svg.appendChild(el("path", { d: `M${cx + 18 * j},${cy - 38} q-7,-10 0,-20 q7,-10 0,-20`, fill: "none", stroke: "var(--discret)", "stroke-width": 2, opacity: (u - 0.25) / 0.75, "stroke-linecap": "round" }));
+        const def = el("defs"), lg = el("linearGradient", { id: "degrade", x1: 0, y1: 0, x2: 0, y2: 1 });
+        lg.appendChild(el("stop", { offset: "0%", "stop-color": "rgb(224,24,27)" })); lg.appendChild(el("stop", { offset: "100%", "stop-color": "rgb(26,86,219)" }));
+        def.appendChild(lg); svg.appendChild(def);
+        const ex = W - 22, eh = 170, ey = 300;
+        svg.appendChild(el("rect", { x: ex - 7, y: ey, width: 14, height: eh, rx: 7, fill: "url(#degrade)" }));
+        texte(ex - 12, ey + 6, "80 °C", { "text-anchor": "end", "font-size": 12, fill: "var(--discret)" });
+        texte(ex - 12, ey + eh, "10 °C", { "text-anchor": "end", "font-size": 12, fill: "var(--discret)" });
+        const ym = ey + eh * (1 - u);
+        svg.appendChild(el("path", { d: `M${ex - 10},${ym} l-9,-6 l0,12 z`, fill: coul, stroke: "var(--encre)", "stroke-width": 1 }));
+        texte(cx, cy + 74, fr(tc, 1) + " °C", { "font-size": 18, fill: coul });
+        texte(cx, cy - 92, "après " + fr(Math.floor(m), 0) + " min", { "font-size": 14, fill: "var(--discret)" });
         $("constat").innerHTML = `Premier n tel que T<sub>n</sub> &lt; ${s} : <b class="r">n = ${ns}</b> (T<sub>${ns}</sub> ≈ ${fr(T(ns), 2)} °C, T<sub>${ns - 1 < 0 ? 0 : ns - 1}</sub> ≈ ${fr(T(Math.max(ns - 1, 0)), 2)} °C)`
           + `<span class="petit">C'est ce que renvoie seuil(${s}) : tant que T ≥ ${s}, on augmente n et on remplace T par 0,8T + 2.</span>`;
       }
