@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;box-sizing:border-box}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head><body>
+<title>Le petit marcheur</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root {
+  --papier: #f7f8fa; --carte: #ffffff; --encre: #1b1f24; --discret: #5d6672; --filet: #d9dee5; --grille: #e4e8ee;
+  --rouge: #e0161b; --hausse: #1a56db; --baisse: #f07800; --violet: #7c3aed; --peau: #ffd9b3;
+  --math: "STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --ui: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #262c35; --rouge: #ff4d52; --hausse: #6aa0ff; --baisse: #ffa133; --violet: #b794f6; --peau: #f3c99e; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #262c35; --rouge: #ff4d52; --hausse: #6aa0ff; --baisse: #ffa133; --violet: #b794f6; --peau: #f3c99e; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--papier); color: var(--encre); font-family: var(--ui); font-size: 15px; line-height: 1.5; margin: 0; }
+.page { max-width: 920px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 40px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+.page > * { min-width: 0; }
+.niveau { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--discret); }
+h1 { font-family: var(--math); font-weight: 600; font-size: clamp(26px, 4vw, 36px); line-height: 1.15; margin: 0; }
+.chapeau { margin: 0; color: var(--discret); max-width: 68ch; }
+.m { font-family: var(--math); font-style: italic; }
+.barre { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; font-size: 14px; }
+.barre label { display: inline-flex; align-items: center; gap: 6px; }
+.barre input[type=range] { width: 120px; accent-color: var(--violet); }
+.barre output { font-family: var(--math); font-size: 17px; min-width: 2.4em; display: inline-block; }
+.pas { display: inline-flex; gap: 4px; }
+button { font: inherit; font-size: 13px; font-weight: 500; padding: 5px 11px; border-radius: 999px; border: 1px solid var(--filet); background: var(--carte); color: var(--encre); cursor: pointer; }
+button[aria-pressed="true"] { border-color: var(--violet); color: var(--violet); box-shadow: inset 0 0 0 1.5px var(--violet); }
+button.go { background: var(--violet); color: #fff; border-color: var(--violet); }
+button:focus-visible { outline: 3px solid var(--violet); outline-offset: 2px; }
+.figure { background: var(--carte); border: 1px solid var(--filet); border-radius: 10px; padding: 6px; touch-action: none; }
+svg { display: block; width: 100%; height: auto; user-select: none; -webkit-user-select: none; }
+.constat { font-family: var(--math); font-size: clamp(18px, 2.5vw, 23px); text-align: center; margin: 0; padding: 10px 14px; border-radius: 10px; background: var(--carte); border: 1.5px solid var(--filet); min-height: 1.6em; }
+.fr { display: inline-flex; flex-direction: column; vertical-align: middle; font-size: .78em; line-height: 1.05; text-align: center; margin: 0 .08em; } .fr > span:first-child { border-bottom: 1.3px solid currentColor; padding: 0 .15em; }
+details { font-size: 14px; color: var(--discret); }
+</style>
+
+<div class="page">
+  <span class="niveau">Seconde · Chapitre 6 · Fonctions affines</span>
+  <h1>Le petit marcheur</h1>
+  <p class="chapeau">Le marcheur mesure la pente de la droite : il avance, puis monte ou descend jusqu'à retrouver la droite. Touchez la droite pour le déplacer, puis faites-le marcher.</p>
+  <div class="barre">
+    <label><span class="m">a</span> <input id="ra" type="range" min="0" max="12" step="1" value="8"> <output id="oa"></output></label>
+    <label><span class="m">b</span> <input id="rb" type="range" min="-3" max="3" step="1" value="1"> <output id="ob"></output></label>
+    <span>Il avance de <span class="pas" id="pas"></span></span>
+    <button class="go" id="go" type="button">▶ Marcher</button>
+    <label>Vitesse <input id="rv" type="range" min="0.4" max="2.5" step="0.1" value="1"></label>
+  </div>
+  <div class="figure"><svg id="g" viewBox="0 0 900 640" role="img" aria-label="Un marcheur sur une droite mesure sa pente"></svg></div>
+  <p class="constat" id="constat" aria-live="polite"></p>
+  <details><summary>Pour aller plus loin</summary>
+    <p>Quelle que soit l'avancée choisie, le quotient montée ÷ avancée est toujours le même : c'est le coefficient directeur <span class="m">a</span> de la droite d'équation réduite <span class="m">y</span> = <span class="m">ax</span> + <span class="m">b</span>. Entre deux points <span class="m">A</span> et <span class="m">B</span> de la droite, <span class="m">a</span> = (<span class="m">y<sub>B</sub></span> − <span class="m">y<sub>A</sub></span>) ÷ (<span class="m">x<sub>B</sub></span> − <span class="m">x<sub>A</sub></span>) : l'écart vertical sur l'écart horizontal.</p>
+  </details>
+</div>
+
+<script>
+(() => {
+  const NS = "http://www.w3.org/2000/svg", $ = id => document.getElementById(id);
+  const el = (t, a, txt) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); if (txt != null) e.textContent = txt; return e; };
+  const pgcd = (a, b) => { a = Math.abs(a); b = Math.abs(b); while (b) [a, b] = [b, a % b]; return a || 1; };
+  const moins = s => String(s).replace("-", "−");
+  const frac = (p, q) => { if (q < 0) { p = -p; q = -q; } const g = pgcd(p, q); p /= g; q /= g;
+    const s = p < 0 ? "−" : ""; p = Math.abs(p); return q === 1 ? s + p : `${s}<span class="fr"><span>${p}</span><span>${q}</span></span>`; };
+  // coefficients proposés : des fractions simples, pour que l'escalier tombe sur le quadrillage
+  const AS = [[-3, 1], [-2, 1], [-3, 2], [-1, 1], [-1, 2], [-1, 3], [0, 1], [1, 3], [1, 2], [1, 1], [3, 2], [2, 1], [3, 1]];
+  const X = [-6, 6], Y = [-5, 5], G = 36, D = 884, H = 16, B = 624;
+  const sx = x => G + (x - X[0]) / (X[1] - X[0]) * (D - G), sy = y => B - (y - Y[0]) / (Y[1] - Y[0]) * (B - H);
+  const ix = p => X[0] + (p - G) / (D - G) * (X[1] - X[0]);
+  const svg = $("g");
+  let ia = 8, b = 1, pas = 2, x0 = -2, anim = null;
+  const aval = () => AS[ia][0] / AS[ia][1];
+
+  // ---------- repère (fixe) et calques
+  const fond = el("g"), calqueD = el("g"), calqueT = el("g"), calqueM = el("g"), calqueB = el("g");
+  svg.append(fond, calqueD, calqueT, calqueM, calqueB);
+  fond.appendChild(el("defs")).appendChild(el("clipPath", { id: "cadre" })).appendChild(el("rect", { x: G, y: H, width: D - G, height: B - H }));
+  for (let x = X[0]; x <= X[1]; x++) fond.appendChild(el("line", { x1: sx(x), x2: sx(x), y1: H, y2: B, stroke: "var(--grille)" }));
+  for (let y = Y[0]; y <= Y[1]; y++) fond.appendChild(el("line", { x1: G, x2: D, y1: sy(y), y2: sy(y), stroke: "var(--grille)" }));
+  fond.appendChild(el("line", { x1: G, x2: D, y1: sy(0), y2: sy(0), stroke: "var(--encre)", "stroke-width": 1.6 }));
+  fond.appendChild(el("line", { x1: sx(0), x2: sx(0), y1: H, y2: B, stroke: "var(--encre)", "stroke-width": 1.6 }));
+  const tx = { "font-size": 14, fill: "var(--discret)", "font-family": "var(--ui)" };
+  for (let x = X[0] + 1; x < X[1]; x++) if (x) fond.appendChild(el("text", Object.assign({ x: sx(x), y: sy(0) + 20, "text-anchor": "middle" }, tx), moins(x)));
+  for (let y = Y[0] + 1; y < Y[1]; y++) if (y) fond.appendChild(el("text", Object.assign({ x: sx(0) - 8, y: sy(y) + 5, "text-anchor": "end" }, tx), moins(y)));
+
+  // ---------- le marcheur
+  function marcheur(px, py, phase, grimpe) {
+    const h = 58, s = Math.sin(phase), c = "var(--violet)";
+    const hx = px, hy = py - 0.42 * h, cx = px, cy = py - 0.74 * h, tete = py - 0.88 * h;
+    const g = el("g", { "stroke-linecap": "round" });
+    g.append(
+      el("line", { x1: hx, y1: hy, x2: px + 9 * s, y2: py, stroke: "var(--encre)", "stroke-width": 4 }),
+      el("line", { x1: hx, y1: hy, x2: px - 9 * s, y2: py, stroke: "var(--encre)", "stroke-width": 4 }),
+      el("line", { x1: cx, y1: cy, x2: hx, y2: hy, stroke: c, "stroke-width": 6 }));
+    if (grimpe) g.append(el("line", { x1: cx, y1: cy + 2, x2: cx + 8, y2: cy - 12 - 3 * s, stroke: c, "stroke-width": 4 }),
+                         el("line", { x1: cx, y1: cy + 2, x2: cx + 5, y2: cy - 12 + 3 * s, stroke: c, "stroke-width": 4 }));
+    else g.append(el("line", { x1: cx, y1: cy + 2, x2: cx - 9 * s, y2: cy + 15, stroke: c, "stroke-width": 4 }),
+                  el("line", { x1: cx, y1: cy + 2, x2: cx + 9 * s, y2: cy + 15, stroke: c, "stroke-width": 4 }));
+    g.append(el("circle", { cx: px, cy: tete, r: 7.5, fill: "var(--peau)", stroke: "var(--encre)", "stroke-width": 2 }),
+             el("path", { d: `M${px - 7.5} ${tete - 2} Q${px} ${tete - 13} ${px + 7.5} ${tete - 2} L${px + 12} ${tete - 1} Z`, fill: c }),
+             el("circle", { cx: px + 3, cy: tete, r: 1.3, fill: "var(--encre)" }));
+    return g;
+  }
+  // bulle de bande dessinée au-dessus du marcheur
+  function bulle(px, py, lignes) {
+    calqueB.textContent = "";
+    if (!lignes) return;
+    const w = Math.max(...lignes.map(l => l.replace(/<[^>]+>/g, "").length)) * 8.4 + 26, h = lignes.length * 21 + 16;
+    let bx = px + 30, by = py - 58 - 30 - h;
+    if (bx + w > D - 4) bx = px - 30 - w;
+    if (by < H + 4) by = H + 4;
+    const tete = [px, py - 58];
+    const coinX = bx < px ? bx + w - 26 : bx + 16;
+    calqueB.append(el("path", { d: `M${coinX} ${by + h - 1} L${coinX + 14} ${by + h - 1} L${tete[0] + (bx < px ? -6 : 6)} ${tete[1] - 6} Z`, fill: "var(--carte)", stroke: "var(--encre)", "stroke-width": 1.8, "stroke-linejoin": "round" }),
+                   el("rect", { x: bx, y: by, width: w, height: h, rx: 12, fill: "var(--carte)", stroke: "var(--encre)", "stroke-width": 1.8 }),
+                   el("line", { x1: coinX + 2, y1: by + h - 1, x2: coinX + 12, y2: by + h - 1, stroke: "var(--carte)", "stroke-width": 3.5 }));
+    lignes.forEach((l, k) => { const t = el("text", { x: bx + w / 2, y: by + 24 + 21 * k, "text-anchor": "middle", "font-family": "var(--ui)", "font-size": 15, fill: "var(--encre)" }); t.innerHTML = l; calqueB.appendChild(t); });
+  }
+  const st = { "font-size": 18, "font-family": "var(--ui)", "font-weight": 600, stroke: "var(--carte)", "stroke-width": 5, "paint-order": "stroke" };
+
+  // ---------- dessin
+  function droite() {
+    calqueD.textContent = "";
+    const a = aval(), coul = a > 0 ? "var(--hausse)" : a < 0 ? "var(--baisse)" : "var(--encre)";
+    calqueD.appendChild(el("line", { x1: sx(X[0]), y1: sy(a * X[0] + b), x2: sx(X[1]), y2: sy(a * X[1] + b), stroke: coul, "stroke-width": 5, "clip-path": "url(#cadre)" }));
+    const prise = el("line", { x1: sx(X[0]), y1: sy(a * X[0] + b), x2: sx(X[1]), y2: sy(a * X[1] + b), stroke: "transparent", "stroke-width": 34, style: "cursor:pointer", "clip-path": "url(#cadre)" });
+    prise.addEventListener("pointerdown", e => { if (anim) return; const p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY;
+      const q = p.matrixTransform(svg.getScreenCTM().inverse()); x0 = Math.round(ix(q.x)); repos(); });
+    calqueD.appendChild(prise);
+    $("oa").innerHTML = frac(AS[ia][0], AS[ia][1]); $("ob").textContent = moins(b);
+  }
+  // abscisse de départ : un entier, et le trajet doit rester dans le repère
+  function departValide() {
+    const a = aval(), [p, q] = AS[ia];
+    const ok = x => x >= X[0] + 0.5 && x + pas <= X[1] - 0.5 && [a * x + b, a * (x + pas) + b].every(y => y > Y[0] + 0.3 && y < Y[1] - 1.4);
+    if (ok(x0)) return true;
+    for (let d = 1; d < 13; d++) for (const x of [x0 - d, x0 + d]) if (ok(x)) { x0 = x; return true; }
+    return false;
+  }
+  function repos() {
+    if (anim) { cancelAnimationFrame(anim); anim = null; }
+    droite(); calqueT.textContent = ""; calqueM.textContent = "";
+    const possible = departValide();
+    $("go").disabled = !possible;
+    const y0 = aval() * x0 + b;
+    calqueM.appendChild(marcheur(sx(x0), sy(y0), 0, false));
+    bulle(sx(x0), sy(y0), possible ? ["Je mesure la <tspan font-weight='600'>pente</tspan> :", "j'avance, puis je retrouve la droite."] : ["Trop raide ici :", "choisissez une avancée plus petite."]);
+    $("constat").innerHTML = `Droite d'équation <span class="m">y</span> = ${eq()} · coefficient directeur <span class="m">a</span> = ${frac(AS[ia][0], AS[ia][1])}`;
+  }
+  function eq() {
+    const [p, q] = AS[ia]; let s = "";
+    if (p !== 0) s = (p === q ? "" : p === -q ? "−" : frac(p, q)) + '<span class="m">x</span>';
+    if (b !== 0 || p === 0) s += (p === 0 ? moins(b) : (b > 0 ? " + " + b : " − " + -b));
+    return s;
+  }
+
+  // ---------- la marche : horizontale, puis verticale
+  function marcher() {
+    if (!departValide()) return;
+    const a = aval(), y0 = a * x0 + b, dy = a * pas, v = +$("rv").value;
+    const tH = 650 * pas / v, tV = Math.max(350, 650 * Math.abs(dy)) / v, pause = 450 / v;
+    const debut = performance.now();
+    calqueT.textContent = "";
+    const lh = el("line", { stroke: "var(--rouge)", "stroke-width": 3.5, "stroke-dasharray": "8 6" }), lv = el("line", { stroke: "var(--rouge)", "stroke-width": 3.5, "stroke-dasharray": "8 6" });
+    calqueT.append(lh, lv);
+    let etiqH = null, etiqV = null;
+    const montee = dy > 0 ? "je monte" : dy < 0 ? "je descends" : "je ne monte pas";
+    const fx = (n, d) => { const g = pgcd(n, d); return d / g === 1 ? moins(n / g) : `${moins(n / g)}/${d / g}`; };
+    const vert = fx(AS[ia][0] * pas, AS[ia][1]);
+    function image(t) {
+      const e = t - debut;
+      let x = x0, y = y0, phase = 0, grimpe = false;
+      if (e < tH) { x = x0 + pas * e / tH; phase = e / 70 * v; }
+      else { x = x0 + pas;
+        if (!etiqH) { etiqH = el("text", Object.assign({ x: sx(x0 + pas / 2), y: sy(y0) + (dy >= 0 ? 24 : -12), "text-anchor": "middle", fill: "var(--rouge)" }, st), "+" + pas); calqueT.appendChild(etiqH);
+          bulle(sx(x), sy(y0), [`J'ai avancé de ${pas}…`]); }
+        const e2 = e - tH - pause;
+        if (e2 > 0) { const k = Math.min(1, e2 / tV); y = y0 + dy * k; phase = e2 / 70 * v; grimpe = dy > 0 && k < 1; } }
+      lh.setAttribute("x1", sx(x0)); lh.setAttribute("y1", sy(y0)); lh.setAttribute("x2", sx(x)); lh.setAttribute("y2", sy(y0));
+      lv.setAttribute("x1", sx(x0 + pas)); lv.setAttribute("y1", sy(y0)); lv.setAttribute("x2", sx(x0 + pas)); lv.setAttribute("y2", sy(y));
+      calqueM.textContent = ""; calqueM.appendChild(marcheur(sx(x), sy(y), phase, grimpe));
+      if (e < tH + pause + tV) { anim = requestAnimationFrame(image); return; }
+      anim = null;
+      if (dy !== 0 && !etiqV) { etiqV = el("text", Object.assign({ x: sx(x0 + pas) + 32, y: sy(y0 + dy / 2) + 6, fill: "var(--rouge)" }, st), (dy > 0 ? "+" : "") + vert); calqueT.appendChild(etiqV); }
+      bulle(sx(x0 + pas), sy(y0 + dy), [`J'ai avancé de ${pas}, ${montee}${dy ? " de " + vert.replace("−", "") : ""}.`,
+        `Pente : ${vert} ÷ ${pas} = ${fx(AS[ia][0], AS[ia][1])}, c'est <tspan font-style="italic" font-family="var(--math)">a</tspan> !`]);
+      const sens = a > 0 ? `<b style="color:var(--hausse)"><span class="m">a</span> &gt; 0 : la droite monte</b>` : a < 0 ? `<b style="color:var(--baisse)"><span class="m">a</span> &lt; 0 : la droite descend</b>` : `<b><span class="m">a</span> = 0 : la droite est horizontale</b>`;
+      $("constat").innerHTML = `<span class="m">a</span> = <span class="fr"><span>écart vertical</span><span>écart horizontal</span></span> = <span class="fr"><span>${vert.replace("/", "⁄")}</span><span>${pas}</span></span> = ${frac(AS[ia][0], AS[ia][1])} &nbsp;·&nbsp; ${sens}`;
+      x0 = x0 + pas; // le prochain trajet part du point d'arrivée
+    }
+    bulle(sx(x0), sy(y0), null);
+    anim = requestAnimationFrame(image);
+  }
+
+  // ---------- commandes
+  [1, 2, 3, 4].forEach(n => { const bt = document.createElement("button"); bt.type = "button"; bt.textContent = n; bt.setAttribute("aria-pressed", n === pas);
+    bt.addEventListener("click", () => { pas = n; document.querySelectorAll("#pas button").forEach(x => x.setAttribute("aria-pressed", x === bt)); repos(); }); $("pas").appendChild(bt); });
+  $("ra").addEventListener("input", e => { ia = +e.target.value; repos(); });
+  $("rb").addEventListener("input", e => { b = +e.target.value; repos(); });
+  $("go").addEventListener("click", marcher);
+  repos();
+})();
+</script>
+<!-- plein-ecran : bouton commun à toutes les pages interactives -->
+<style>
+#pleinEcran { position: fixed; top: calc(10px + env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); z-index: 50; font: 500 13px var(--ui, system-ui, sans-serif); padding: 6px 12px; border-radius: 999px; border: 1px solid var(--filet, #d9dee5); background: var(--carte, #fff); color: var(--encre, #1b1f24); cursor: pointer; opacity: .9; }
+#pleinEcran:hover { opacity: 1; }
+body.plein-ecran .niveau, body.plein-ecran h1, body.plein-ecran h1 + .chapeau { display: none !important; }
+body.plein-ecran .page { max-width: none !important; min-height: 100vh; padding-top: 48px !important; align-content: start; }
+body.plein-ecran .page svg:not(.mini) { max-height: 76vh; }
+body.plein-ecran.plein-multi .page svg:not(.mini) { max-height: 46vh; }
+body.plein-ecran .constat { font-size: clamp(20px, 2.6vw, 30px); }
+</style>
+<script>
+(() => {
+  const b = document.createElement("button");
+  b.type = "button"; b.id = "pleinEcran"; document.body.appendChild(b);
+  function etat(on) { document.body.classList.toggle("plein-ecran", on); b.textContent = on ? "✕ Quitter le plein écran" : "⛶ Plein écran"; b.setAttribute("aria-pressed", on); window.dispatchEvent(new Event("resize")); }
+  b.addEventListener("click", async () => {
+    const on = !document.body.classList.contains("plein-ecran");
+    etat(on);
+    try { on ? await document.documentElement.requestFullscreen() : (document.fullscreenElement && await document.exitFullscreen()); } catch (e) {}
+  });
+  document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement && document.body.classList.contains("plein-ecran")) etat(false); });
+  window.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("plein-ecran")) etat(false); });
+  if (document.querySelectorAll(".page svg:not(.mini), .page canvas").length > 1) document.body.classList.add("plein-multi");
+  etat(location.hash === "#plein");
+})();
+</script>
+
+</body></html>
