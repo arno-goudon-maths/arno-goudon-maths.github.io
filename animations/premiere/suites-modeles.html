@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;box-sizing:border-box}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head><body>
+<title>Bibliothèque et tortues</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Mise en page : le nuage de points (n ; uₙ) en grand, la valeur conjecturée en pointillés ; au-dessus le choix de l'exercice et les commandes, dessous une ligne
+   de constat. Mêmes couleurs que les autres pages du chapitre 3 (escalier, tableur). */
+:root {
+  --papier: #f7f8fa; --carte: #ffffff; --encre: #1b1f24; --discret: #5d6672; --filet: #d9dee5; --grille: #e7eaef;
+  --bleu: #1a56db; --orange: #f07800; --rouge: #c62828; --violet: #7b2cbf;
+  --math: "STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --ui: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #252b34;
+    --bleu: #6fa3f0; --orange: #ffa040; --rouge: #f07a7a; --violet: #c49bf0; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #252b34;
+    --bleu: #6fa3f0; --orange: #ffa040; --rouge: #f07a7a; --violet: #c49bf0; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--papier); color: var(--encre); font-family: var(--ui); font-size: 15px; line-height: 1.5; }
+.page { max-width: 960px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 40px; display: grid; gap: 14px; }
+.niveau { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--discret); padding-right: 150px; }
+h1 { font-family: var(--math); font-weight: 600; font-size: clamp(26px, 4vw, 36px); line-height: 1.15; margin: 0; text-wrap: balance; }
+.chapeau { margin: 0; color: var(--discret); max-width: 70ch; }
+.m { font-family: var(--math); font-style: italic; }
+.barre { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; font-size: 14px; }
+select { font: inherit; padding: 4px 8px; border-radius: 8px; border: 1px solid var(--filet); background: var(--carte); color: var(--encre); max-width: 100%; }
+button { font: inherit; font-weight: 500; border-radius: 8px; padding: 4px 12px; cursor: pointer; border: 1px solid var(--bleu); background: transparent; color: var(--bleu); }
+button.principal { background: var(--bleu); color: var(--carte); }
+button:focus-visible, select:focus-visible, input:focus-visible, summary:focus-visible, svg:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
+.vitesse { display: flex; align-items: center; gap: 6px; color: var(--discret); }
+.vitesse input { width: 90px; accent-color: var(--bleu); }
+.figure { background: var(--carte); border: 1px solid var(--filet); border-radius: 10px; padding: 8px; touch-action: none; }
+svg { display: block; width: 100%; height: auto; user-select: none; cursor: crosshair; }
+.constat { font-size: 16px; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--filet); background: var(--carte); margin: 0; }
+details { background: var(--carte); border: 1px solid var(--filet); border-radius: 10px; padding: 10px 14px; }
+summary { cursor: pointer; font-weight: 500; }
+details p { color: var(--discret); margin: 8px 0; max-width: 70ch; }
+.tableau { overflow-x: auto; }
+table { border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: 14px; margin-top: 6px; }
+td, th { border: 1px solid var(--filet); padding: 3px 9px; text-align: center; white-space: nowrap; }
+th { font-family: var(--math); font-weight: 400; font-style: italic; }
+@media (max-width: 520px) { .niveau { padding-right: 0; padding-top: 34px; } }
+</style>
+
+<div class="page">
+  <span class="niveau">Première spécialité · Chapitre 3 · Suites numériques · TD3</span>
+  <h1>Bibliothèque et tortues</h1>
+  <p class="chapeau" id="chapeau"></p>
+
+  <div class="barre">
+    <label for="choix">Exercice :
+      <select id="choix">
+        <option value="0">Exercice 17 : la bibliothèque</option>
+        <option value="1">Exercice 18 : les tortues</option>
+      </select>
+    </label>
+    <button id="animer" class="principal" type="button">Animer</button>
+    <label class="vitesse" for="vitesse">Vitesse <input id="vitesse" type="range" min="1" max="10" value="4"></label>
+    <button id="suivant" type="button">Terme suivant</button>
+    <button id="effacer" type="button">Recommencer</button>
+  </div>
+
+  <div class="figure"><svg id="g" viewBox="0 0 900 560" role="img" tabindex="0" aria-label="Nuage de points des termes de la suite"></svg></div>
+  <p class="constat" id="constat"></p>
+
+  <details>
+    <summary>Pour aller plus loin</summary>
+    <p id="formule"></p>
+    <div class="tableau"><table id="table"></table></div>
+  </details>
+</div>
+
+<script>
+(() => {
+  const NS = "http://www.w3.org/2000/svg", g = document.getElementById("g"), $ = id => document.getElementById(id);
+  const fr = (x, d = 1) => (Math.round(x * 10 ** d) / 10 ** d).toFixed(d).replace(".", ",").replace("-", "−");
+  const S = [
+    { ancre: "e17", nom: "u", an0: 2019, u0: 80, a: 0.9, b: 15, lim: 150, nmax: 50, y: [60, 160], pasY: 10, pasX: 5,
+      chapeau: "En 2019, la bibliothèque compte 80 lecteurs ; chaque année, 90 % se réinscrivent et 15 nouveaux lecteurs s'inscrivent : <span class=\"m\">u</span><sub>0</sub> = 80 et <span class=\"m\">u</span><sub><span class=\"m\">n</span>+1</sub> = 0,9<span class=\"m\">u<sub>n</sub></span> + 15. Lancez l'animation : de quel nombre les termes semblent-ils se rapprocher ?",
+      formule: "On admet que, pour tout entier naturel <span class=\"m\">n</span>, <span class=\"m\">u<sub>n</sub></span> = 150 − 70 × 0,9<sup><span class=\"m\">n</span></sup>. Comme 0,9<sup><span class=\"m\">n</span></sup> devient très proche de 0 quand <span class=\"m\">n</span> devient très grand, donc 70 × 0,9<sup><span class=\"m\">n</span></sup> aussi, et <span class=\"m\">u<sub>n</sub></span> semble se rapprocher de 150.",
+      unite: "lecteurs" },
+    { ancre: "e18", nom: "t", an0: 2021, u0: 150, a: 0.8, b: 60, lim: 300, nmax: 30, y: [140, 310], pasY: 20, pasX: 5, seuil: 250,
+      chapeau: "En 2021, le parc compte 150 tortues ; chaque année, 20 % disparaissent et 60 naissent : <span class=\"m\">t</span><sub>0</sub> = 150 et <span class=\"m\">t</span><sub><span class=\"m\">n</span>+1</sub> = 0,8<span class=\"m\">t<sub>n</sub></span> + 60. Lancez l'animation : quand le parc devient-il surpeuplé, et de quel nombre les termes semblent-ils se rapprocher ?",
+      formule: "On admet que, pour tout entier naturel <span class=\"m\">n</span>, <span class=\"m\">t<sub>n</sub></span> = 300 − 150 × 0,8<sup><span class=\"m\">n</span></sup>. Comme 0,8<sup><span class=\"m\">n</span></sup> devient très proche de 0 quand <span class=\"m\">n</span> devient très grand, donc 150 × 0,8<sup><span class=\"m\">n</span></sup> aussi, et <span class=\"m\">t<sub>n</sub></span> semble se rapprocher de 300.",
+      unite: "tortues" },
+  ];
+  let s = S[0], n = 0, minuteur = null;
+  const P = { g: 70, d: 870, h: 24, b: 500 };
+  const sx = k => P.g + k / s.nmax * (P.d - P.g);
+  const sy = y => P.b - (y - s.y[0]) / (s.y[1] - s.y[0]) * (P.b - P.h);
+  const el = (t, a, txt) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); if (txt != null) e.textContent = txt; return e; };
+  const termes = () => { const t = [s.u0]; for (let k = 0; k < s.nmax; k++) t.push(s.a * t[k] + s.b); return t; };
+  const sub = k => String(k).split("").map(c => "₀₁₂₃₄₅₆₇₈₉"[+c]).join("");
+
+  function dessiner() {
+    const t = termes();
+    g.textContent = "";
+    // grille et graduations
+    for (let y = Math.ceil(s.y[0] / s.pasY) * s.pasY; y <= s.y[1]; y += s.pasY) {
+      g.appendChild(el("line", { x1: P.g, x2: P.d, y1: sy(y), y2: sy(y), stroke: "var(--grille)" }));
+      g.appendChild(el("text", { x: P.g - 10, y: sy(y) + 5, "text-anchor": "end", "font-size": 14, fill: "var(--discret)", "font-family": "var(--ui)" }, String(y)));
+    }
+    for (let k = 0; k <= s.nmax; k += s.pasX) {
+      g.appendChild(el("line", { x1: sx(k), x2: sx(k), y1: P.h, y2: P.b, stroke: "var(--grille)" }));
+      g.appendChild(el("text", { x: sx(k), y: P.b + 22, "text-anchor": "middle", "font-size": 14, fill: "var(--discret)", "font-family": "var(--ui)" }, String(k)));
+    }
+    g.appendChild(el("line", { x1: P.g, x2: P.d + 10, y1: P.b, y2: P.b, stroke: "var(--encre)", "stroke-width": 1.5 }));
+    g.appendChild(el("line", { x1: P.g, x2: P.g, y1: P.b, y2: P.h - 10, stroke: "var(--encre)", "stroke-width": 1.5 }));
+    g.appendChild(el("text", { x: P.d + 14, y: P.b + 5, "font-size": 18, "font-style": "italic", "font-family": "var(--math)", fill: "var(--encre)" }, "n"));
+    g.appendChild(el("text", { x: P.g + 10, y: P.h + 4, "font-size": 18, "font-style": "italic", "font-family": "var(--math)", fill: "var(--encre)" }, s.nom + "ₙ"));
+    // seuil (tortues) et valeur conjecturée
+    if (s.seuil) {
+      g.appendChild(el("line", { x1: P.g, x2: P.d, y1: sy(s.seuil), y2: sy(s.seuil), stroke: "var(--violet)", "stroke-width": 1.5, "stroke-dasharray": "3 5" }));
+      g.appendChild(el("text", { x: P.d - 4, y: sy(s.seuil) + 20, "text-anchor": "end", "font-size": 14, fill: "var(--violet)", "font-family": "var(--ui)" }, "seuil de surpopulation : 250"));
+    }
+    const vu = n >= 8;
+    g.appendChild(el("line", { x1: P.g, x2: P.d, y1: sy(s.lim), y2: sy(s.lim), stroke: "var(--rouge)", "stroke-width": 2, "stroke-dasharray": "9 7", opacity: vu ? 1 : 0.25 }));
+    if (vu) g.appendChild(el("text", { x: P.d - 4, y: sy(s.lim) - 9, "text-anchor": "end", "font-size": 15, "font-weight": 600, fill: "var(--rouge)", "font-family": "var(--ui)" }, "y = " + s.lim));
+    // les points
+    for (let k = 0; k <= n; k++) {
+      const audessus = s.seuil && t[k] >= s.seuil;
+      g.appendChild(el("circle", { cx: sx(k), cy: sy(t[k]), r: k === n ? 7 : 5, fill: audessus ? "var(--violet)" : "var(--bleu)", stroke: "var(--carte)", "stroke-width": 1.5 }));
+    }
+    constat(t);
+  }
+
+  function constat(t) {
+    const der = t[n], an = s.an0 + n, nom = `<span class="m">${s.nom}</span><sub>${n}</sub>`;
+    let txt = `Année ${an} (<span class="m">n</span> = ${n}) : ${nom} ≈ ${fr(der)}. `;
+    if (n === 0) txt = `Année ${an} : ${nom} = ${fr(der, 0)} ${s.unite}. Cliquez sur « Animer » ou sur « Terme suivant ».`;
+    else if (s.seuil && n <= 7) {
+      const k = t.findIndex(x => x >= s.seuil);
+      txt += der >= s.seuil ? `Le parc est surpeuplé depuis ${s.an0 + k} : ${s.nom}<sub>${k - 1}</sub> ≈ ${fr(t[k - 1])} < 250 et ${s.nom}<sub>${k}</sub> ≈ ${fr(t[k])} ⩾ 250.`
+                            : `Encore ${fr(s.seuil - der)} avant le seuil de 250.`;
+    }
+    else if (n < 8) txt += `Les termes augmentent, de moins en moins vite.`;
+    else txt += `Les termes semblent se rapprocher de <strong>${s.lim}</strong>. À long terme, le nombre de ${s.unite} semble se stabiliser autour de ${s.lim}.`;
+    $("constat").innerHTML = txt;
+    const tt = t.slice(0, Math.max(n, 0) + 1);
+    $("table").innerHTML = "<tr><th>n</th>" + tt.map((_, k) => `<td>${k}</td>`).join("") + "</tr><tr><th>" + s.nom + "<sub>n</sub></th>" + tt.map(x => `<td>${fr(x)}</td>`).join("") + "</tr>";
+  }
+
+  function arreter() { clearInterval(minuteur); minuteur = null; $("animer").textContent = "Animer"; }
+  function lancer() {
+    if (n >= s.nmax) n = 0;
+    $("animer").textContent = "Pause";
+    minuteur = setInterval(() => { if (n < s.nmax) { n++; dessiner(); } else arreter(); }, 1300 / +$("vitesse").value);
+  }
+  $("animer").addEventListener("click", () => minuteur ? arreter() : lancer());
+  $("vitesse").addEventListener("input", () => { if (minuteur) { clearInterval(minuteur); lancer(); } });
+  $("suivant").addEventListener("click", () => { arreter(); if (n < s.nmax) n++; dessiner(); });
+  $("effacer").addEventListener("click", () => { arreter(); n = 0; dessiner(); });
+  // on peut aussi glisser sur la figure pour choisir le rang
+  let glisse = false;
+  const versN = e => { const pt = g.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY; const p = pt.matrixTransform(g.getScreenCTM().inverse()); return Math.max(0, Math.min(s.nmax, Math.round((p.x - P.g) / (P.d - P.g) * s.nmax))); };
+  g.addEventListener("pointerdown", e => { arreter(); glisse = true; g.setPointerCapture(e.pointerId); n = versN(e); dessiner(); });
+  g.addEventListener("pointermove", e => { if (glisse) { const k = versN(e); if (k !== n) { n = k; dessiner(); } } });
+  g.addEventListener("pointerup", () => glisse = false);
+  g.addEventListener("keydown", e => { const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0; if (!d) return; e.preventDefault(); arreter(); n = Math.max(0, Math.min(s.nmax, n + d)); dessiner(); });
+
+  function choisir(i) {
+    arreter(); s = S[i]; n = 0; $("choix").value = i;
+    $("chapeau").innerHTML = s.chapeau; $("formule").innerHTML = s.formule; dessiner();
+  }
+  $("choix").addEventListener("change", e => { choisir(+e.target.value); history.replaceState(null, "", "#" + s.ancre); });
+  // une ancre #e17 ou #e18 (QR code à côté de l'exercice du TD3) ouvre directement le bon exercice
+  function depuisAncre() { const i = S.findIndex(x => "#" + x.ancre === location.hash); choisir(i >= 0 ? i : 0); }
+  window.addEventListener("hashchange", depuisAncre);
+  depuisAncre();
+})();
+</script>
+
+<!-- plein-ecran : bouton commun à toutes les pages interactives -->
+<style>
+#pleinEcran { position: fixed; top: calc(10px + env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); z-index: 50; font: 500 13px var(--ui, system-ui, sans-serif); padding: 6px 12px; border-radius: 999px; border: 1px solid var(--filet, #d9dee5); background: var(--carte, #fff); color: var(--encre, #1b1f24); cursor: pointer; opacity: .9; }
+#pleinEcran:hover { opacity: 1; }
+body.plein-ecran .niveau, body.plein-ecran h1, body.plein-ecran h1 + .chapeau { display: none !important; }
+body.plein-ecran .page { max-width: none !important; min-height: 100vh; padding-top: 48px !important; align-content: start; }
+body.plein-ecran .page svg:not(.mini) { max-height: 76vh; }
+body.plein-ecran.plein-multi .page svg:not(.mini) { max-height: 46vh; }
+body.plein-ecran .constat { font-size: clamp(20px, 2.6vw, 30px); }
+</style>
+<script>
+(() => {
+  const b = document.createElement("button");
+  b.type = "button"; b.id = "pleinEcran"; document.body.appendChild(b);
+  function etat(on) { document.body.classList.toggle("plein-ecran", on); b.textContent = on ? "✕ Quitter le plein écran" : "⛶ Plein écran"; b.setAttribute("aria-pressed", on); window.dispatchEvent(new Event("resize")); }
+  b.addEventListener("click", async () => {
+    const on = !document.body.classList.contains("plein-ecran");
+    etat(on);
+    try { on ? await document.documentElement.requestFullscreen() : (document.fullscreenElement && await document.exitFullscreen()); } catch (e) {}
+  });
+  document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement && document.body.classList.contains("plein-ecran")) etat(false); });
+  window.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("plein-ecran")) etat(false); });
+  if (document.querySelectorAll(".page svg:not(.mini), .page canvas").length > 1) document.body.classList.add("plein-multi");
+  etat(location.hash === "#plein");
+})();
+</script>
+
+</body></html>

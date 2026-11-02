@@ -53,14 +53,21 @@ th { font-family: var(--math); font-weight: 400; font-style: italic; }
   <div class="barre">
     <label for="choix">Fonction :
       <select id="choix">
-        <option value="0">f(x) = 0,5x + 1,5</option>
-        <option value="1">f(x) = −0,6x + 3,2</option>
-        <option value="2">f(x) = 0,2x² + 1</option>
-        <option value="3">f(x) = 3 − 4 / (x + 2)</option>
+        <optgroup label="Exemples du cours (3.2)">
+          <option value="0">Exemple 1 : u₀ = −1, escalier</option>
+          <option value="1">Exemple 2 : u₀ = 1, escargot</option>
+        </optgroup>
+        <optgroup label="Exercices du TD3">
+          <option value="2">Exercice 9 : f(x) = 0,5x(4 − x) + 2</option>
+          <option value="3">Exercice 13 : f croissante, u₀ = 0</option>
+          <option value="4">Exercice 14 : f décroissante, u₀ = 2</option>
+          <option value="5">Exercice 15 : f(x) = 1 + 1/x (nombre d'or)</option>
+          <option value="6">Exercice 27 : f(x) = x/2 + 4</option>
+        </optgroup>
       </select>
     </label>
     <button id="suivant" class="principal" type="button">Terme suivant</button>
-    <button id="tout" type="button">Construire 8 termes</button>
+    <button id="tout" type="button">Construire 3 termes</button>
     <button id="effacer" type="button">Recommencer</button>
   </div>
 
@@ -79,16 +86,22 @@ th { font-family: var(--math); font-weight: 400; font-style: italic; }
   const NS = "http://www.w3.org/2000/svg", g = document.getElementById("g"), $ = id => document.getElementById(id);
   const fr = (x, d = 2) => (Math.round(x * 10 ** d) / 10 ** d).toString().replace(".", ",").replace("-", "−");
   const F = [
-    { f: x => 0.5 * x + 1.5, x: [-1, 6], u0: -0.5 },
-    { f: x => -0.6 * x + 3.2, x: [-1, 6], u0: 0 },
-    { f: x => 0.2 * x * x + 1, x: [-1, 6], u0: 0 },
-    { f: x => 3 - 4 / (x + 2), x: [-1, 6], u0: 5.5 },
+    // les deux exemples du cours (3.2) : mêmes fonctions et mêmes fenêtres que les figures du cours
+    { f: x => 2 * Math.sqrt(x + 3), x: [-3.8, 8.9], y: [-1.9, 7.7], dom: [-3, 8.9], u0: -1, ancre: "c1" },
+    { f: x => 6 / (x + 1), x: [-0.5, 6.5], y: [-1.2, 5.4], dom: [0.08, 6.5], u0: 1, ancre: "c2" },
+    // exercices du TD3 : mêmes fonctions et mêmes fenêtres que les figures de la feuille
+    { f: x => 0.5 * x * (4 - x) + 2, x: [-0.5, 5], dom: [-0.4, 4.9], u0: 0, ancre: "e9" },
+    { f: x => 4.4 - 3 / (x + 1), x: [-0.5, 4.75], dom: [-0.49, 4.5], u0: 0, ancre: "e13" },
+    { f: x => 12 / (x + 1), x: [-0.25, 4.75], dom: [1.6, 4.5], u0: 2, ancre: "e14" },
+    { f: x => 1 + 1 / x, x: [-0.15, 3.15], dom: [0.5, 3], u0: 1, ancre: "e15" },
+    { f: x => 0.5 * x + 4, x: [-0.6, 12.6], dom: [0, 12], u0: 2, ancre: "e27" },
   ];
   let fn = F[0], u0 = fn.u0, n = 0;
   const P = { g: 60, d: 860, h: 20, b: 600 };
   const R = () => fn.x;
   const sx = x => P.g + (x - R()[0]) / (R()[1] - R()[0]) * (P.d - P.g);
-  const sy = y => P.b - (y - R()[0]) / (R()[1] - R()[0]) * (P.b - P.h);
+  const Ry = () => fn.y || fn.x;
+  const sy = y => P.b - (y - Ry()[0]) / (Ry()[1] - Ry()[0]) * (P.b - P.h);
   const ix = px => R()[0] + (px - P.g) / (P.d - P.g) * (R()[1] - R()[0]);
   const el = (t, a, txt) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); if (txt != null) e.textContent = txt; return e; };
   const termes = () => { const t = [u0]; for (let k = 0; k < n; k++) t.push(fn.f(t[k])); return t; };
@@ -97,21 +110,24 @@ th { font-family: var(--math); font-weight: 400; font-style: italic; }
     g.textContent = "";
     const [a, b] = R();
     g.appendChild(el("clipPath", { id: "cadre" })).appendChild(el("rect", { x: P.g, y: P.h, width: P.d - P.g, height: P.b - P.h }));
+    const [ya, yb] = Ry();
     for (let x = Math.ceil(a); x <= b; x++) {
       g.appendChild(el("line", { x1: sx(x), x2: sx(x), y1: P.h, y2: P.b, stroke: "var(--grille)" }));
-      g.appendChild(el("line", { x1: P.g, x2: P.d, y1: sy(x), y2: sy(x), stroke: "var(--grille)" }));
-      if (x !== 0) {
-        g.appendChild(el("text", { x: sx(x), y: sy(0) + 20, "text-anchor": "middle", "font-size": 14, fill: "var(--discret)", "font-family": "var(--ui)" }, String(x).replace("-", "−")));
-        g.appendChild(el("text", { x: sx(0) - 10, y: sy(x) + 5, "text-anchor": "end", "font-size": 14, fill: "var(--discret)", "font-family": "var(--ui)" }, String(x).replace("-", "−")));
-      }
+      if (x !== 0) g.appendChild(el("text", { x: sx(x), y: sy(0) + 20, "text-anchor": "middle", "font-size": 14, fill: "var(--discret)", "font-family": "var(--ui)" }, String(x).replace("-", "−")));
+    }
+    for (let y = Math.ceil(ya); y <= yb; y++) {
+      g.appendChild(el("line", { x1: P.g, x2: P.d, y1: sy(y), y2: sy(y), stroke: "var(--grille)" }));
+      if (y !== 0) g.appendChild(el("text", { x: sx(0) - 10, y: sy(y) + 5, "text-anchor": "end", "font-size": 14, fill: "var(--discret)", "font-family": "var(--ui)" }, String(y).replace("-", "−")));
     }
     g.appendChild(el("line", { x1: P.g, x2: P.d, y1: sy(0), y2: sy(0), stroke: "var(--encre)", "stroke-width": 1.5 }));
     g.appendChild(el("line", { x1: sx(0), x2: sx(0), y1: P.h, y2: P.b, stroke: "var(--encre)", "stroke-width": 1.5 }));
     const zone = el("g", { "clip-path": "url(#cadre)" }); g.appendChild(zone);
-    zone.appendChild(el("line", { x1: sx(a), y1: sy(a), x2: sx(b), y2: sy(b), stroke: "var(--encre)", "stroke-width": 2 }));
-    let d = ""; for (let i = 0; i <= 300; i++) { const x = a + (b - a) * i / 300, y = fn.f(x); d += (i ? "L" : "M") + sx(x).toFixed(1) + "," + Math.max(-2000, Math.min(2000, sy(y))).toFixed(1); }
+    zone.appendChild(el("line", { x1: sx(Math.max(a, ya)), y1: sy(Math.max(a, ya)), x2: sx(Math.min(b, yb)), y2: sy(Math.min(b, yb)), stroke: "var(--encre)", "stroke-width": 2 }));
+    const [da, db] = fn.dom || [a, b];
+    let d = ""; for (let i = 0; i <= 300; i++) { const x = da + (db - da) * i / 300, y = fn.f(x); d += (i ? "L" : "M") + sx(x).toFixed(1) + "," + Math.max(-2000, Math.min(2000, sy(y))).toFixed(1); }
     zone.appendChild(el("path", { d, fill: "none", stroke: "var(--courbe)", "stroke-width": 3.5 }));
-    g.appendChild(el("text", { x: sx(b - 0.3) - 6, y: sy(b - 0.3) - 10, "text-anchor": "end", "font-size": 18, "font-style": "italic", "font-family": "var(--math)", fill: "var(--encre)" }, "y = x"));
+    const lab = Math.min(b, yb) - 0.3;
+    g.appendChild(el("text", { x: sx(lab) - 6, y: sy(lab) - 10, "text-anchor": "end", "font-size": 18, "font-style": "italic", "font-family": "var(--math)", fill: "var(--encre)" }, "y = x"));
     // construction
     const t = termes();
     for (let k = 0; k < n; k++) {
@@ -154,20 +170,24 @@ th { font-family: var(--math); font-weight: 400; font-style: italic; }
     $("table").innerHTML = "<tr><th>n</th>" + tt.map((_, k) => `<td>${k}</td>`).join("") + "</tr><tr><th>u<sub>n</sub></th>" + tt.map(x => `<td>${fr(x)}</td>`).join("") + "</tr>";
   }
   let actif = false;
-  const versX = e => { const pt = g.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY; const p = pt.matrixTransform(g.getScreenCTM().inverse()); return Math.min(R()[1] - 0.1, Math.max(R()[0] + 0.1, ix(p.x))); };
+  const versX = e => { const pt = g.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY; const p = pt.matrixTransform(g.getScreenCTM().inverse()); return borne(ix(p.x)); };
+  function borne(x) { const [lo, hi] = fn.dom || [R()[0] + 0.1, R()[1] - 0.1]; return Math.min(hi, Math.max(lo, x)); }
   g.addEventListener("pointerdown", e => { if (e.target.closest(".poignee")) { actif = true; g.setPointerCapture(e.pointerId); } });
   g.addEventListener("pointermove", e => { if (!actif) return; u0 = Math.round(versX(e) * 10) / 10; dessiner(); });
   g.addEventListener("pointerup", () => actif = false);
   g.addEventListener("keydown", e => {
     if (!e.target.closest(".poignee")) return;
     const d = e.key === "ArrowRight" ? 0.1 : e.key === "ArrowLeft" ? -0.1 : 0; if (!d) return;
-    e.preventDefault(); u0 = Math.min(R()[1] - 0.1, Math.max(R()[0] + 0.1, Math.round((u0 + d) * 10) / 10)); dessiner(); g.querySelector(".poignee").focus();
+    e.preventDefault(); u0 = borne(Math.round((u0 + d) * 10) / 10); dessiner(); g.querySelector(".poignee").focus();
   });
   $("suivant").addEventListener("click", () => { if (n < 30) n++; dessiner(); });
-  $("tout").addEventListener("click", () => { n = 8; dessiner(); });
+  $("tout").addEventListener("click", () => { n = Math.min(30, n + 3); dessiner(); });
   $("effacer").addEventListener("click", () => { n = 0; dessiner(); });
-  $("choix").addEventListener("change", e => { fn = F[+e.target.value]; u0 = fn.u0; n = 0; dessiner(); });
-  dessiner();
+  $("choix").addEventListener("change", e => { fn = F[+e.target.value]; u0 = fn.u0; n = 0; history.replaceState(null, "", fn.ancre ? "#" + fn.ancre : location.pathname); dessiner(); });
+  // une ancre #e13 (QR code à côté de l'exercice 13 du TD3) ouvre directement la bonne figure
+  function depuisAncre() { const i = F.findIndex(x => x.ancre && "#" + x.ancre === location.hash); if (i >= 0) { fn = F[i]; u0 = fn.u0; n = 0; $("choix").value = i; } dessiner(); }
+  window.addEventListener("hashchange", depuisAncre);
+  depuisAncre();
 })();
 </script>
 
