@@ -1,0 +1,23 @@
+{
+  "name": "Plan de classe",
+  "short_name": "Plan de classe",
+  "lang": "fr",
+  "description": "Plans de classe : élèves, salles, contraintes, placement et export PDF.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f2f5f4",
+  "theme_color": "#2f4a3c",
+  "icons": [
+    {
+      "src": "icone-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icone-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

@@ -1,0 +1,1530 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#2f4a3c"><meta name="description" content="Plans de classe : élèves, salles, contraintes, placement et export PDF. Les données restent sur votre ordinateur."><link rel="manifest" href="manifest.webmanifest"><link rel="icon" type="image/png" href="icone-32.png"><link rel="apple-touch-icon" href="icone-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Plan de classe"><style>:root{color-scheme:light dark}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style><script src="pont-web.js"></script></head><body><title>Plan de classe</title>
+<link rel="stylesheet" href="lexend.css">
+<style>
+/* Trois espaces, comme les outils de plans de classe en ligne : Mes classes, Mes salles, Mes plans.
+   Le plan reprend les objets de la salle : tableau vert ardoise, tables en bois clair, bureau du professeur. */
+:root {
+  --fond: #f2f5f4; --carte: #ffffff; --encre: #16201e; --discret: #56635f; --filet: #d3ddd9; --survol: #e7eeeb;
+  --accent: #1d6b74; --accent-fond: #d9eeec; --accent-encre: #ffffff;
+  --ardoise: #2f4a3c; --ardoise-texte: #e8f1ea; --bois: #ecdcbe; --bois-bord: #c4a574; --bois-texte: #34250f; --bureau: #c4a574;
+  --vide: #e3e9e6; --alerte: #c2361f; --alerte-fond: #fbe3dd; --ok: #2c7a3f; --verrou: #7a4fb0;
+  --f: #b4467a; --g: #2d62b8; --ombre: 0 6px 20px rgba(20, 40, 35, .10);
+  --vitre: #cfeaf8; --vitre-bord: #7fbde0; --vitre-texte: #1f5d80;
+  --ia: #5b45c9; --ia-fond: #eeeafd; --ia-bulle: #ffffff;
+  --ui: "Lexend", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --fond: #111615; --carte: #1a211f; --encre: #e7eeec; --discret: #a1b2ae; --filet: #2e3a37; --survol: #243030;
+    --accent: #62b9c1; --accent-fond: #1c3a3d; --accent-encre: #0d1514; --ardoise: #23382d; --ardoise-texte: #dcebe0;
+    --bois: #6b5638; --bois-bord: #92764b; --bois-texte: #fbf0dd; --bureau: #8d7146; --vide: #222b29; --alerte: #ff7a63; --alerte-fond: #3d211b;
+    --ok: #6fcf86; --verrou: #b896e6; --f: #ea8ab6; --g: #84aef0; --ombre: 0 6px 20px rgba(0, 0, 0, .35); --ia: #ad9cf7; --ia-fond: #241f3d; --ia-bulle: #1a211f; --vitre: #1d3a4a; --vitre-bord: #3f7fa6; --vitre-texte: #b9e1f7; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --vitre: #1d3a4a; --vitre-bord: #3f7fa6; --vitre-texte: #b9e1f7; --ia: #ad9cf7; --ia-fond: #241f3d; --ia-bulle: #1a211f; --fond: #111615; --carte: #1a211f; --encre: #e7eeec; --discret: #a1b2ae; --filet: #2e3a37; --survol: #243030;
+    --accent: #62b9c1; --accent-fond: #1c3a3d; --accent-encre: #0d1514; --ardoise: #23382d; --ardoise-texte: #dcebe0;
+    --bois: #6b5638; --bois-bord: #92764b; --bois-texte: #fbf0dd; --bureau: #8d7146; --vide: #222b29; --alerte: #ff7a63; --alerte-fond: #3d211b;
+    --ok: #6fcf86; --verrou: #b896e6; --f: #ea8ab6; --g: #84aef0; --ombre: 0 6px 20px rgba(0, 0, 0, .35); color-scheme: dark; }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--fond); color: var(--encre); font-family: var(--ui); font-size: 17px; line-height: 1.5; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+h1, h2, h3 { text-wrap: balance; }
+
+/* ---- barre et navigation ---- */
+.barre { display: flex; align-items: center; gap: 10px 22px; flex-wrap: wrap; padding-block: 12px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); background: var(--carte); border-bottom: 1px solid var(--filet); }
+.marque { font-weight: 700; font-size: 22px; display: flex; align-items: center; gap: 9px; letter-spacing: -.01em; }
+.marque svg { color: var(--accent); }
+.nav { display: flex; gap: 6px; flex-wrap: wrap; }
+.nav button { border: 0; background: none; border-radius: 999px; padding: 9px 18px; font-weight: 600; font-size: 17px; color: var(--discret); display: inline-flex; gap: 8px; align-items: center; }
+.nav button:hover { background: var(--survol); color: var(--encre); }
+.nav button[aria-current="page"] { background: var(--accent); color: var(--accent-encre); }
+.nav .nb { font-size: 14px; font-weight: 600; background: color-mix(in srgb, currentColor 16%, transparent); border-radius: 999px; padding: 0 8px; }
+.espace { flex: 1; }
+.etat { font-size: 15px; color: var(--discret); }
+.corps { max-width: 1520px; margin: 0 auto; padding-block: 22px 40px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+/* ---- éléments communs ---- */
+select, input[type=text], input[type=number], textarea { background: var(--carte); border: 1.5px solid var(--filet); border-radius: 10px; padding: 8px 11px; min-height: 44px; }
+input[type=number] { width: 5em; }
+textarea { width: 100%; resize: vertical; min-height: 110px; }
+input[type=checkbox], input[type=radio] { width: 20px; height: 20px; accent-color: var(--accent); vertical-align: -4px; }
+.btn { border: 1.5px solid var(--filet); background: var(--carte); border-radius: 10px; padding: 9px 16px; font-weight: 600; font-size: 16px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; white-space: nowrap; }
+.btn:hover { background: var(--survol); }
+.btn.principal { background: var(--accent); color: var(--accent-encre); border-color: var(--accent); }
+.btn.principal:hover { filter: brightness(1.07); }
+.btn.petit { padding: 5px 12px; font-size: 15px; min-height: 36px; }
+.btn.danger { color: var(--alerte); }
+.btn.danger.arme { background: var(--alerte); color: #fff; border-color: var(--alerte); }
+.btn:disabled { opacity: .5; cursor: default; }
+.ligne { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.aide { font-size: 15px; color: var(--discret); margin: 0; }
+.exemple { font-size: 13px; font-weight: 600; color: var(--accent); background: var(--accent-fond); padding: 2px 10px; border-radius: 999px; white-space: nowrap; }
+.entete { display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 16px; }
+.entete h1 { font-size: 32px; margin: 0; line-height: 1.15; }
+.entete .aide { margin-top: 4px; font-size: 16px; }
+.titre-bloc { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; min-width: 0; flex: 1; }
+.titre-champ { font-size: 30px !important; font-weight: 700; border-color: transparent !important; background: transparent !important; padding: 2px 8px !important; margin-left: -8px; field-sizing: content; min-width: 8ch; max-width: 100%; }
+.titre-champ:hover, .titre-champ:focus { border-color: var(--filet) !important; background: var(--carte) !important; }
+.retour { border: 0; background: none; color: var(--accent); font-weight: 600; font-size: 16px; padding: 4px 0; margin-bottom: 6px; }
+.retour:hover { text-decoration: underline; }
+.panneau { background: var(--carte); border: 1px solid var(--filet); border-radius: 16px; padding: 18px; display: grid; gap: 14px; align-content: start; min-width: 0; }
+.panneau h2 { font-size: 20px; margin: 0; }
+.panneau h3 { font-size: 14px; text-transform: uppercase; letter-spacing: .07em; color: var(--discret); margin: 6px 0 0; }
+.deux { display: grid; grid-template-columns: minmax(280px, 360px) minmax(0, 1fr); gap: 18px; align-items: start; }
+@media (max-width: 900px) { .deux { grid-template-columns: minmax(0, 1fr); } }
+.bandeau { display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; background: var(--accent-fond); border-radius: 14px; padding: 12px 16px; margin-bottom: 18px; font-size: 16px; }
+.vide { border: 2px dashed var(--filet); border-radius: 16px; padding: 34px 20px; text-align: center; display: grid; gap: 10px; justify-items: center; color: var(--discret); }
+.vide b { color: var(--encre); font-size: 20px; }
+
+/* ---- cartes des listes ---- */
+.cartes { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 16px; }
+.carte { background: var(--carte); border: 1.5px solid var(--filet); border-radius: 16px; padding: 18px; display: grid; gap: 10px; align-content: start; cursor: pointer; transition: border-color .15s, box-shadow .15s, transform .15s; min-width: 0; }
+.carte:hover { border-color: var(--accent); box-shadow: var(--ombre); transform: translateY(-1px); }
+.carte-titre { display: flex; align-items: center; gap: 8px; justify-content: space-between; font-size: 21px; font-weight: 600; line-height: 1.25; }
+.carte-titre span:first-child { overflow-wrap: anywhere; }
+.carte-info { color: var(--discret); font-size: 16px; }
+.carte-noms { font-size: 15px; color: var(--discret); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.carte .ligne { margin-top: 4px; }
+.apercu { display: grid; gap: 0; justify-content: center; padding: 10px; background: var(--fond); border-radius: 10px; }
+.apercu i { display: block; width: 11px; height: 8px; border-radius: 1px; }
+.apercu i.s { background: var(--bois); box-shadow: inset 0 0 0 1px var(--bois-bord); }
+.apercu i.o { background: var(--bois-bord); }
+.apercu .tab { height: 5px; background: var(--ardoise); border-radius: 2px; margin: 0 15% 4px; }
+.etapes { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; margin-bottom: 20px; }
+.etape { background: var(--carte); border: 1.5px solid var(--filet); border-radius: 16px; padding: 18px; display: grid; gap: 10px; align-content: start; }
+.etape .num { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--accent-fond); color: var(--accent); font-weight: 700; }
+.etape.faite .num { background: var(--ok); color: #fff; }
+.etape b { font-size: 19px; }
+
+/* ---- sous-onglets ---- */
+.sous-onglets { display: flex; gap: 4px; border-bottom: 1.5px solid var(--filet); margin-bottom: 18px; overflow-x: auto; }
+.sous-onglets button { border: 0; background: none; padding: 10px 16px; font-weight: 600; font-size: 17px; color: var(--discret); border-bottom: 3px solid transparent; margin-bottom: -1.5px; white-space: nowrap; }
+.sous-onglets button[aria-selected="true"] { color: var(--encre); border-bottom-color: var(--accent); }
+
+/* ---- plan ---- */
+.scene { background: var(--carte); border: 1px solid var(--filet); border-radius: 16px; padding: 20px; overflow-x: auto; min-width: 0; }
+.salle { display: grid; gap: 14px; justify-items: center; margin: 0 auto; width: max-content; min-width: 100%; }
+.tableau { background: var(--ardoise); color: var(--ardoise-texte); border-radius: 6px; padding: 8px 0; text-align: center; letter-spacing: .3em; font-weight: 600; font-size: 15px; width: min(70%, 680px); box-shadow: inset 0 0 0 4px color-mix(in srgb, var(--ardoise) 70%, black); }
+.avant { width: 100%; display: flex; }
+.bureau { background: var(--bureau); color: var(--bois-texte); border-radius: 6px; padding: 9px 20px; font-size: 15px; font-weight: 600; text-align: center; }
+.grille { display: flex; flex-direction: column; }
+.rangee { display: grid; }
+.case { width: var(--cw, 112px); height: var(--ch, 58px); }
+.place { background: var(--bois); border: 0 solid var(--bois-bord); display: flex; align-items: center; justify-content: center; position: relative; padding: 4px 6px; text-align: center; color: var(--bois-texte); touch-action: none; user-select: none; }
+.place[data-e] { cursor: grab; }
+.place .nom { font-weight: 600; font-size: var(--fs, 17px); line-height: 1.12; overflow-wrap: anywhere; }
+.place.libre .nom { opacity: .4; font-weight: 400; font-size: calc(var(--fs, 17px) * .75); }
+.place.cible { outline: 3px solid var(--accent); outline-offset: -3px; z-index: 2; }
+.place.conflit { box-shadow: inset 0 0 0 3px var(--alerte); }
+.place .num { position: absolute; right: 6px; bottom: 3px; font-size: max(11px, calc(var(--fs, 17px) * .55)); font-weight: 600; opacity: .55; }
+.place.choisie, .carte-eleve.choisie { outline: 4px solid var(--ia); outline-offset: -4px; z-index: 3; }
+.carte-eleve.choisie { outline-offset: 1px; }
+.rang3 { width: 100%; display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; }
+.slot { display: flex; gap: 10px; align-items: center; }
+.slot.gauche { justify-content: flex-start; } .slot.centre { justify-content: center; } .slot.droite { justify-content: flex-end; }
+.corps-salle { display: flex; gap: 14px; align-items: stretch; justify-content: center; }
+.corps-salle > .porte { align-self: center; }
+.fenetres { width: 24px; flex: none; border-radius: 5px; background: repeating-linear-gradient(to bottom, var(--vitre) 0 34px, var(--vitre-bord) 34px 37px); border: 2px solid var(--vitre-bord); display: flex; align-items: center; justify-content: center; }
+.fenetres span { writing-mode: vertical-rl; transform: rotate(180deg); font-size: 12px; font-weight: 600; color: var(--vitre-texte); letter-spacing: .1em; }
+.porte { border: 2px dashed var(--discret); color: var(--discret); background: var(--carte); border-radius: 8px; padding: 6px 14px; font-size: 14px; font-weight: 600; }
+.projection .porte { font-size: 18px; } .projection .fenetres span { font-size: 15px; }
+.place .pin { position: absolute; top: 2px; right: 5px; font-size: 13px; }
+.place .sexe { position: absolute; left: 6px; top: 5px; width: 9px; height: 9px; border-radius: 50%; }
+.sexe.F { background: var(--f); } .sexe.G { background: var(--g); }
+.carte-eleve { display: inline-flex; align-items: center; background: var(--bois); color: var(--bois-texte); border: 1.5px solid var(--bois-bord); border-radius: 999px; padding: 5px 12px; font-weight: 600; font-size: 16px; touch-action: none; cursor: grab; user-select: none; }
+.fantome { position: fixed; z-index: 100; pointer-events: none; transform: translate(-50%, -50%) rotate(-3deg); box-shadow: 0 8px 22px rgba(0,0,0,.25); }
+.non-places { min-height: 52px; border: 2px dashed var(--filet); border-radius: 12px; padding: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
+.non-places.cible { border-color: var(--accent); background: var(--accent-fond); }
+.alertes { margin: 0; padding-left: 20px; color: var(--alerte); font-size: 16px; }
+.ok { color: var(--ok); font-size: 16px; margin: 0; }
+.legende { display: flex; gap: 18px; flex-wrap: wrap; font-size: 15px; color: var(--discret); }
+.outils { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.segment { display: inline-flex; border: 1.5px solid var(--filet); border-radius: 10px; overflow: hidden; }
+.segment button { border: 0; background: var(--carte); padding: 0 14px; font-weight: 600; font-size: 16px; min-height: 41px; }
+.segment button + button { border-left: 1.5px solid var(--filet); }
+.segment button:disabled { opacity: .4; cursor: default; }
+.segment button[aria-pressed="true"] { background: var(--accent); color: var(--accent-encre); }
+.menu { position: relative; }
+.menu summary { list-style: none; }
+.menu summary::-webkit-details-marker { display: none; }
+.menu-liste { position: absolute; right: 0; top: calc(100% + 6px); z-index: 30; background: var(--carte); border: 1.5px solid var(--filet); border-radius: 12px; box-shadow: var(--ombre); padding: 6px; display: grid; min-width: 260px; }
+.menu-liste button { border: 0; background: none; text-align: left; padding: 10px 12px; border-radius: 8px; font-size: 16px; }
+.menu-liste button:hover { background: var(--survol); }
+.reglages-affichage { left: 0; right: auto; gap: 4px; }
+.reglages-affichage label { display: flex; gap: 10px; align-items: center; padding: 8px 10px; font-size: 16px; border-radius: 8px; }
+.reglages-affichage label:hover { background: var(--survol); }
+.reglages-affichage select { flex: 1; }
+.meta { display: flex; gap: 8px 18px; flex-wrap: wrap; align-items: center; margin: -8px 0 16px; }
+.meta label { font-weight: 600; color: var(--discret); font-size: 15px; display: inline-flex; gap: 8px; align-items: center; }
+.lien { border: 0; background: none; color: var(--accent); font-weight: 600; font-size: 15px; padding: 0; text-decoration: underline; }
+.options { border: 2px solid var(--accent); background: var(--accent-fond); border-radius: 14px; padding: 12px 14px; display: grid; gap: 10px; }
+.options label { display: flex; gap: 10px; align-items: flex-start; font-weight: 600; font-size: 16px; cursor: pointer; }
+.options label input { margin-top: 2px; flex: none; }
+.options .aide { font-weight: 400; display: block; }
+.puces { display: inline-flex; gap: 4px; vertical-align: -1px; }
+.puces i { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+.claude { border: 2px solid var(--ia); background: var(--ia-fond); border-radius: 18px; padding: 16px 18px; display: grid; gap: 12px; margin-bottom: 18px; }
+.claude-tete { display: flex; gap: 12px; align-items: center; }
+.claude-tete svg { color: var(--ia); flex: none; }
+.claude-tete h2 { margin: 0; font-size: 22px; }
+.claude-tete p { margin: 2px 0 0; color: var(--discret); font-size: 15px; }
+.fil { display: flex; flex-direction: column; gap: 8px; max-height: 280px; overflow-y: auto; }
+.bulle { max-width: min(80%, 760px); padding: 10px 14px; border-radius: 16px; font-size: 16px; line-height: 1.45; }
+.bulle.moi { align-self: flex-end; background: var(--accent); color: var(--accent-encre); border-bottom-right-radius: 4px; }
+.bulle.ia { align-self: flex-start; background: var(--ia-bulle); border: 1.5px solid color-mix(in srgb, var(--ia) 35%, transparent); border-bottom-left-radius: 4px; }
+.bulle.attente { font-style: italic; color: var(--discret); }
+.saisie { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: end; }
+.saisie textarea { min-height: 64px; background: var(--carte); border-color: color-mix(in srgb, var(--ia) 45%, var(--filet)); }
+.btn.ia { background: var(--ia); border-color: var(--ia); color: #fff; }
+.exemples { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.exemples button { min-height: 32px; border: 1.5px dashed var(--ia); background: transparent; color: var(--ia); border-radius: 999px; padding: 4px 12px; font-size: 15px; font-weight: 600; }
+.exemples button:hover { background: var(--ia-bulle); }
+.compris { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.compris .pastille { display: inline-flex; gap: 6px; align-items: center; background: var(--ia-bulle); border: 1.5px solid var(--ia); border-radius: 999px; padding: 3px 4px 3px 12px; font-size: 15px; }
+.compris .pastille button { border: 0; background: none; color: var(--discret); font-size: 15px; width: 26px; height: 26px; border-radius: 50%; }
+.compris .pastille button:hover { background: var(--survol); }
+@media (max-width: 600px) { .saisie { grid-template-columns: minmax(0, 1fr); } .bulle { max-width: 92%; } }
+.colonne { display: grid; gap: 16px; align-content: start; min-width: 0; }
+.colonne .claude { margin-bottom: 0; padding: 14px 16px; gap: 10px; }
+.colonne .claude-tete { align-items: flex-start; }
+.colonne .claude-tete h2 { font-size: 20px; }
+.colonne .claude-tete p { font-size: 14px; }
+.colonne .claude-tete svg { width: 28px; height: 28px; }
+.colonne .saisie { grid-template-columns: minmax(0, 1fr); }
+.colonne .saisie .btn { width: 100%; }
+.colonne .bulle { max-width: 94%; font-size: 15px; padding: 8px 12px; }
+.colonne .exemples button { font-size: 14px; padding: 3px 10px; }
+.colonne .compris .pastille { font-size: 14px; }
+.ia-rep { font-size: 16px; background: var(--accent-fond); border-radius: 12px; padding: 12px 14px; margin: 0; }
+
+/* ---- éditeur de salle ---- */
+.edit .rangee { column-gap: 4px; }
+.lien-rangs { height: 20px; border: 0; background: none; padding: 0; width: 100%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: var(--discret); border-radius: 6px; opacity: .45; }
+.lien-rangs:hover, .lien-rangs:focus-visible { opacity: 1; background: var(--survol); }
+.lien-rangs.colle { opacity: 1; color: var(--bois-texte); background: linear-gradient(var(--bois-bord), var(--bois-bord)) center / 100% 6px no-repeat; }
+.lien-rangs.colle span { background: var(--carte); padding: 0 8px; border-radius: 999px; }
+.apercu .r { display: grid; gap: 3px; }
+.historique { display: grid; gap: 12px; }
+.histo { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 16px; align-items: center; background: var(--carte); border: 1.5px solid var(--filet); border-radius: 16px; padding: 14px 18px; }
+.histo.actuel { border-color: var(--accent); }
+.histo .quand { font-size: 15px; color: var(--discret); }
+.histo .titre { font-size: 19px; font-weight: 600; }
+@media (max-width: 700px) { .histo { grid-template-columns: minmax(0, 1fr); } }
+.ajout-eleve { display: grid; grid-template-columns: 1fr 1fr auto auto; gap: 8px; align-items: center; }
+@media (max-width: 700px) { .ajout-eleve { grid-template-columns: 1fr 1fr; } }
+.edit .case { --cw: 56px; --ch: 42px; border-radius: 8px; border: 2px dashed var(--filet); background: var(--vide); cursor: pointer; }
+.edit .case.siege { background: var(--bois); border: 2px solid var(--bois-bord); }
+.edit .case:hover { border-color: var(--accent); }
+.reglages-salle { margin-bottom: 16px; gap: 16px; }
+.modeles { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+.reglages { display: flex; flex-wrap: wrap; gap: 14px 28px; padding-top: 14px; border-top: 1px solid var(--filet); align-items: flex-start; }
+.bloc { display: grid; gap: 8px; align-content: start; }
+.reglages input[type=number] { width: 4.2em; }
+.reglages .ligne { gap: 8px; }
+.bloc h3 { margin: 0 !important; }
+.aide-case { font-size: 15px; display: inline-flex; gap: 8px; align-items: center; }
+.modeles button { flex: none; min-width: 104px; font-size: 14px !important; display: grid; gap: 6px; justify-items: center; align-content: end; padding: 10px 8px; border: 1.5px solid var(--filet); border-radius: 12px; background: var(--carte); font-weight: 600; font-size: 15px; }
+.modeles button:hover { border-color: var(--accent); }
+.modeles .apercu { padding: 4px; background: none; gap: 2px; }
+.modeles .apercu i { width: 7px; height: 5px; }
+.champs { display: grid; grid-template-columns: auto 1fr; gap: 10px 12px; align-items: center; }
+.info-places { font-weight: 600; font-size: 17px; margin: 0; }
+
+/* ---- élèves et contraintes ---- */
+table.eleves { border-collapse: collapse; width: 100%; font-size: 16px; }
+table.eleves th { text-align: left; font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--discret); padding: 8px 6px; border-bottom: 1.5px solid var(--filet); }
+table.eleves td { padding: 3px 6px; border-bottom: 1px solid var(--filet); }
+table.eleves input[type=text] { width: 100%; min-height: 40px; border-color: transparent; background: transparent; }
+table.eleves input[type=text]:hover, table.eleves input[type=text]:focus { border-color: var(--filet); background: var(--carte); }
+table.eleves select { min-height: 40px; padding: 4px 8px; }
+.defile { overflow-x: auto; }
+.depot { border: 2.5px dashed var(--filet); border-radius: 14px; padding: 22px 14px; text-align: center; color: var(--discret); display: grid; gap: 10px; justify-items: center; }
+.depot.survol { border-color: var(--accent); background: var(--accent-fond); color: var(--encre); }
+.contrainte { display: flex; align-items: center; gap: 10px; justify-content: space-between; padding: 10px 12px; border: 1.5px solid var(--filet); border-radius: 12px; background: var(--carte); flex-wrap: wrap; }
+.contrainte .type { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; padding: 3px 10px; border-radius: 999px; background: var(--accent-fond); white-space: nowrap; }
+.liste-c { display: grid; gap: 10px; }
+
+/* ---- projection ---- */
+.projection { position: fixed; inset: 0; z-index: 90; background: var(--fond); display: flex; flex-direction: column; gap: 10px; padding: calc(12px + env(safe-area-inset-top, 0px)) max(18px, env(safe-area-inset-right, 0px)) calc(12px + env(safe-area-inset-bottom, 0px)) max(18px, env(safe-area-inset-left, 0px)); }
+.proj-barre { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.proj-titre { font-size: 30px; font-weight: 700; }
+.proj-scene { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.projection .salle { min-width: 0; gap: 18px; }
+.projection .tableau { font-size: 22px; padding: 10px 0; }
+.projection .bureau { font-size: 20px; padding: 10px 24px; }
+.projection .place { cursor: default; }
+.voile { position: fixed; inset: 0; z-index: 115; background: rgba(10, 20, 18, .45); display: grid; place-items: center; padding: 16px; }
+.dialogue { width: min(560px, 100%); box-shadow: var(--ombre); }
+.toast { position: fixed; left: 50%; bottom: calc(22px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 120; background: var(--encre); color: var(--fond); padding: 12px 20px; border-radius: 12px; font-weight: 600; box-shadow: var(--ombre); max-width: calc(100vw - 32px); }
+@media (max-width: 900px) { .deux > .colonne { order: 2; } }
+@media (max-width: 600px) {
+  .titre-champ { font-size: 24px !important; field-sizing: fixed; width: 100%; }
+  .entete h1 { font-size: 26px; }
+  .nav button { padding: 8px 12px; font-size: 16px; }
+  .barre { gap: 8px 14px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<header class="barre">
+  <div class="marque"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="4" rx="1"/><rect x="3" y="11" width="7" height="4" rx="1"/><rect x="14" y="11" width="7" height="4" rx="1"/><rect x="3" y="18" width="7" height="3" rx="1"/><rect x="14" y="18" width="7" height="3" rx="1"/></svg>Plan de classe</div>
+  <nav class="nav" id="nav" aria-label="Espaces">
+    <button type="button" data-e="classes">Mes classes <span class="nb"></span></button>
+    <button type="button" data-e="salles">Mes salles <span class="nb"></span></button>
+    <button type="button" data-e="plans">Mes plans <span class="nb"></span></button>
+  </nav>
+  <span class="espace"></span>
+  <span class="etat" id="etatSauv">…</span>
+  <details class="menu" id="menuSauvegarde"><summary class="btn petit">Sauvegarde</summary><div class="menu-liste">
+    <button type="button" id="exporter">Exporter mes données (.json)</button>
+    <button type="button" id="importer">Importer une sauvegarde…</button>
+  </div></details>
+  <input type="file" id="fichierSauvegarde" accept=".json,application/json" hidden>
+</header>
+<main class="corps" id="contenu"></main>
+
+<div class="projection" id="projection" hidden>
+  <div class="proj-barre">
+    <div class="proj-titre" id="projTitre"></div>
+    <div class="ligne">
+      <div class="segment" role="group" aria-label="Point de vue"><button type="button" id="projEleve">Vue élèves</button><button type="button" id="projProf">Vue professeur</button></div>
+      <button class="btn" type="button" id="projQuitter">✕ Quitter</button>
+    </div>
+  </div>
+  <div class="proj-scene" id="projScene"><div class="salle" id="projSalle"></div></div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script src="jspdf.umd.min.js"></script>
+<script>
+(() => {
+"use strict";
+const $ = id => document.getElementById(id);
+const uid = (p = "") => p + Math.random().toString(36).slice(2, 10);
+const s = n => n > 1 ? "s" : "";
+const LS2 = "plans-de-classe-v2", LS1 = "plans-de-classe-v1", LSUI = "plans-de-classe-ui";
+const ESPACES = ["classes", "salles", "plans"];
+// petit constructeur de DOM : el("div", {class, text, onclick, attribut…}, enfants…)
+function el(tag, props = {}, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(props)) {
+    if (v == null || v === false) continue;
+    if (k === "class") e.className = v;
+    else if (k === "text") e.textContent = v;
+    else if (k === "value") e.value = v;
+    else if (k === "style") e.style.cssText = v;
+    else if (k.startsWith("on") && typeof v === "function") e.addEventListener(k.slice(2), v);
+    else if (typeof v === "boolean") e[k] = v;
+    else e.setAttribute(k, v);
+  }
+  for (const c of kids.flat()) if (c != null && c !== false) e.append(c);
+  return e;
+}
+function choix(options, valeur, onchange, props = {}) {
+  const sel = el("select", props, options.map(([v, t]) => el("option", { value: v, text: t })));
+  sel.value = valeur; sel.onchange = () => onchange(sel.value); return sel;
+}
+
+// ------------------------------------------------------------------ contraintes et salles
+const TYPES = {
+  pas_a_cote: { lib: "pas côte à côte", long: "ne doivent pas être côte à côte", deux: true },
+  eloignes: { lib: "éloignés", long: "doivent être éloignés", deux: true },
+  a_cote: { lib: "côte à côte", long: "doivent être côte à côte", deux: true },
+  devant: { lib: "devant", long: "doit être devant", deux: false },
+  fond: { lib: "au fond", long: "doit être au fond", deux: false },
+  pres_bureau: { lib: "près du bureau", long: "doit être près du bureau", deux: false },
+  isole: { lib: "seul à sa table", long: "doit être seul à sa table", deux: false },
+  pres_porte: { lib: "près de la porte", long: "doit être près de la porte", deux: false },
+  pres_fenetre: { lib: "près d'une fenêtre", long: "doit être près d'une fenêtre", deux: false },
+  loin_fenetre: { lib: "loin des fenêtres", long: "doit être loin des fenêtres", deux: false },
+};
+function grilleMotif(rangs, motif) {
+  const groupes = String(motif).split(/[^0-9]+/).map(Number).filter(n => n > 0);
+  const ligne = [];
+  groupes.forEach((g, i) => { if (i) ligne.push(0); for (let k = 0; k < g; k++) ligne.push(1); });
+  if (!ligne.length) ligne.push(1);
+  return { lignes: rangs, colonnes: ligne.length, cases: Array.from({ length: rangs }, () => ligne.slice()), motif: groupes.join(" ") || "1" };
+}
+function appliquerMotif(S, rangs, motif) { Object.assign(S, grilleMotif(rangs, motif)); poserColle(S); }
+// colle[r] : la rangée r et la suivante forment des îlots (tables face à face)
+const colle = (S, r) => !!(S.colle && S.colle[r]);
+const lie = (S, r1, r2) => Math.abs(r1 - r2) === 1 && colle(S, Math.min(r1, r2));
+function poserColle(S) { S.colle = Array.from({ length: Math.max(0, S.lignes - 1) }, (_, r) => S.ilots ? r % 2 === 0 : !!(S.colle || [])[r]); }
+function appliquerU(S) { S.lignes = 5; S.colonnes = 9; S.cases = Array.from({ length: 5 }, (_, r) => Array.from({ length: 9 }, (_, k) => r === 4 || k <= 1 || k >= 7 ? 1 : 0)); S.motif = ""; S.ilots = false; S.colle = []; poserColle(S); }
+// motif lu sur les rangées quand elles sont toutes identiques (« 2 2 2 »), sinon disposition personnalisée
+function motifDe(S) {
+  const t = JSON.stringify(S.cases[0]); if (!S.cases.every(l => JSON.stringify(l) === t)) return "";
+  const g = []; let n = 0; for (const v of S.cases[0] || []) { if (v) n++; else if (n) { g.push(n); n = 0; } } if (n) g.push(n); return g.join(" ");
+}
+const MODELES = [
+  { nom: "Rangées de 2", rangs: 5, motif: "2 2 2" }, { nom: "Rangées de 3", rangs: 5, motif: "3 3" },
+  { nom: "2 · 3 · 2", rangs: 5, motif: "2 3 2" }, { nom: "2 · 4 · 2", rangs: 4, motif: "2 4 2" },
+  { nom: "Tables seules", rangs: 5, motif: "1 1 1 1 1 1" }, { nom: "En U", u: true },
+  { nom: "Îlots de 4", rangs: 6, motif: "2 2 2", ilots: true }, { nom: "Îlots de 6", rangs: 6, motif: "3 3", ilots: true },
+];
+function nouvelleSalle(nom) { const S = { id: uid("s-"), nom, bureau: "gauche", nbDevant: 2, nbFond: 2 }; appliquerMotif(S, 5, "2 2 2"); return S; }
+function nouvelleClasse(nom) { return { id: uid("c-"), nom, eleves: [], contraintes: [], alterner: false }; }
+const rc = id => id.split(",").map(Number);
+const allee = (S, k) => S.cases.every(l => !l[k]);
+function sieges(S) { const t = []; for (let r = 0; r < S.lignes; r++) for (let k = 0; k < S.colonnes; k++) if (S.cases[r][k]) t.push(r + "," + k); return t; }
+function rangsOccupes(S) { const t = []; for (let i = 0; i < S.lignes; i++) if (S.cases[i].some(Boolean)) t.push(i); return t; }
+function colBureau(S) { return S.bureau === "gauche" ? 0 : S.bureau === "droite" ? S.colonnes - 1 : (S.colonnes - 1) / 2; }
+function voisins(S, id) { const [r, k] = rc(id), v = []; if (!S.cases[r]) return v; if (r > 0 && colle(S, r - 1) && S.cases[r - 1][k]) v.push((r - 1) + "," + k); if (colle(S, r) && S.cases[r + 1]?.[k]) v.push((r + 1) + "," + k); if (S.cases[r][k - 1]) v.push(r + "," + (k - 1)); if (S.cases[r][k + 1]) v.push(r + "," + (k + 1)); return v; }
+// porte et fenêtres : colonnes extrêmes des places, position de la porte en (rangée, colonne)
+function colonnesSieges(S) { const c = [...Array(S.colonnes).keys()].filter(k => !allee(S, k)); return [c[0] ?? 0, c[c.length - 1] ?? 0]; }
+function posPorte(S) {
+  const [c0, c1] = colonnesSieges(S), r = rangsOccupes(S), r0 = r[0] ?? 0, r1 = r[r.length - 1] ?? 0;
+  return ({ "devant-gauche": [r0 - 1, c0], "devant-droite": [r0 - 1, c1], "fond-gauche": [r1 + 1, c0], "fond-droite": [r1 + 1, c1], gauche: [(r0 + r1) / 2, c0 - 1], droite: [(r0 + r1) / 2, c1 + 1] })[S.porte] || null;
+}
+function distFenetre(S, k) { const [c0, c1] = colonnesSieges(S), d = []; if (S.fenetres === "gauche" || S.fenetres === "deux") d.push(k - c0); if (S.fenetres === "droite" || S.fenetres === "deux") d.push(c1 - k); return d.length ? Math.min(...d) : null; }
+// numéros de place, vus des élèves : rangée par rangée depuis le tableau, de gauche à droite
+function numeros(S) { const m = {}; let n = 0; for (let r = 0; r < S.lignes; r++) for (let k = 0; k < S.colonnes; k++) if (S.cases[r][k]) m[r + "," + k] = ++n; return m; }
+function carteVoisins(S) { const m = {}; for (const id of sieges(S)) m[id] = voisins(S, id); return m; }
+const cle = (a, b) => a < b ? a + "|" + b : b + "|" + a;
+function retirerHors(P, S) { for (const id in P.places) { const [r, k] = rc(id); if (r >= S.lignes || k >= S.colonnes || !S.cases[r][k]) { delete P.places[id]; delete P.verrous[id]; } } }
+
+// ------------------------------------------------------------------ coût d'un placement
+function evaluer(C, S, places, extra = [], detail = false, opts = {}) {
+  const nb = opts.nb || carteVoisins(S);
+  const pos = {}; for (const id in places) if (places[id]) pos[places[id]] = id;
+  const rangs = rangsOccupes(S), rangDe = {}; rangs.forEach((r, i) => rangDe[r] = i);
+  const nR = rangs.length, nDev = S.nbDevant || 2, nFond = S.nbFond || 2, cb = colBureau(S);
+  const adj = (a, b) => !!nb[a]?.includes(b);
+  let cout = 0; const viol = [], repetes = [];
+  for (const ct of C.contraintes.concat(extra)) {
+    const pa = pos[ct.a], pb = ct.b ? pos[ct.b] : null; let v = 0;
+    if (!pa || (TYPES[ct.type]?.deux && !pb)) continue;
+    const [ra, ka] = rc(pa);
+    if (ct.type === "pas_a_cote" && adj(pa, pb)) v = 100;
+    else if (ct.type === "eloignes") { const [rb, kb] = rc(pb); if (Math.max(Math.abs(ra - rb), Math.abs(ka - kb)) < 3) v = 70; }
+    else if (ct.type === "a_cote" && !adj(pa, pb)) v = 30;
+    else if (ct.type === "devant" && rangDe[ra] >= nDev) v = 40 + 10 * (rangDe[ra] - nDev);
+    else if (ct.type === "fond" && rangDe[ra] < nR - nFond) v = 40 + 10 * (nR - nFond - rangDe[ra]);
+    else if (ct.type === "pres_bureau") { const d = Math.max(rangDe[ra], Math.abs(ka - cb) / 2); if (d > 1.5) v = 25 + 8 * d; }
+    else if (ct.type === "isole") { const n = (nb[pa] || []).filter(x => places[x]).length; if (n) v = 35 * n; }
+    else if (ct.type === "pres_porte") { const pp = posPorte(S); if (pp) { const d = Math.max(Math.abs(ra - pp[0]), Math.abs(ka - pp[1])); if (d > 2) v = 25 + 8 * (d - 2); } }
+    else if (ct.type === "pres_fenetre") { const d = distFenetre(S, ka); if (d !== null && d > 1) v = 25 + 8 * (d - 1); }
+    else if (ct.type === "loin_fenetre") { const d = distFenetre(S, ka); if (d !== null && d <= 1) v = 40; }
+    if (v) { cout += v; if (detail) viol.push(ct); }
+  }
+  // règles générales de la classe : remplir d'abord l'avant ; pas d'élève seul à une table
+  const rg = C.regles || {};
+  if (rg.devant || rg.parDeux) for (const id in places) {
+    if (!places[id]) continue;
+    if (rg.devant) cout += 3 * (rangDe[rc(id)[0]] ?? 0);
+    if (rg.parDeux) { const v = nb[id] || []; if (v.length && !v.some(t => places[t])) cout += 12; }
+  }
+  if (opts.cible) for (const id in places) { const t = opts.cible.get(places[id]); if (t != null) cout += 6 * Math.abs(rangDe[rc(id)[0]] - t); }
+  const sexe = C.alterner ? new Map(C.eleves.map(e => [e.id, e.sexe])) : null, hist = opts.hist;
+  if (sexe || hist?.size) for (const id in places) {
+    const a = places[id]; if (!a) continue;
+    for (const t of nb[id] || []) {
+      const b = places[t]; if (t < id || !b) continue;
+      if (sexe) { const x = sexe.get(a), y = sexe.get(b); if (x && y && x === y) cout += 3; }
+      if (hist) { const w = hist.get(cle(a, b)); if (w) { cout += w; if (detail) repetes.push([a, b]); } }
+    }
+  }
+  return detail ? { cout, viol, repetes } : cout;
+}
+// voisinages des plans précédents de la classe ; les plus récents pèsent davantage
+function plansClasse(C) { return etat.plans.filter(p => p.classeId === C.id).sort((a, b) => (b.cree || 0) - (a.cree || 0)); }
+function historique(C, P) {
+  const m = new Map();
+  plansClasse(C).filter(Q => Q !== P && (Q.cree || 0) < (P.cree || Infinity)).slice(0, 6).forEach((Q, i) => {
+    const S = trouve("salles", Q.salleId); if (!S) return; const w = 8 / (i + 1);
+    for (const id in Q.places) for (const t of voisins(S, id)) if (t > id && Q.places[t]) { const k = cle(Q.places[id], Q.places[t]); m.set(k, (m.get(k) || 0) + w); }
+  });
+  return m;
+}
+// recuit simulé : échanges au hasard, les places épinglées ne bougent pas
+function resoudre(C, S, P, extra = [], o = {}) {
+  const T = sieges(S), ids = new Set(C.eleves.map(e => e.id)), fixes = {};
+  for (const id in P.verrous || {}) if (P.verrous[id] && P.places[id] && T.includes(id) && ids.has(P.places[id])) fixes[id] = P.places[id];
+  const fixesIds = new Set(Object.values(fixes)), libres = T.filter(x => !fixes[x]);
+  const aPlacer = C.eleves.map(e => e.id).filter(id => !fixesIds.has(id));
+  let meilleur = null, meilleurCout = Infinity;
+  const opts = { nb: carteVoisins(S), hist: P.eviterVoisins ? historique(C, P) : null, cible: o.cible || null };
+  const iter = Math.max(4000, 900 * libres.length);
+  for (let essai = 0; essai < (o.depart ? 1 : 6); essai++) {
+    const ordre = aPlacer.slice().sort(() => Math.random() - .5), sl = libres.slice().sort(() => Math.random() - .5);
+    const places = Object.assign({}, fixes);
+    if (o.depart) { const mis = new Set(); for (const x of libres) { const e = o.depart[x]; if (e && aPlacer.includes(e)) { places[x] = e; mis.add(e); } else places[x] = null; } const reste = aPlacer.filter(e => !mis.has(e)); for (const x of libres) if (!places[x] && reste.length) places[x] = reste.shift(); }
+    else sl.forEach((x, i) => places[x] = ordre[i] || null);
+    let cout = evaluer(C, S, places, extra, false, opts), temp = o.depart ? 4 : 60;
+    for (let i = 0; i < iter && libres.length > 1; i++) {
+      const a = libres[(Math.random() * libres.length) | 0], b = libres[(Math.random() * libres.length) | 0];
+      if (a === b || (!places[a] && !places[b])) continue;
+      [places[a], places[b]] = [places[b], places[a]];
+      const n = evaluer(C, S, places, extra, false, opts);
+      if (n <= cout || Math.random() < Math.exp((cout - n) / temp)) cout = n; else [places[a], places[b]] = [places[b], places[a]];
+      temp = Math.max(.05, temp * .9993);
+      if (cout === 0 && i > libres.length * 50) break;
+    }
+    if (cout < meilleurCout) { meilleurCout = cout; meilleur = Object.assign({}, places); }
+    if (meilleurCout === 0) break;
+  }
+  for (const x in meilleur) if (!meilleur[x]) delete meilleur[x];
+  return meilleur || {};
+}
+
+// ------------------------------------------------------------------ plan suivant : les élèves du fond passent devant, ceux de devant au fond
+// alpha = 1 : échange complet (miroir des rangées) ; alpha = 0,5 : chacun fait la moitié du chemin
+function planSuivant(C, S, P, alpha) {
+  const rangs = rangsOccupes(S), nR = rangs.length, rangDe = {}; rangs.forEach((r, i) => rangDe[r] = i);
+  const cible = new Map(), ordre = [];
+  for (const [id, e] of Object.entries(P.places)) {
+    if (P.verrous[id]) continue;
+    const [r, k] = rc(id), i = rangDe[r] ?? 0, t = i + alpha * ((nR - 1 - i) - i);
+    cible.set(e, Math.round(t)); ordre.push({ e, t, k, ecart: Math.abs(t - i) });
+  }
+  const depart = {}, libres = new Set(sieges(S));
+  for (const id in P.verrous) if (P.places[id]) { depart[id] = P.places[id]; libres.delete(id); }
+  ordre.sort((a, b) => b.ecart - a.ecart);
+  for (const x of ordre) { let best = null, bc = Infinity; for (const id of libres) { const [r, k] = rc(id), c = Math.abs(rangDe[r] - x.t) * 100 + Math.abs(k - x.k); if (c < bc) { bc = c; best = id; } } if (best) { depart[best] = x.e; libres.delete(best); } }
+  const date = new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long" });
+  const Q = { id: uid("p-"), nom: `Plan du ${date}`, cree: Date.now(), classeId: C.id, salleId: S.id, places: depart, verrous: Object.assign({}, P.verrous), format: P.format || "pi", prefsIA: "", eviterVoisins: true, chat: [], iaTemp: [] };
+  if (etat.plans.some(x => x.classeId === C.id && x.nom === Q.nom)) { let n = 2; while (etat.plans.some(x => x.classeId === C.id && x.nom === `${Q.nom} (${n})`)) n++; Q.nom += ` (${n})`; }
+  Q.places = resoudre(C, S, Q, [], { depart, cible });
+  return Q;
+}
+
+// ------------------------------------------------------------------ élève arrivé en cours d'année
+const planActuel = C => plansClasse(C)[0];
+// une case vide à côté d'une place, au plus près du fond ; sinon une rangée de plus au fond
+function ajouterPlace(S) {
+  for (let r = S.lignes - 1; r >= 0; r--) for (let k = 0; k < S.colonnes; k++)
+    if (!S.cases[r][k] && !allee(S, k) && (S.cases[r][k - 1] || S.cases[r][k + 1])) { S.cases[r][k] = 1; S.motif = motifDe(S); return; }
+  const k = [...Array(S.colonnes).keys()].find(x => !allee(S, x)) ?? 0;
+  S.cases.push(Array(S.colonnes).fill(0)); S.cases[S.lignes][k] = 1; S.lignes++; S.ilots = false; poserColle(S); S.motif = motifDe(S);
+}
+function integrer(C, nouveaux) {
+  const P = planActuel(C); if (!P || !nouveaux.length) return "";
+  const S = trouve("salles", P.salleId); if (!S) return "";
+  let n = 0, ajout = 0; memo(P);
+  for (const e of nouveaux) {
+    if (Object.values(P.places).includes(e.id)) continue;
+    let libres = sieges(S).filter(x => !P.places[x]);
+    if (!libres.length) { ajouterPlace(S); ajout++; libres = sieges(S).filter(x => !P.places[x]); }
+    const nb = carteVoisins(S); let best = libres[0], bc = Infinity;
+    for (const x of libres) { P.places[x] = e.id; const c = evaluer(C, S, P.places, [], false, { nb }); delete P.places[x]; if (c < bc) { bc = c; best = x; } }
+    P.places[best] = e.id; n++;
+  }
+  if (!n) return "";
+  marquer(P); if (ajout) marquer(S);
+  return ` ${n > 1 ? "Ils ont" : "Il a"} pris place dans le plan « ${P.nom} »` + (ajout ? ` ; ${ajout} place${s(ajout)} ajoutée${s(ajout)} au fond de la salle « ${S.nom} ».` : ".");
+}
+
+// ------------------------------------------------------------------ annuler / rétablir (placements d'un plan, le temps de la séance)
+const pile = { annuler: {}, retablir: {} };
+const instantane = P => JSON.stringify({ places: P.places, verrous: P.verrous || {} });
+function memo(P) { const h = pile.annuler[P.id] ||= []; h.push(instantane(P)); if (h.length > 50) h.shift(); pile.retablir[P.id] = []; }
+function deplacerHistorique(P, depuis, vers) {
+  const h = pile[depuis][P.id]; if (!h || !h.length) return false;
+  (pile[vers][P.id] ||= []).push(instantane(P));
+  const o = JSON.parse(h.pop()); P.places = o.places; P.verrous = o.verrous; marquer(P); return true;
+}
+// ⌘Z / Ctrl+Z hors des champs de saisie ; appelé aussi par le menu Édition de l'application Mac
+window.__annulerPlan = retablir => {
+  if (!courant || projId) return false;
+  const a = document.activeElement; if (a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) && a.type !== "checkbox") return false;
+  const ok = retablir ? deplacerHistorique(courant.P, "retablir", "annuler") : deplacerHistorique(courant.P, "annuler", "retablir");
+  if (ok) { toast(retablir ? "Placement rétabli." : "Placement annulé."); courant.maj(); }
+  return ok;
+};
+document.addEventListener("keydown", e => {
+  if (window.webkit?.messageHandlers?.mac) return; // dans l'application Mac, c'est le menu Édition qui s'en charge
+  if ((e.metaKey || e.ctrlKey) && !e.altKey && e.key.toLowerCase() === "z" && window.__annulerPlan(e.shiftKey)) e.preventDefault();
+  else if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "y" && window.__annulerPlan(true)) e.preventDefault();
+});
+
+// ------------------------------------------------------------------ données
+let etat = { classes: [], salles: [], plans: [] };
+const trouve = (liste, id) => etat[liste].find(x => x.id === id);
+const listeDe = id => id[0] === "c" ? "classes" : id[0] === "s" ? "salles" : "plans";
+let ui = { espace: "plans", ouvert: { classes: null, salles: null, plans: null }, vueProf: false, voirSexe: false, ongletClasse: "eleves" };
+const temp = { iaTemp: {}, repIA: {}, chat: {}, repClasse: {}, nouveauPlan: null, focus: null };
+
+function exemples() {
+  const noms = [["MARTIN","Inès","F"],["BERNARD","Léo","G"],["DUBOIS","Chloé","F"],["THOMAS","Nathan","G"],["ROBERT","Manon","F"],["RICHARD","Hugo","G"],["PETIT","Lina","F"],["DURAND","Lucas","G"],["LEROY","Jade","F"],["MOREAU","Gabriel","G"],["SIMON","Louise","F"],["LAURENT","Adam","G"],["LEFEBVRE","Zoé","F"],["MICHEL","Raphaël","G"],["GARCIA","Emma","F"],["DAVID","Arthur","G"],["BERTRAND","Alice","F"],["ROUX","Jules","G"],["VINCENT","Léna","F"],["FOURNIER","Noah","G"],["MOREL","Sarah","F"],["GIRARD","Tom","G"],["ANDRÉ","Camille","F"],["MERCIER","Ethan","G"],["BLANC","Mila","F"],["GUERIN","Sacha","G"]];
+  const C = nouvelleClasse("2nde 4"); C.exemple = true; C.alterner = true;
+  C.eleves = noms.map(([n, p, x]) => ({ id: uid(), nom: n, prenom: p, sexe: x }));
+  const e = p => C.eleves.find(x => x.prenom === p).id;
+  C.contraintes = [{ id: uid(), type: "pas_a_cote", a: e("Léo"), b: e("Nathan") }, { id: uid(), type: "devant", a: e("Inès") }, { id: uid(), type: "eloignes", a: e("Hugo"), b: e("Tom") }];
+  const S = nouvelleSalle("Salle B12"); S.exemple = true;
+  const P = { id: uid("p-"), nom: "Plan de rentrée", cree: Date.now(), exemple: true, classeId: C.id, salleId: S.id, places: {}, verrous: {}, format: "auto", prefsIA: "" };
+  P.places = resoudre(C, S, P);
+  return { classes: [C], salles: [S], plans: [P] };
+}
+// version 1 : la salle et les plans étaient rangés dans chaque classe
+function migrerV1(anciennes) {
+  const out = { classes: [], salles: [], plans: [] };
+  for (const c of anciennes) {
+    const C = { id: c.id, nom: c.nom, eleves: c.eleves || [], contraintes: c.contraintes || [], alterner: !!c.alterner }; if (c.exemple) C.exemple = true;
+    out.classes.push(C);
+    if (!c.salle) continue;
+    const S = Object.assign({ bureau: "gauche", nbDevant: 2, nbFond: 2 }, c.salle, { id: "s-" + c.id.replace(/^c-/, ""), nom: "Salle de " + c.nom }); if (c.exemple) S.exemple = true;
+    S.motif = S.motif ?? motifDe(S);
+    out.salles.push(S);
+    for (const p of c.plans || []) out.plans.push({ id: "p-" + String(p.id).replace(/^p-/, ""), nom: p.nom, classeId: C.id, salleId: S.id, places: p.places || {}, verrous: p.verrous || {}, format: c.format || "pi", prefsIA: c.prefsIA || "", exemple: c.exemple || undefined });
+  }
+  return out;
+}
+function normaliser(e) {
+  const o = { classes: Array.isArray(e.classes) ? e.classes : [], salles: Array.isArray(e.salles) ? e.salles : [], plans: Array.isArray(e.plans) ? e.plans : [] };
+  o.classes.forEach(C => { C.eleves ||= []; C.contraintes ||= []; });
+  o.salles = o.salles.filter(S => Array.isArray(S.cases) && S.cases.length);
+  o.plans = o.plans.filter(P => o.classes.some(c => c.id === P.classeId) && o.salles.some(x => x.id === P.salleId));
+  const t0 = Date.now(); o.plans.forEach((P, i) => { P.places ||= {}; P.verrous ||= {}; if (!P.formatV2) { if (!P.format || P.format === "pi") P.format = "auto"; P.formatV2 = true; } P.cree ||= t0 - i * 60000; P.chat = (P.chat || []).filter(m => !m.attente); P.iaTemp ||= []; });
+  o.salles.forEach(S => poserColle(S));
+  return o;
+}
+
+// ------------------------------------------------------------------ enregistrement : espace privé claude.ai, sinon ce navigateur
+const stock = { mode: "local", db: null, uid: null, enCours: {}, attente: {} };
+const sales = new Set(), supprimes = new Set(); let minuteur = null;
+function lireJSON(k) { try { const t = localStorage.getItem(k); return t ? JSON.parse(t) : null; } catch (e) { return null; } }
+function ecrireJSON(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+function marquer(o) { if (o) { sales.add(o.id); if (o.id[0] === "p") o.modifie = Date.now(); } ecrireJSON(LS2, etat); majEtat("Enregistrement…"); clearTimeout(minuteur); minuteur = setTimeout(vidanger, 800); }
+function oter(o) { etat[listeDe(o.id)] = etat[listeDe(o.id)].filter(x => x !== o); sales.delete(o.id); supprimes.add(o.id); marquer(null); }
+function supprimerClasse(C) { etat.plans.filter(p => p.classeId === C.id).forEach(oter); oter(C); }
+function supprimerSalle(S) { etat.plans.filter(p => p.salleId === S.id).forEach(oter); oter(S); }
+async function ecrireDoc(chemin, data) {
+  if (stock.enCours[chemin]) { stock.attente[chemin] = data; return; }
+  stock.enCours[chemin] = true;
+  try { if (data === null) await stock.db.doc(chemin).delete(); else await stock.db.doc(chemin).set(data); }
+  catch (e) { majEtat(e && e.code === "quota_exceeded" ? "Espace de stockage plein" : "Échec de l'enregistrement : nouvel essai à la prochaine modification"); }
+  finally { stock.enCours[chemin] = false; if (chemin in stock.attente) { const d = stock.attente[chemin]; delete stock.attente[chemin]; await ecrireDoc(chemin, d); } }
+}
+async function vidanger() {
+  if (stock.mode !== "db") { majEtat("Enregistré dans ce navigateur"); return; }
+  const base = "data/users/" + stock.uid + "/";
+  const a = [...sales], b = [...supprimes]; sales.clear(); supprimes.clear();
+  for (const id of a) { const o = trouve(listeDe(id), id); if (o) await ecrireDoc(base + id, JSON.parse(JSON.stringify(o))); }
+  for (const id of b) await ecrireDoc(base + id, null);
+  await ecrireDoc(base + "index", { version: 2, classes: etat.classes.map(x => x.id), salles: etat.salles.map(x => x.id), plans: etat.plans.map(x => x.id) });
+  majEtat("Enregistré dans votre espace");
+}
+function majEtat(t) { $("etatSauv").textContent = t; }
+async function brancherStockage() {
+  try {
+    if (!window.claude?.use) throw 0;
+    const [db, user] = await Promise.all([claude.use("db"), claude.use("user")]);
+    const id = user ? await user.id() : null;
+    if (!db || !id) throw 0;
+    stock.db = db; stock.uid = id;
+    const snap = await db.collection("data/users/" + id).get();
+    const docs = {}; let index = null;
+    for (const d of snap.docs) { const v = JSON.parse(JSON.stringify(d.data())); if (d.id === "index") index = v; else if (/^[csp]-/.test(d.id)) docs[d.id] = v; }
+    stock.mode = "db";
+    const ids = Object.keys(docs);
+    if (!ids.length) { [...etat.classes, ...etat.salles, ...etat.plans].forEach(o => sales.add(o.id)); await vidanger(); return; }
+    const nouv = { classes: [], salles: [], plans: [] }, anciennes = [];
+    for (const k of ids) { const v = docs[k]; if (k[0] === "c" && (v.salle || v.plans)) anciennes.push(v); else nouv[listeDe(k)].push(v); }
+    if (anciennes.length) { const m = migrerV1(anciennes); for (const k of ESPACES) nouv[k].push(...m[k]); }
+    if (index?.version === 2) for (const k of ESPACES) { const o = index[k] || []; nouv[k].sort((a, b) => ((o.indexOf(a.id) + 1) || 1e9) - ((o.indexOf(b.id) + 1) || 1e9)); }
+    etat = normaliser(nouv);
+    for (const k of ESPACES) if (ui.ouvert[k] && !trouve(k, ui.ouvert[k])) ui.ouvert[k] = null;
+    if (anciennes.length) { [...etat.classes, ...etat.salles, ...etat.plans].forEach(o => sales.add(o.id)); await vidanger(); }
+    ecrireJSON(LS2, etat); majEtat("Enregistré dans votre espace"); if (!projId) render();
+  } catch (e) { stock.mode = "local"; majEtat("Enregistré dans ce navigateur"); }
+}
+
+// ------------------------------------------------------------------ noms
+// « auto » : le prénom seul ; le début du nom n'apparaît que si le prénom est en double
+// dans la classe, avec juste assez de lettres pour distinguer les homonymes (Lucas Du. / Lucas Da.)
+const cleP = t => String(t || "").trim().toLowerCase();
+function libelle(e, f, C) {
+  if (!e) return "";
+  const p = e.prenom || "", n = e.nom || "";
+  if (f === "auto" || !f) {
+    if (!p) return n;
+    const homonymes = (C ? C.eleves : []).filter(x => x !== e && cleP(x.prenom) === cleP(p));
+    if (!homonymes.length || !n) return p;
+    for (let k = 1; k <= n.length; k++) {
+      const deb = t => String(t || "").slice(0, k).toLowerCase();
+      if (!homonymes.some(x => deb(x.nom) === deb(n))) return `${p} ${n.charAt(0).toUpperCase()}${n.slice(1, k).toLowerCase()}.`;
+    }
+    return `${p} ${n.toUpperCase()}`;
+  }
+  if (f === "p") return p || n;
+  if (f === "pn") return (p + " " + n).trim();
+  if (f === "np") return (n.toUpperCase() + " " + p).trim();
+  return p ? p + (n ? " " + n.charAt(0).toUpperCase() + "." : "") : n;
+}
+const jour = t => t ? new Date(t).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }) : "date inconnue";
+const nomComplet = e => e ? ((e.prenom || "") + " " + (e.nom || "")).trim() || "(sans nom)" : "?";
+function phrase(C, ct) { const n = id => nomComplet(C.eleves.find(e => e.id === id)); const T = TYPES[ct.type]; return T.deux ? `${n(ct.a)} et ${n(ct.b)} ${T.long}` : `${n(ct.a)} ${T.long}`; }
+
+// ------------------------------------------------------------------ dessin d'une salle (plan, projection)
+function tailles(S, W, H, proj) {
+  W -= (S.fenetres === "deux" ? 76 : S.fenetres ? 38 : 0) + (S.porte === "gauche" || S.porte === "droite" ? 90 : 0);
+  const U = [...Array(S.colonnes).keys()].reduce((a, k) => a + (allee(S, k) ? .4 : 1), 0);
+  let cw = Math.floor(W / U); cw = proj ? Math.max(60, Math.min(cw, 300)) : Math.max(80, Math.min(160, cw));
+  let ch = Math.round(cw * .52), rg = 16;
+  if (proj && H) { const par = H / S.lignes; ch = Math.min(ch, Math.floor(par * .8)); rg = Math.max(8, Math.min(32, Math.floor(par - ch))); }
+  ch = Math.max(proj ? 38 : 50, ch);
+  const fs = Math.round(Math.max(13, Math.min(proj ? 48 : 20, Math.min(cw / 6.6, ch / 2.2))));
+  return { cw, ch, fs, rg };
+}
+function cadreSalle(S, prof, grille, libBureau) {
+  const mir = c => prof ? ({ gauche: "droite", droite: "gauche", centre: "centre" })[c] : c;
+  const porte = () => el("div", { class: "porte", text: "Porte" });
+  const fen = () => el("div", { class: "fenetres", title: "Fenêtres" }, el("span", { text: "Fenêtres" }));
+  const rang3 = contenu => el("div", { class: "rang3" }, ["gauche", "centre", "droite"].map(c => el("div", { class: "slot " + c }, contenu[c] || [])));
+  const [lieu, cote] = (S.porte || "").split("-");
+  const av = {}; (av[mir(S.bureau || "gauche")] ||= []).push(el("div", { class: "bureau", text: libBureau }));
+  if (lieu === "devant") (av[mir(cote)] ||= []).push(porte());
+  const fo = {}; if (lieu === "fond") (fo[mir(cote)] ||= []).push(porte());
+  const corps = el("div", { class: "corps-salle" },
+    S.fenetres === "deux" || mir(S.fenetres) === "gauche" ? fen() : null, !cote && mir(lieu) === "gauche" ? porte() : null,
+    grille, !cote && mir(lieu) === "droite" ? porte() : null, S.fenetres === "deux" || mir(S.fenetres) === "droite" ? fen() : null);
+  const parts = [el("div", { class: "tableau", text: "TABLEAU" }), rang3(av), corps, lieu === "fond" ? rang3(fo) : null].filter(Boolean);
+  return prof ? parts.reverse() : parts;
+}
+function dessinerSalle(zone, C, S, P, o) {
+  zone.textContent = "";
+  zone.style.setProperty("--cw", o.cw + "px"); zone.style.setProperty("--ch", o.ch + "px"); zone.style.setProperty("--fs", o.fs + "px"); zone.style.setProperty("--rg", o.rg + "px");
+  const num = o.numeros ? numeros(S) : null;
+  const lignes = [...Array(S.lignes).keys()], cols = [...Array(S.colonnes).keys()];
+  if (o.prof) { lignes.reverse(); cols.reverse(); }
+  const tpl = cols.map(k => allee(S, k) ? "calc(var(--cw) * .4)" : "var(--cw)").join(" ");
+  const grille = el("div", { class: "grille" }), siege = (r, k) => !!S.cases[r]?.[k];
+  const elv = new Map(C.eleves.map(e => [e.id, e])), plein = "2px solid var(--bois-bord)", tiret = "1.5px dashed var(--bois-bord)";
+  lignes.forEach((r, i) => {
+    const rang = el("div", { class: "rangee", style: `grid-template-columns:${tpl}` + (i && !lie(S, lignes[i - 1], r) ? ";margin-top:var(--rg)" : "") });
+    for (const k of cols) {
+      if (!S.cases[r][k]) { rang.append(el("div", { class: "case" })); continue; }
+      const id = r + "," + k, E = elv.get(P.places[id]);
+      const g = o.prof ? k + 1 : k - 1, d = o.prof ? k - 1 : k + 1, h = o.prof ? r + 1 : r - 1, b = o.prof ? r - 1 : r + 1;
+      const lg = siege(r, g), ld = siege(r, d), lh = siege(h, k) && lie(S, r, h), lb = siege(b, k) && lie(S, r, b);
+      const R = (x, y) => x || y ? "0" : "9px";
+      const style = `border-top:${lh ? "0" : plein};border-left:${lg ? "0" : plein};border-right:${ld ? tiret : plein};border-bottom:${lb ? tiret : plein};border-radius:${R(lh, lg)} ${R(lh, ld)} ${R(lb, ld)} ${R(lb, lg)}`;
+      const cls = ["case", "place"]; if (!E) cls.push("libre"); if (o.conflits?.has(id)) cls.push("conflit"); if (o.choisie === id) cls.push("choisie");
+      rang.append(el("div", { class: cls.join(" "), style, "data-s": id, "data-e": E ? E.id : null, title: E && o.interactif ? nomComplet(E) + " · double-clic pour épingler" : null },
+        el("div", { class: "nom", text: E ? libelle(E, P.format, C) : "libre" }),
+        E && P.verrous?.[id] ? el("span", { class: "pin", text: "📌" }) : null,
+        num ? el("span", { class: "num", text: String(num[id]) }) : null,
+        E && o.sexe && E.sexe ? el("span", { class: "sexe " + E.sexe }) : null));
+    }
+    grille.append(rang);
+  });
+  zone.append(...cadreSalle(S, o.prof, grille, "Bureau du professeur"));
+}
+function apercu(S, P) {
+  const g = el("div", { class: "apercu" }, el("span", { class: "tab", style: "margin:0 15% 6px" }));
+  for (let r = 0; r < S.lignes; r++) {
+    const rang = el("div", { class: "r", style: `grid-template-columns:repeat(${S.colonnes}, 11px)` + (r && !colle(S, r - 1) ? ";margin-top:3px" : "") });
+    for (let k = 0; k < S.colonnes; k++) rang.append(el("i", { class: S.cases[r][k] ? (P && P.places[r + "," + k] ? "o" : "s") : "" }));
+    g.append(rang);
+  }
+  return g;
+}
+
+// ------------------------------------------------------------------ PDF (vectoriel, A4 paysage)
+let telech = null;
+const pdfTxt = t => String(t).replace(/œ/g, "oe").replace(/Œ/g, "OE").replace(/[’‘]/g, "'").replace(/[“”«»]/g, '"').replace(/[^\u0000-ÿ]/g, c => c.normalize("NFD").replace(/[^\u0000-ÿ]/g, ""));
+function pdfPage(doc, C, S, P, prof, premier, avecNum) {
+  if (!premier) doc.addPage("a4", "landscape");
+  const W = 297, H = 210, m = 12;
+  doc.setFont("helvetica", "bold"); doc.setFontSize(20); doc.setTextColor(22, 32, 30);
+  doc.text(pdfTxt(`${C.nom} · ${P.nom}`), m, m + 5);
+  doc.setFont("helvetica", "normal"); doc.setFontSize(13); doc.setTextColor(86, 99, 95);
+  doc.text(prof ? "Vue du professeur" : "Vue des élèves", W - m, m + 5, { align: "right" });
+  doc.setFontSize(9); doc.text(pdfTxt(S.nom), m, H - 6);
+  const cols = [...Array(S.colonnes).keys()], rows = [...Array(S.lignes).keys()];
+  if (prof) { cols.reverse(); rows.reverse(); }
+  const U = cols.reduce((a, k) => a + (allee(S, k) ? .4 : 1), 0);
+  const mirP = c => prof ? ({ gauche: "droite", droite: "gauche", centre: "centre" })[c] : c;
+  const [lieu, coteP] = (S.porte || "").split("-"), fenG = S.fenetres === "deux" || mirP(S.fenetres) === "gauche", fenD = S.fenetres === "deux" || mirP(S.fenetres) === "droite";
+  const porteG = !coteP && mirP(lieu) === "gauche", porteD = !coteP && mirP(lieu) === "droite", hFond = lieu === "fond" ? 12 : 0;
+  const exG = (fenG ? 7 : 0) + (porteG ? 25 : 0), exD = (fenD ? 7 : 0) + (porteD ? 25 : 0);
+  const haut = m + 13, bas = H - m - 2, hTab = 10, hBur = 10, g1 = 4, g2 = 8;
+  const dispo = bas - haut - hTab - hBur - g1 - g2 - hFond;
+  const cw = Math.min((W - 2 * m - exG - exD) / U, 56), par = dispo / S.lignes;
+  const ch = Math.min(cw * .55, par * .78), rg = Math.min(par - ch, ch * .6);
+  const yr = []; let yy = 0; rows.forEach((r, i) => { if (i) yy += lie(S, rows[i - 1], r) ? 0 : rg; yr.push(yy); yy += ch; });
+  const gW = U * cw, gH = yy;
+  const y0 = haut + (bas - haut - (hTab + g1 + hBur + g2 + gH + hFond)) / 2, x0 = m + exG + (W - 2 * m - exG - exD - gW) / 2;
+  const tabW = Math.min(Math.max(gW * .7, 90), 190), burW = 48;
+  const cote = prof ? { gauche: "droite", droite: "gauche", centre: "centre" }[S.bureau || "gauche"] : (S.bureau || "gauche");
+  const burX = { gauche: x0, centre: (W - burW) / 2, droite: x0 + gW - burW }[cote];
+  const tab = y => { doc.setFillColor(47, 74, 60); doc.roundedRect((W - tabW) / 2, y, tabW, hTab, 1.5, 1.5, "F"); doc.setTextColor(232, 241, 234); doc.setFont("helvetica", "bold"); doc.setFontSize(12); doc.text("T A B L E A U", W / 2, y + hTab / 2 + 1.5, { align: "center" }); };
+  const bur = y => { doc.setFillColor(196, 165, 116); doc.roundedRect(burX, y, burW, hBur, 1.5, 1.5, "F"); doc.setTextColor(52, 37, 15); doc.setFont("helvetica", "bold"); doc.setFontSize(10); doc.text("Bureau du professeur", burX + burW / 2, y + hBur / 2 + 1.3, { align: "center" }); };
+  let yG, yBur, yFond;
+  if (!prof) { tab(y0); yBur = y0 + hTab + g1; bur(yBur); yG = yBur + hBur + g2; yFond = yG + gH + 3; }
+  else { yFond = y0; yG = y0 + hFond; yBur = yG + gH + g2; bur(yBur); tab(yBur + hBur + g1); }
+  const pW = 22, pH = 8;
+  const porte = (x, y) => { doc.setLineDashPattern([1.2, 1], 0); doc.setDrawColor(86, 99, 95); doc.setLineWidth(.4); doc.setFillColor(255, 255, 255); doc.roundedRect(x, y, pW, pH, 1.5, 1.5, "FD"); doc.setLineDashPattern([], 0); doc.setTextColor(86, 99, 95); doc.setFont("helvetica", "bold"); doc.setFontSize(9); doc.text("Porte", x + pW / 2, y + pH / 2 + 1.2, { align: "center" }); };
+  if (lieu === "devant" || lieu === "fond") {
+    const c = mirP(coteP), y = lieu === "devant" ? yBur + (hBur - pH) / 2 : yFond;
+    const pres = lieu === "devant" && c === cote ? burW + 4 : 0;
+    porte(c === "gauche" ? x0 + pres : x0 + gW - pW - pres, y);
+  }
+  if (porteG) porte(x0 - (fenG ? 7 : 0) - pW - 3, yG + gH / 2 - pH / 2);
+  if (porteD) porte(x0 + gW + (fenD ? 7 : 0) + 3, yG + gH / 2 - pH / 2);
+  const vitre = x => { doc.setFillColor(207, 234, 248); doc.setDrawColor(127, 189, 224); doc.setLineWidth(.4); doc.rect(x, yG, 3.5, gH, "FD"); doc.setTextColor(31, 93, 128); doc.setFontSize(7); doc.text("Fenêtres", x + 2.6, yG + gH / 2 + 6, { angle: 90 }); };
+  if (fenG) vitre(x0 - 6); if (fenD) vitre(x0 + gW + 2.5);
+  const xs = []; let x = x0; for (const k of cols) { xs.push(x); x += allee(S, k) ? .4 * cw : cw; }
+  const elv = new Map(C.eleves.map(e => [e.id, e]));
+  // blocs de places reliées (tables collées, îlots) : un rectangle arrondi, séparations en tirets
+  const vu = new Set(), siege = (i, j) => i >= 0 && i < rows.length && j >= 0 && j < cols.length && !!S.cases[rows[i]][cols[j]];
+  for (let i = 0; i < rows.length; i++) for (let j = 0; j < cols.length; j++) {
+    if (!siege(i, j) || vu.has(i + "," + j)) continue;
+    const bloc = [], pile = [[i, j]]; vu.add(i + "," + j);
+    while (pile.length) {
+      const [a, b] = pile.pop(); bloc.push([a, b]);
+      const v = [[a, b - 1], [a, b + 1]]; if (a > 0 && lie(S, rows[a], rows[a - 1])) v.push([a - 1, b]); if (a < rows.length - 1 && lie(S, rows[a], rows[a + 1])) v.push([a + 1, b]);
+      for (const [c, d] of v) if (siege(c, d) && !vu.has(c + "," + d)) { vu.add(c + "," + d); pile.push([c, d]); }
+    }
+    const i0 = Math.min(...bloc.map(x => x[0])), i1 = Math.max(...bloc.map(x => x[0])), j0 = Math.min(...bloc.map(x => x[1])), j1 = Math.max(...bloc.map(x => x[1]));
+    doc.setLineDashPattern([], 0); doc.setFillColor(236, 220, 190); doc.setDrawColor(176, 145, 98); doc.setLineWidth(.45);
+    if (bloc.length === (i1 - i0 + 1) * (j1 - j0 + 1)) {
+      doc.roundedRect(xs[j0], yG + yr[i0], xs[j1] + cw - xs[j0], yr[i1] + ch - yr[i0], 2, 2, "FD");
+      doc.setLineDashPattern([1, 1], 0); doc.setLineWidth(.3);
+      for (let a = i0; a <= i1; a++) for (let b = j0 + 1; b <= j1; b++) doc.line(xs[b], yG + yr[a] + ch * .18, xs[b], yG + yr[a] + ch * .82);
+      for (let a = i0; a < i1; a++) doc.line(xs[j0] + cw * .08, yG + yr[a] + ch, xs[j1] + cw * .92, yG + yr[a] + ch);
+      doc.setLineDashPattern([], 0);
+    } else for (const [a, b] of bloc) doc.rect(xs[b], yG + yr[a], cw, ch, "FD");
+    for (const [a, b] of bloc) {
+      const E = elv.get(P.places[rows[a] + "," + cols[b]]); if (!E) continue;
+      const t = pdfTxt(libelle(E, P.format, C));
+      doc.setFont("helvetica", "bold"); let fs = Math.min(18, ch / .3528 * .42);
+      while (fs > 6 && doc.getStringUnitWidth(t) * fs * .3528 > cw - 3) fs -= .5;
+      doc.setFontSize(fs); doc.setTextColor(52, 37, 15);
+      doc.text(t, xs[b] + cw / 2, yG + yr[a] + ch / 2 + fs * .3528 * .35, { align: "center" });
+    }
+    if (avecNum) { const nm = numeros(S); doc.setFont("helvetica", "normal"); doc.setFontSize(7); doc.setTextColor(140, 115, 75); for (const [a, b] of bloc) doc.text(String(nm[rows[a] + "," + cols[b]]), xs[b] + cw - 1.6, yG + yr[a] + ch - 1.5, { align: "right" }); }
+  }
+}
+// liste alphabétique « élève → place », pour l'appel, un remplaçant, la vie scolaire
+function pdfListe(doc, C, S, P, premier) {
+  if (!premier) doc.addPage("a4", "landscape");
+  const W = 297, m = 14, nm = numeros(S), pos = {}; for (const id in P.places) pos[P.places[id]] = id;
+  doc.setFont("helvetica", "bold"); doc.setFontSize(20); doc.setTextColor(22, 32, 30); doc.text(pdfTxt(`${C.nom} · ${P.nom}`), m, m + 5);
+  doc.setFont("helvetica", "normal"); doc.setFontSize(13); doc.setTextColor(86, 99, 95); doc.text("Liste des élèves et numéros de place", W - m, m + 5, { align: "right" });
+  const liste = C.eleves.slice().sort((a, b) => (a.nom + " " + a.prenom).localeCompare(b.nom + " " + b.prenom, "fr"));
+  const parCol = 24, nCol = Math.max(1, Math.ceil(liste.length / parCol)), lc = (W - 2 * m) / Math.max(3, nCol), y0 = m + 20;
+  liste.forEach((e, i) => {
+    const c = Math.floor(i / parCol), l = i % parCol, x = m + c * lc, y = y0 + l * 6.6;
+    if (l % 2 === 0) { doc.setFillColor(244, 239, 228); doc.rect(x - 2, y - 4.6, lc - 6, 6.6, "F"); }
+    doc.setFont("helvetica", "bold"); doc.setFontSize(11); doc.setTextColor(22, 32, 30); doc.text(pdfTxt((e.nom || "").toUpperCase()), x, y);
+    const w = doc.getStringUnitWidth(pdfTxt((e.nom || "").toUpperCase() + " ")) * 11 * .3528;
+    doc.setFont("helvetica", "normal"); doc.text(pdfTxt(e.prenom || ""), x + w, y);
+    doc.setFont("helvetica", "bold"); doc.setTextColor(pos[e.id] ? 29 : 194, pos[e.id] ? 107 : 54, pos[e.id] ? 116 : 31);
+    doc.text(pos[e.id] ? `place ${nm[pos[e.id]]}` : "non placé", x + lc - 9, y, { align: "right" });
+  });
+}
+const nomFichier = t => t.replace(/[\\/:*?"<>|]+/g, "-").replace(/\s+/g, " ").trim() + ".pdf";
+async function telechargerPdf(pages, fichier) {
+  if (!telech || !window.jspdf) { toast("Le téléchargement n'est disponible que dans claude.ai."); return; }
+  const doc = new window.jspdf.jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+  let n = 0;
+  for (const { P, prof, liste, num } of pages) { const C = trouve("classes", P.classeId), S = trouve("salles", P.salleId); if (!C || !S) continue; if (liste) pdfListe(doc, C, S, P, n === 0); else pdfPage(doc, C, S, P, prof, n === 0, num ?? !!ui.numeros); n++; }
+  if (!n) return;
+  try { await telech.save({ filename: nomFichier(fichier), data: doc.output("blob") }); toast("PDF enregistré."); }
+  catch (e) { if (e?.code !== "declined") toast(e?.code === "rate_limited" ? "Un téléchargement est déjà en attente." : "Le téléchargement a échoué."); }
+}
+function menuPdf(P) {
+  const d = el("details", { class: "menu" }), base = `${trouve("classes", P.classeId)?.nom || ""} - ${P.nom}`;
+  const fermer = () => d.open = false;
+  d.append(el("summary", { class: "btn", text: "Télécharger en PDF" }), el("div", { class: "menu-liste" },
+    el("button", { type: "button", text: "Vue des élèves (à projeter)", onclick: () => { fermer(); telechargerPdf([{ P, prof: false }], `${base} (élèves)`); } }),
+    el("button", { type: "button", text: "Vue du professeur", onclick: () => { fermer(); telechargerPdf([{ P, prof: true }], `${base} (professeur)`); } }),
+    el("button", { type: "button", text: "Les deux vues (2 pages)", onclick: () => { fermer(); telechargerPdf([{ P, prof: false }, { P, prof: true }], base); } }),
+    el("button", { type: "button", text: "Liste des élèves avec leur numéro de place", onclick: () => { fermer(); telechargerPdf([{ P, liste: true }], `${base} (liste)`); } }),
+    el("button", { type: "button", text: "Dossier complet : 2 vues numérotées + liste", onclick: () => { fermer(); telechargerPdf([{ P, prof: false, num: true }, { P, prof: true, num: true }, { P, liste: true }], `${base} (complet)`); } })));
+  return d;
+}
+document.addEventListener("click", e => document.querySelectorAll("details.menu[open]").forEach(d => { if (!d.contains(e.target)) d.open = false; }));
+
+// ------------------------------------------------------------------ outils d'interface
+let minToast = null;
+function toast(t) { const z = $("toast"); z.textContent = t; z.hidden = false; clearTimeout(minToast); minToast = setTimeout(() => z.hidden = true, 3200); }
+function confirmer(label, conf, action, cls = "btn danger") {
+  const b = el("button", { class: cls, type: "button", text: label }); let arme = false, t = null;
+  b.onclick = ev => { ev.stopPropagation(); if (!arme) { arme = true; b.textContent = conf; b.classList.add("arme"); t = setTimeout(() => { arme = false; b.textContent = label; b.classList.remove("arme"); }, 4000); } else { clearTimeout(t); action(); } };
+  return b;
+}
+const badgeEx = () => el("span", { class: "exemple", text: "Exemple" });
+function carte(ouvrir, ...kids) { return el("div", { class: "carte", tabindex: "0", role: "button", onclick: ouvrir, onkeydown: e => { if ((e.key === "Enter" || e.key === " ") && e.target === e.currentTarget) { e.preventDefault(); ouvrir(); } } }, ...kids); }
+function retour(label, espace) { return el("button", { class: "retour", type: "button", text: "← " + label, onclick: () => aller(espace, null) }); }
+function vide(titre, texte, ...actions) { return el("div", { class: "vide" }, el("b", { text: titre }), el("span", { text: texte }), actions.length ? el("div", { class: "ligne", style: "justify-content:center" }, ...actions) : null); }
+function bandeauExemples() {
+  const ex = [...etat.classes, ...etat.salles, ...etat.plans].filter(x => x.exemple);
+  if (!ex.length) return null;
+  return el("div", { class: "bandeau" }, el("span", { text: "Les éléments marqués « Exemple » montrent le fonctionnement de l'application. Supprimez-les quand vous n'en avez plus besoin." }),
+    confirmer("Supprimer les exemples", "Confirmer la suppression ?", () => { etat.plans.filter(p => p.exemple).forEach(oter); etat.classes.filter(c => c.exemple).forEach(supprimerClasse); etat.salles.filter(x => x.exemple).forEach(supprimerSalle); toast("Exemples supprimés."); render(); }));
+}
+function aller(espace, id) { selection = null; ui.espace = espace; ui.ouvert[espace] = id; render(); window.scrollTo(0, 0); }
+document.querySelectorAll("#nav button").forEach(b => b.onclick = () => aller(b.dataset.e, null));
+
+// ------------------------------------------------------------------ sauvegarde : exporter / importer (aussi pour passer de claude.ai à l'application Mac)
+function dialogue(titre, texte, boutons) {
+  const voile = el("div", { class: "voile" }), fermer = () => voile.remove();
+  voile.append(el("div", { class: "panneau dialogue", role: "dialog", "aria-modal": "true", "aria-label": titre }, el("h2", { text: titre }), el("p", { text: texte, style: "margin:0" }),
+    el("div", { class: "ligne", style: "justify-content:flex-end" }, boutons.map(([t, cls, fn]) => el("button", { class: cls, type: "button", text: t, onclick: () => { fermer(); fn && fn(); } })))));
+  voile.addEventListener("click", e => { if (e.target === voile) fermer(); });
+  document.body.append(voile); voile.querySelector(".btn.principal")?.focus();
+}
+$("exporter").onclick = async () => {
+  $("menuSauvegarde").open = false;
+  if (!telech) { toast("L'export n'est pas disponible ici."); return; }
+  const date = new Date().toISOString().slice(0, 10);
+  const donnees = JSON.stringify({ application: "plans-de-classe", version: 2, exporte: new Date().toISOString(), classes: etat.classes, salles: etat.salles, plans: etat.plans }, null, 1);
+  try { await telech.save({ filename: `Plans de classe - sauvegarde ${date}.json`, data: donnees }); toast("Sauvegarde enregistrée."); }
+  catch (e) { if (e?.code !== "declined") toast("L'export a échoué."); }
+};
+$("importer").onclick = () => { $("menuSauvegarde").open = false; $("fichierSauvegarde").click(); };
+$("fichierSauvegarde").onchange = async e => {
+  const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+  let d; try { d = JSON.parse(await f.text()); } catch (err) { d = null; }
+  if (!d || !Array.isArray(d.classes) || !Array.isArray(d.salles) || !Array.isArray(d.plans)) { dialogue("Fichier non reconnu", "Ce fichier n'est pas une sauvegarde de Plans de classe.", [["Fermer", "btn principal"]]); return; }
+  const neuf = normaliser(JSON.parse(JSON.stringify(d)));
+  const resume = `${neuf.classes.length} classe${s(neuf.classes.length)}, ${neuf.salles.length} salle${s(neuf.salles.length)} et ${neuf.plans.length} plan${s(neuf.plans.length)}`;
+  dialogue("Importer une sauvegarde", `Ce fichier contient ${resume}. Voulez-vous les ajouter à vos données, ou remplacer toutes vos données actuelles ?`, [
+    ["Annuler", "btn"],
+    ["Remplacer tout", "btn danger", () => {
+      for (const k of ESPACES) etat[k].forEach(o => { if (!neuf[k].some(x => x.id === o.id)) supprimes.add(o.id); });
+      etat = neuf; for (const k of ESPACES) { etat[k].forEach(o => sales.add(o.id)); ui.ouvert[k] = null; }
+      marquer(null); toast(`Données remplacées : ${resume}.`); render();
+    }],
+    ["Ajouter", "btn principal", () => {
+      let n = 0;
+      for (const k of ["classes", "salles", "plans"]) for (const o of neuf[k]) if (!trouve(k, o.id)) { etat[k].push(o); sales.add(o.id); n++; }
+      etat = normaliser(etat); marquer(null); toast(n ? `${n} élément${s(n)} ajouté${s(n)} (ceux déjà présents sont gardés tels quels).` : "Tout était déjà présent : rien n'a été ajouté."); render();
+    }],
+  ]);
+};
+
+// ------------------------------------------------------------------ rendu
+let courant = null;
+function render() {
+  courant = null;
+  document.querySelectorAll("#nav button").forEach(b => { b.setAttribute("aria-current", b.dataset.e === ui.espace ? "page" : "false"); b.querySelector(".nb").textContent = etat[b.dataset.e].length; });
+  const z = $("contenu"); z.textContent = "";
+  const id = ui.ouvert[ui.espace], o = id && trouve(ui.espace, id);
+  if (ui.espace === "classes") z.append(o ? vueClasse(o) : listeClasses());
+  else if (ui.espace === "salles") z.append(o ? vueSalle(o) : listeSalles());
+  else z.append(o ? vuePlan(o) : listePlans());
+  courant?.maj?.();
+  if (temp.focus) { const f = document.getElementById(temp.focus); temp.focus = null; if (f) { f.focus(); f.select?.(); } }
+  ecrireJSON(LSUI, ui);
+  try { history.replaceState(null, "", "#" + ui.espace); } catch (e) {}
+}
+
+// ================================================================== MES CLASSES
+function listeClasses() {
+  const f = el("div");
+  const fichierCsv = el("input", { type: "file", accept: ".csv,.txt,text/csv", hidden: true, onchange: async e => { const fi = e.target.files[0]; e.target.value = ""; if (!fi) return; const eleves = lireCsv(decoder(await fi.arrayBuffer())); const C = nouvelleClasse(fi.name.replace(/\.[^.]+$/, "")); C.eleves = eleves; etat.classes.push(C); marquer(C); toast(`${eleves.length} élève${s(eleves.length)} importé${s(eleves.length)}.`); ui.ongletClasse = "eleves"; aller("classes", C.id); } });
+  f.append(el("div", { class: "entete" }, el("div", {}, el("h1", { text: "Mes classes" }), el("p", { class: "aide", text: "Les listes d'élèves et les contraintes de placement de chaque classe." })),
+    el("div", { class: "ligne" }, fichierCsv, el("button", { class: "btn", type: "button", text: "Importer un fichier .csv", onclick: () => fichierCsv.click() }),
+      el("button", { class: "btn principal", type: "button", text: "+ Nouvelle classe", onclick: () => { const C = nouvelleClasse("Nouvelle classe"); etat.classes.push(C); marquer(C); ui.ongletClasse = "eleves"; temp.focus = "nomObjet"; aller("classes", C.id); } }))));
+  f.append(bandeauExemples() || "");
+  if (!etat.classes.length) { f.append(vide("Aucune classe pour l'instant", "Créez une classe, ou importez directement la liste exportée de Pronote ou de l'ENT (.csv) : la classe est créée avec ses élèves.")); return f; }
+  const g = el("div", { class: "cartes" });
+  for (const C of etat.classes) {
+    const n = etat.plans.filter(p => p.classeId === C.id).length;
+    g.append(carte(() => aller("classes", C.id),
+      el("div", { class: "carte-titre" }, el("span", { text: C.nom || "Sans nom" }), C.exemple ? badgeEx() : null),
+      el("div", { class: "carte-info", text: `${C.eleves.length} élève${s(C.eleves.length)} · ${C.contraintes.length} contrainte${s(C.contraintes.length)} · ${n} plan${s(n)}` }),
+      el("div", { class: "carte-noms", text: C.eleves.length ? C.eleves.slice(0, 8).map(e => e.prenom || e.nom).join(", ") + (C.eleves.length > 8 ? "…" : "") : "Aucun élève : ouvrez la classe pour importer la liste." })));
+  }
+  f.append(g); return f;
+}
+function vueClasse(C) {
+  const f = el("div");
+  const nP = etat.plans.filter(p => p.classeId === C.id).length;
+  f.append(retour("Mes classes", "classes"), el("div", { class: "entete" },
+    el("div", { class: "titre-bloc" }, el("input", { class: "titre-champ", id: "nomObjet", type: "text", value: C.nom, "aria-label": "Nom de la classe", oninput: e => { C.nom = e.target.value; marquer(C); } }), C.exemple ? badgeEx() : null),
+    el("div", { class: "ligne" },
+      el("button", { class: "btn principal", type: "button", text: "Créer un plan pour cette classe", onclick: () => { temp.nouveauPlan = { classeId: C.id }; aller("plans", null); } }),
+      confirmer("Supprimer la classe", nP ? `Supprimer aussi ${nP} plan${s(nP)} ?` : "Confirmer la suppression ?", () => { supprimerClasse(C); toast("Classe supprimée."); aller("classes", null); }))));
+  f.append(el("div", { class: "sous-onglets", role: "tablist" }, [["eleves", `Élèves (${C.eleves.length})`], ["contraintes", `Contraintes (${C.contraintes.length})`], ["historique", `Historique des plans (${nP})`]].map(([k, t]) =>
+    el("button", { type: "button", role: "tab", "aria-selected": String(ui.ongletClasse === k), text: t, onclick: () => { ui.ongletClasse = k; render(); } }))));
+  f.append(ui.ongletClasse === "contraintes" ? panneauContraintes(C) : ui.ongletClasse === "historique" ? panneauHistorique(C) : panneauEleves(C));
+  return f;
+}
+function panneauEleves(C) {
+  const msg = el("p", { class: "aide", "aria-live": "polite" });
+  const mode = el("div", { class: "ligne" }, el("label", {}, el("input", { type: "radio", name: "mode", value: "ajouter", checked: true }), " Ajouter à la liste"), el("label", {}, el("input", { type: "radio", name: "mode", value: "remplacer" }), " Remplacer la liste"));
+  const remplacer = () => mode.querySelector("input:checked").value === "remplacer";
+  function importer(liste, source) {
+    if (!liste.length) { msg.textContent = "Aucun élève trouvé dans " + source + "."; return; }
+    if (remplacer()) { C.eleves = []; C.contraintes = []; etat.plans.filter(p => p.classeId === C.id).forEach(p => { p.places = {}; p.verrous = {}; marquer(p); }); }
+    const deja = new Set(C.eleves.map(e => (e.nom + "|" + e.prenom).toLowerCase())); let n = 0;
+    const ajoutes = [];
+    for (const e of liste) { const k = (e.nom + "|" + e.prenom).toLowerCase(); if (!deja.has(k)) { C.eleves.push(e); deja.add(k); ajoutes.push(e); n++; } }
+    marquer(C); const place = remplacer() ? "" : integrer(C, ajoutes);
+    toast(`${n} élève${s(n)} ajouté${s(n)} depuis ${source}.` + place); render();
+  }
+  const fichier = async fi => { if (fi) importer(lireCsv(decoder(await fi.arrayBuffer())), "« " + fi.name + " »"); };
+  const entree = el("input", { type: "file", accept: ".csv,.txt,text/csv", hidden: true, onchange: e => { fichier(e.target.files[0]); e.target.value = ""; } });
+  const depot = el("div", { class: "depot" }, el("span", { text: "Glissez ici le fichier .csv de la classe" }), el("span", { class: "aide", text: "Pronote, ENT, tableur…" }), entree, el("button", { class: "btn", type: "button", text: "Choisir un fichier", onclick: () => entree.click() }));
+  ["dragenter", "dragover"].forEach(t => depot.addEventListener(t, e => { e.preventDefault(); depot.classList.add("survol"); }));
+  ["dragleave", "drop"].forEach(t => depot.addEventListener(t, e => { e.preventDefault(); depot.classList.remove("survol"); }));
+  depot.addEventListener("drop", e => fichier(e.dataTransfer.files[0]));
+  const coller = el("textarea", { id: "coller", placeholder: "Un élève par ligne : NOM Prénom (ou Prénom NOM)" });
+  const gauche = el("aside", { class: "panneau" }, el("h2", { text: "Importer la liste" }), depot, mode,
+    el("p", { class: "aide", text: "Colonnes reconnues : Nom, Prénom, Sexe (ou Genre), ou une seule colonne « NOM Prénom ». Séparateur ; , ou tabulation." }),
+    el("h3", { text: "Ou coller une liste" }), coller,
+    el("button", { class: "btn", type: "button", text: "Ajouter ces élèves", onclick: () => importer(coller.value.split(/\r?\n/).map(x => x.trim()).filter(Boolean).map(t => { const o = separerNomComplet(t); return { id: uid(), nom: o.nom.toUpperCase(), prenom: o.prenom, sexe: "" }; }), "la liste collée") }), msg);
+  const tb = el("tbody");
+  for (const e of C.eleves) {
+    const champ = (cle, ph) => el("td", {}, el("input", { type: "text", value: e[cle] || "", placeholder: ph, "aria-label": ph, id: "el-" + cle + "-" + e.id, onchange: ev => { e[cle] = cle === "nom" ? ev.target.value.toUpperCase() : ev.target.value; if (cle === "nom") ev.target.value = e.nom; marquer(C); } }));
+    tb.append(el("tr", {}, champ("nom", "Nom"), champ("prenom", "Prénom"),
+      el("td", {}, choix([["", "—"], ["F", "F"], ["G", "G"]], e.sexe || "", v => { e.sexe = v; marquer(C); }, { "aria-label": "Sexe de " + nomComplet(e) })),
+      el("td", { style: "text-align:right" }, confirmer("Retirer", "Confirmer ?", () => {
+        C.eleves = C.eleves.filter(y => y !== e); C.contraintes = C.contraintes.filter(k => k.a !== e.id && k.b !== e.id);
+        etat.plans.filter(p => p.classeId === C.id).forEach(p => { for (const x in p.places) if (p.places[x] === e.id) { delete p.places[x]; delete p.verrous[x]; } marquer(p); });
+        marquer(C); toast(`${nomComplet(e)} retiré${e.sexe === "F" ? "e" : ""} de la classe et de ses plans.`); render(); }, "btn petit danger"))));
+  }
+  if (!C.eleves.length) tb.append(el("tr", {}, el("td", { colspan: "4", class: "aide", style: "padding:18px 6px", text: "Aucun élève pour l'instant : importez le fichier .csv de la classe ou collez la liste à gauche." })));
+  // un élève qui arrive en cours d'année prend une place libre du plan actuel (une place est ajoutée si la salle est pleine)
+  const nNom = el("input", { type: "text", id: "nouveauNom", placeholder: "NOM", "aria-label": "Nom du nouvel élève" });
+  const nPre = el("input", { type: "text", placeholder: "Prénom", "aria-label": "Prénom du nouvel élève" });
+  const nSexe = choix([["", "Sexe"], ["F", "F"], ["G", "G"]], "", () => {}, { "aria-label": "Sexe du nouvel élève" });
+  const actuel = planActuel(C);
+  const ajout = el("form", { class: "panneau", style: "background:var(--accent-fond);border-color:var(--accent)", onsubmit: ev => {
+    ev.preventDefault(); const nom = nNom.value.trim().toUpperCase(), prenom = nPre.value.trim();
+    if (!nom && !prenom) { nNom.focus(); return; }
+    const e = { id: uid(), nom, prenom, sexe: nSexe.value }; C.eleves.push(e); marquer(C);
+    toast(`${nomComplet(e)} ajouté${e.sexe === "F" ? "e" : ""} à la classe.` + integrer(C, [e])); temp.focus = "nouveauNom"; render();
+  } }, el("h2", { text: "Ajouter un élève" }),
+    el("div", { class: "ajout-eleve" }, nNom, nPre, nSexe, el("button", { class: "btn principal", type: "submit", text: "Ajouter" })),
+    el("p", { class: "aide", text: actuel ? `Il prendra aussitôt une place libre dans le plan actuel, « ${actuel.nom} », en respectant les contraintes. Si toutes les places sont prises, une place est ajoutée au fond de la salle.` : "La classe n'a pas encore de plan : l'élève sera placé au prochain plan créé." }));
+  const droite = el("div", { class: "panneau" },
+    el("div", { class: "ligne" }, el("h2", { style: "flex:1", text: `${C.eleves.length} élève${s(C.eleves.length)}` }),
+      el("button", { class: "btn petit", type: "button", text: "Trier de A à Z", onclick: () => { C.eleves.sort((a, b) => (a.nom + a.prenom).localeCompare(b.nom + b.prenom, "fr")); marquer(C); render(); } })),
+    el("div", { class: "defile" }, el("table", { class: "eleves" }, el("thead", {}, el("tr", {}, el("th", { text: "Nom" }), el("th", { text: "Prénom" }), el("th", { text: "Sexe" }), el("th", {}))), tb)));
+  return el("div", { class: "deux" }, gauche, el("div", { style: "display:grid;gap:18px;min-width:0" }, ajout, droite));
+}
+// cases à cocher des règles générales de la classe (plan, contraintes, nouveau plan)
+function reglesCases(C, apres, S) {
+  C.regles ||= {};
+  const S0 = S || (planActuel(C) && trouve("salles", planActuel(C).salleId)), libres = S0 ? sieges(S0).length - C.eleves.length : null;
+  const caseR = (cle, titre, aide) => el("label", {}, el("input", { type: "checkbox", checked: !!C.regles[cle], onchange: e => { C.regles[cle] = e.target.checked; marquer(C); apres && apres(); } }),
+    el("span", {}, titre, el("span", { class: "aide", text: aide })));
+  return [
+    caseR("devant", "Remplir d'abord les places de devant", libres > 0 ? `${C.eleves.length} élèves pour ${sieges(S0).length} places : les ${libres} place${s(libres)} libre${s(libres)} reste${libres > 1 ? "nt" : ""} au fond.` : "Les places libres restent au fond de la salle."),
+    caseR("parDeux", "Pas d'élève seul à une table", "Sur les tables incomplètes, les élèves sont placés par deux, côte à côte."),
+  ];
+}
+function panneauHistorique(C) {
+  const liste = plansClasse(C), f = el("div", { class: "historique" });
+  f.append(el("div", { class: "ligne", style: "justify-content:space-between" }, el("p", { class: "aide", text: "Du plus récent au plus ancien. Le plan actuel est celui où un élève arrivé en cours d'année prend place." }),
+    el("button", { class: "btn principal", type: "button", text: "+ Nouveau plan pour cette classe", onclick: () => { temp.nouveauPlan = { classeId: C.id }; aller("plans", null); } })));
+  if (!liste.length) { f.append(vide("Aucun plan pour cette classe", "Créez un premier plan : il apparaîtra ici, puis chaque nouveau plan s'ajoutera à l'historique.")); return f; }
+  liste.forEach((P, i) => {
+    const S = trouve("salles", P.salleId); if (!S) return;
+    const { repetes } = evaluer(C, S, P.places, [], true, { hist: historique(C, P) });
+    const ant = liste.length - 1 - i;
+    f.append(el("div", { class: "histo" + (i === 0 ? " actuel" : "") }, apercu(S, P),
+      el("div", { style: "display:grid;gap:4px;min-width:0" },
+        el("div", { class: "ligne" }, el("span", { class: "titre", text: P.nom || "Sans nom" }), i === 0 ? el("span", { class: "exemple", text: "Plan actuel" }) : null),
+        el("span", { class: "quand", text: `Créé le ${jour(P.cree)}` + (P.modifie && jour(P.modifie) !== jour(P.cree) ? ` · modifié le ${jour(P.modifie)}` : "") + ` · ${S.nom}` }),
+        el("span", { class: "aide", text: ant ? (repetes.length ? `${repetes.length} paire${s(repetes.length)} de voisins déjà vue${s(repetes.length)} dans les plans précédents` : "Aucun voisin répété par rapport aux plans précédents") : "Premier plan de la classe" })),
+      el("div", { class: "ligne" }, el("button", { class: "btn petit", type: "button", text: "Ouvrir", onclick: () => aller("plans", P.id) }),
+        el("button", { class: "btn petit principal", type: "button", text: "Projeter", onclick: () => ouvrirProjection(P) }),
+        telech ? el("button", { class: "btn petit", type: "button", text: "PDF", onclick: () => telechargerPdf([{ P, prof: false }, { P, prof: true }], `${C.nom} - ${P.nom}`) }) : null)));
+  });
+  return f;
+}
+function panneauContraintes(C) {
+  const tri = C.eleves.slice().sort((a, b) => nomComplet(a).localeCompare(nomComplet(b), "fr")).map(e => [e.id, nomComplet(e)]);
+  let type = "pas_a_cote";
+  const selA = choix(tri, tri[0]?.[0] || "", () => {}, { "aria-label": "Premier élève" });
+  const selB = choix(tri, tri[1]?.[0] || "", () => {}, { "aria-label": "Second élève" });
+  const lienB = el("span", { class: "aide", text: "et" });
+  const selT = choix(Object.entries(TYPES).map(([k, v]) => [k, v.long]), type, v => { type = v; selB.hidden = lienB.hidden = !TYPES[v].deux; }, { "aria-label": "Type de contrainte" });
+  const gauche = el("aside", { class: "panneau" }, el("h2", { text: "Ajouter une contrainte" }),
+    C.eleves.length < 1 ? el("p", { class: "aide", text: "Ajoutez d'abord des élèves." }) : null,
+    selA, lienB, selB, selT,
+    el("button", { class: "btn principal", type: "button", text: "Ajouter la contrainte", disabled: !C.eleves.length, onclick: () => {
+      const a = selA.value, b = selB.value; if (!a || (TYPES[type].deux && (!b || a === b))) { toast("Choisissez deux élèves différents."); return; }
+      C.contraintes.push({ id: uid(), type, a, b: TYPES[type].deux ? b : undefined }); marquer(C); render(); } }),
+    el("h3", { text: "Règles générales de placement" }),
+    el("div", { class: "options" },
+      el("label", {}, el("input", { type: "checkbox", checked: !!C.alterner, onchange: e => { C.alterner = e.target.checked; marquer(C); } }), el("span", { text: "Alterner filles et garçons quand c'est possible" })),
+      ...reglesCases(C)),
+    el("p", { class: "aide", text: "« Côte à côte » : à la même table, places voisines. « Éloignés » : au moins deux places d'écart dans toutes les directions. « Devant » et « au fond » se règlent dans chaque salle." }));
+  const liste = el("div", { class: "liste-c" });
+  if (!C.contraintes.length) liste.append(el("p", { class: "aide", text: "Aucune contrainte. Ajoutez-en à gauche, ou expliquez-les à Claude dans l'encadré ci-dessus." }));
+  for (const ct of C.contraintes) liste.append(el("div", { class: "contrainte" }, el("span", { class: "type", text: TYPES[ct.type].lib }), el("span", { style: "flex:1;min-width:12em", text: phrase(C, ct) }),
+    el("button", { class: "btn petit danger", type: "button", text: "Supprimer", onclick: () => { C.contraintes = C.contraintes.filter(y => y !== ct); marquer(C); render(); } })));
+  return el("div", { style: "display:grid;gap:18px" }, carteClaudeClasse(C), el("div", { class: "deux" }, gauche, el("div", { class: "panneau" }, el("h2", { text: "Contraintes de la classe" }), liste)));
+}
+
+// ================================================================== MES SALLES
+function listeSalles() {
+  const f = el("div");
+  f.append(el("div", { class: "entete" }, el("div", {}, el("h1", { text: "Mes salles" }), el("p", { class: "aide", text: "La disposition des tables, du tableau et du bureau. Une salle sert pour toutes les classes qui y ont cours." })),
+    el("button", { class: "btn principal", type: "button", text: "+ Nouvelle salle", onclick: () => { const S = nouvelleSalle("Nouvelle salle"); etat.salles.push(S); marquer(S); temp.focus = "nomObjet"; aller("salles", S.id); } })));
+  f.append(bandeauExemples() || "");
+  if (!etat.salles.length) { f.append(vide("Aucune salle pour l'instant", "Décrivez la salle où vous faites cours : rangées, tables de 2 ou de 3, allées, position du bureau.")); return f; }
+  const g = el("div", { class: "cartes" });
+  for (const S of etat.salles) {
+    const n = etat.plans.filter(p => p.salleId === S.id).length, nS = sieges(S).length;
+    g.append(carte(() => aller("salles", S.id), el("div", { class: "carte-titre" }, el("span", { text: S.nom || "Sans nom" }), S.exemple ? badgeEx() : null), apercu(S), el("div", { class: "carte-info", text: `${nS} place${s(nS)} · ${n} plan${s(n)}` })));
+  }
+  f.append(g); return f;
+}
+function dupliquerSalle(S) { const T = JSON.parse(JSON.stringify(S)); T.id = uid("s-"); T.nom = S.nom + " (copie)"; delete T.exemple; etat.salles.push(T); marquer(T); toast("Salle dupliquée : la copie n'est utilisée par aucun plan."); temp.focus = "nomObjet"; aller("salles", T.id); }
+function vueSalle(S) {
+  const f = el("div");
+  const nP = etat.plans.filter(p => p.salleId === S.id).length;
+  f.append(retour("Mes salles", "salles"), el("div", { class: "entete" },
+    el("div", { class: "titre-bloc" }, el("input", { class: "titre-champ", id: "nomObjet", type: "text", value: S.nom, "aria-label": "Nom de la salle", oninput: e => { S.nom = e.target.value; marquer(S); } }), S.exemple ? badgeEx() : null),
+    el("div", { class: "ligne" }, el("button", { class: "btn", type: "button", text: "Dupliquer", title: "Créer une copie de cette salle, à modifier sans toucher aux plans existants", onclick: () => dupliquerSalle(S) }), confirmer("Supprimer la salle", nP ? `Supprimer aussi ${nP} plan${s(nP)} ?` : "Confirmer la suppression ?", () => { supprimerSalle(S); toast("Salle supprimée."); aller("salles", null); }))));
+  const qui = etat.plans.filter(p => p.salleId === S.id), classesS = [...new Set(qui.map(p => trouve("classes", p.classeId)?.nom).filter(Boolean))];
+  if (qui.length > 1) f.append(el("div", { class: "bandeau", style: "background:var(--alerte-fond)" },
+    el("span", { text: `Cette salle sert à ${qui.length} plans (${classesS.join(", ")}) : toute modification s'applique à tous ces plans. Pour changer la disposition d'une seule classe, dupliquez d'abord la salle.` }),
+    el("button", { class: "btn", type: "button", text: "Dupliquer la salle", onclick: () => dupliquerSalle(S) })));
+  const zone = el("div", { class: "salle edit" }), info = el("p", { class: "info-places" });
+  const champR = el("input", { type: "number", id: "nbRangs", min: "1", max: "15", value: String(S.lignes) });
+  const champM = el("input", { type: "text", id: "motif", value: S.motif ?? motifDe(S), placeholder: "personnalisée", style: "width:7.5em" });
+  // chaque modification redessine aussitôt ; les élèves dont la place existe encore la gardent
+  const maj = () => { etat.plans.filter(p => p.salleId === S.id).forEach(p => { retirerHors(p, S); marquer(p); }); marquer(S); editeur(); };
+  function editeur() {
+    zone.textContent = "";
+    const just = { gauche: "flex-start", droite: "flex-end", centre: "center" }[S.bureau || "gauche"];
+    const g = el("div", { class: "grille" });
+    for (let r = 0; r < S.lignes; r++) {
+      if (r) g.append(el("button", { type: "button", class: "lien-rangs" + (colle(S, r - 1) ? " colle" : ""), title: colle(S, r - 1) ? "Séparer ces deux rangées" : "Coller ces deux rangées en îlots (tables face à face)", "aria-label": `${colle(S, r - 1) ? "Séparer" : "Coller"} les rangées ${r} et ${r + 1}`,
+        onclick: () => { S.colle[r - 1] = !colle(S, r - 1); S.ilots = S.colle.every((v, i) => v === (i % 2 === 0)); champI.checked = S.ilots; maj(); } }, el("span", { text: colle(S, r - 1) ? "îlot" : "⇕ coller" })));
+      const rang = el("div", { class: "rangee", style: `grid-template-columns:repeat(${S.colonnes}, 56px)` });
+      for (let k = 0; k < S.colonnes; k++)
+        rang.append(el("button", { type: "button", class: "case" + (S.cases[r][k] ? " siege" : ""), "aria-label": `Rangée ${r + 1}, colonne ${k + 1} : ${S.cases[r][k] ? "place" : "allée"}`, onclick: () => { S.cases[r][k] = S.cases[r][k] ? 0 : 1; S.motif = motifDe(S); champM.value = S.motif; maj(); } }));
+      g.append(rang);
+    }
+    zone.append(...cadreSalle(S, false, g, "Bureau"));
+    const n = sieges(S).length; info.textContent = `${n} place${s(n)}`;
+  }
+  const champI = el("input", { type: "checkbox", checked: !!S.ilots, onchange: e => { S.ilots = e.target.checked; if (!S.ilots) S.colle = []; poserColle(S); maj(); } });
+  const regenerer = () => {
+    const r = Math.round(+champR.value), m = champM.value;
+    if (!(r >= 1 && r <= 15) || !/[1-9]/.test(m)) return;
+    const gr = m.split(/[^0-9]+/).map(Number).filter(n => n > 0); if (gr.reduce((a, b) => a + b, 0) + gr.length - 1 > 20) return;
+    appliquerMotif(S, r, m); maj();
+  };
+  champR.oninput = regenerer; champM.oninput = regenerer;
+  const ajuster = (t, fn) => el("button", { class: "btn petit", type: "button", text: t, onclick: () => { fn(); poserColle(S); S.motif = motifDe(S); champR.value = S.lignes; champM.value = S.motif; maj(); } });
+  const nombre = (id, val, poser) => el("input", { type: "number", id, min: "1", max: "6", value: String(val), oninput: e => { const v = Math.round(+e.target.value); if (v >= 1) { poser(v); marquer(S); } } });
+  const bureau = el("div", { class: "segment", role: "group", "aria-label": "Position du bureau" }, [["gauche", "À gauche"], ["centre", "Au centre"], ["droite", "À droite"]].map(([v, t]) =>
+    el("button", { type: "button", text: t, "aria-pressed": String((S.bureau || "gauche") === v), onclick: e => { S.bureau = v; bureau.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b === e.currentTarget))); maj(); } })));
+  const modeles = el("div", { class: "modeles" }, MODELES.map(M => { const T = { cases: [], ilots: !!M.ilots }; if (M.u) appliquerU(T); else appliquerMotif(T, M.rangs, M.motif);
+    return el("button", { type: "button", onclick: () => { S.ilots = !!M.ilots; S.colle = []; if (M.u) appliquerU(S); else appliquerMotif(S, M.rangs, M.motif); champR.value = S.lignes; champM.value = S.motif; champI.checked = S.ilots; maj(); } }, apercu(T), el("span", { text: M.nom })); }));
+  // réglages ramassés au-dessus du plan : modèles, puis une ligne de groupes
+  const reglages = el("div", { class: "panneau reglages-salle" },
+    el("div", { class: "bloc" }, el("h3", { text: "Partir d'un modèle" }), modeles),
+    el("div", { class: "reglages" },
+      el("div", { class: "bloc" }, el("h3", { text: "Dimensions" }),
+        el("div", { class: "ligne" }, el("label", { for: "nbRangs", text: "Rangées" }), champR, el("label", { for: "motif", text: "Tables par rangée" }), champM),
+        el("label", { class: "aide-case" }, champI, " Îlots : rangées collées deux à deux")),
+      el("div", { class: "bloc" }, el("h3", { text: "Bureau du professeur" }), bureau),
+      el("div", { class: "bloc" }, el("h3", { text: "Porte et fenêtres" }),
+        el("div", { class: "ligne" },
+          choix([["", "Pas de porte"], ["devant-gauche", "Porte devant, à gauche"], ["devant-droite", "Porte devant, à droite"], ["fond-gauche", "Porte au fond, à gauche"], ["fond-droite", "Porte au fond, à droite"], ["gauche", "Porte sur le côté gauche"], ["droite", "Porte sur le côté droit"]], S.porte || "", v => { S.porte = v; maj(); }, { "aria-label": "Porte" }),
+          choix([["", "Pas de fenêtres"], ["gauche", "Fenêtres à gauche"], ["droite", "Fenêtres à droite"], ["deux", "Fenêtres des deux côtés"]], S.fenetres || "", v => { S.fenetres = v; maj(); }, { "aria-label": "Fenêtres" }))),
+      el("div", { class: "bloc" }, el("h3", { text: "Zones" }),
+        el("div", { class: "ligne" }, el("label", { for: "nbDevant", text: "Devant" }), nombre("nbDevant", S.nbDevant || 2, v => S.nbDevant = v),
+          el("label", { for: "nbFond", text: "Au fond" }), nombre("nbFond", S.nbFond || 2, v => S.nbFond = v), el("span", { class: "aide", text: "rangées" })))));
+  editeur();
+  f.append(reglages, el("div", { class: "scene" },
+    el("div", { class: "ligne", style: "justify-content:space-between;margin-bottom:6px" }, info,
+      el("div", { class: "ligne", style: "gap:6px" },
+        ajuster("+ Colonne", () => { if (S.colonnes < 20) { S.colonnes++; S.cases.forEach(l => l.push(0)); } }),
+        ajuster("− Colonne", () => { if (S.colonnes > 1) { S.colonnes--; S.cases.forEach(l => l.pop()); } }),
+        ajuster("+ Rangée", () => { if (S.lignes < 15) { S.cases.push(S.cases[S.lignes - 1].slice()); S.lignes++; } }),
+        ajuster("− Rangée", () => { if (S.lignes > 1) { S.lignes--; S.cases.pop(); } }))),
+    el("p", { class: "aide", style: "margin-bottom:14px", text: "Cliquez sur une case pour poser ou retirer une place ; « ⇕ coller » entre deux rangées crée des îlots. « 2 2 2 » = trois tables de 2 séparées par des allées." }), zone));
+  return f;
+}
+
+// ================================================================== MES PLANS
+function listePlans() {
+  const f = el("div");
+  f.append(el("div", { class: "entete" }, el("div", {}, el("h1", { text: "Mes plans de classe" }), el("p", { class: "aide", text: "Une classe placée dans une salle. Projetez le plan en début d'heure, ou téléchargez-le en PDF." })),
+    el("div", { class: "ligne" },
+      etat.plans.length && telech ? el("button", { class: "btn", type: "button", text: "Tout télécharger en PDF", onclick: () => telechargerPdf(etat.plans.flatMap(P => [{ P, prof: false }, { P, prof: true }]), "Plans de classe") }) : null,
+      el("button", { class: "btn principal", type: "button", text: "+ Nouveau plan", onclick: () => { temp.nouveauPlan = {}; render(); } }))));
+  f.append(bandeauExemples() || "");
+  const okC = etat.classes.length > 0, okS = etat.salles.length > 0;
+  if (!okC || !okS || !etat.plans.length) f.append(el("div", { class: "etapes" },
+    el("div", { class: "etape" + (okC ? " faite" : "") }, el("span", { class: "num", text: okC ? "✓" : "1" }), el("b", { text: "Créer une classe" }), el("span", { class: "aide", text: "Importez la liste des élèves (.csv)." }), okC ? null : el("button", { class: "btn", type: "button", text: "Aller à Mes classes", onclick: () => aller("classes", null) })),
+    el("div", { class: "etape" + (okS ? " faite" : "") }, el("span", { class: "num", text: okS ? "✓" : "2" }), el("b", { text: "Décrire une salle" }), el("span", { class: "aide", text: "Rangées, tables, allées, bureau." }), okS ? null : el("button", { class: "btn", type: "button", text: "Aller à Mes salles", onclick: () => aller("salles", null) })),
+    el("div", { class: "etape" }, el("span", { class: "num", text: "3" }), el("b", { text: "Créer le plan" }), el("span", { class: "aide", text: "Placement au hasard, contraintes respectées, ou consignes expliquées à Claude." }))));
+  if (temp.nouveauPlan) f.append(formNouveauPlan());
+  if (!etat.plans.length) { if (!temp.nouveauPlan) f.append(vide("Aucun plan pour l'instant", "Un plan associe une classe à une salle.", el("button", { class: "btn principal", type: "button", text: "+ Nouveau plan", onclick: () => { temp.nouveauPlan = {}; render(); } }))); return f; }
+  if (ui.filtre && !trouve("classes", ui.filtre)) ui.filtre = "";
+  if (etat.classes.length > 1) f.append(el("div", { class: "ligne", style: "margin-bottom:14px" }, el("label", { class: "aide", for: "filtre", text: "Afficher" }),
+    choix([["", "Toutes les classes"], ...etat.classes.map(c => [c.id, c.nom])], ui.filtre || "", v => { ui.filtre = v; render(); }, { id: "filtre" })));
+  const g = el("div", { class: "cartes" });
+  for (const P of etat.plans.filter(p => !ui.filtre || p.classeId === ui.filtre).sort((a, b) => (b.cree || 0) - (a.cree || 0))) {
+    const C = trouve("classes", P.classeId), S = trouve("salles", P.salleId);
+    g.append(carte(() => aller("plans", P.id), el("div", { class: "carte-titre" }, el("span", { text: P.nom || "Sans nom" }), P.exemple ? badgeEx() : null),
+      el("div", { class: "carte-info", text: `${C.nom} · ${S.nom}` }), el("div", { class: "aide", text: `Créé le ${jour(P.cree)}` + (planActuel(C) === P ? " · plan actuel" : "") }), apercu(S, P),
+      el("div", { class: "ligne", onclick: e => e.stopPropagation() }, el("button", { class: "btn petit principal", type: "button", text: "Projeter", onclick: () => ouvrirProjection(P) }),
+        telech ? el("button", { class: "btn petit", type: "button", text: "PDF", title: "Vue des élèves et vue du professeur", onclick: () => telechargerPdf([{ P, prof: false }, { P, prof: true }], `${C.nom} - ${P.nom}`) }) : null)));
+  }
+  f.append(g); return f;
+}
+function formNouveauPlan() {
+  const d = temp.nouveauPlan;
+  if (!etat.classes.length || !etat.salles.length) return el("div", { class: "panneau", style: "margin-bottom:18px" }, el("h2", { text: "Nouveau plan" }), el("p", { text: !etat.classes.length ? "Il faut d'abord une classe." : "Il faut d'abord une salle." }),
+    el("div", { class: "ligne" }, el("button", { class: "btn principal", type: "button", text: !etat.classes.length ? "Créer une classe" : "Créer une salle", onclick: () => aller(!etat.classes.length ? "classes" : "salles", null) }), el("button", { class: "btn", type: "button", text: "Annuler", onclick: () => { temp.nouveauPlan = null; render(); } })));
+  const date = new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long" });
+  const nom = el("input", { type: "text", id: "nomPlan", value: `Plan du ${date}`, style: "width:100%" });
+  const selC = choix(etat.classes.map(c => [c.id, `${c.nom} (${c.eleves.length} élève${s(c.eleves.length)})`]), d.classeId || etat.classes[0].id, () => {}, { id: "planClasse" });
+  const selS = choix(etat.salles.map(x => [x.id, `${x.nom} (${sieges(x).length} places)`]), d.salleId || etat.salles[0].id, () => {}, { id: "planSalle" });
+  const hasard = el("input", { type: "checkbox", checked: true }), alt = el("input", { type: "checkbox", checked: !!trouve("classes", selC.value)?.alterner });
+  const regDev = el("input", { type: "checkbox", checked: !!trouve("classes", selC.value)?.regles?.devant }), regDeux = el("input", { type: "checkbox", checked: !!trouve("classes", selC.value)?.regles?.parDeux });
+  selC.addEventListener("change", () => { const c = trouve("classes", selC.value); alt.checked = !!c?.alterner; regDev.checked = !!c?.regles?.devant; regDeux.checked = !!c?.regles?.parDeux; });
+  return el("form", { class: "panneau", style: "margin-bottom:18px", onsubmit: e => {
+    e.preventDefault();
+    const C = trouve("classes", selC.value), S = trouve("salles", selS.value);
+    const P = { id: uid("p-"), nom: nom.value.trim() || `Plan du ${date}`, cree: Date.now(), classeId: C.id, salleId: S.id, places: {}, verrous: {}, format: "auto", prefsIA: "", eviterVoisins: plansClasse(C).length > 0 };
+    if (C.alterner !== alt.checked) { C.alterner = alt.checked; marquer(C); }
+    C.regles ||= {}; if (!!C.regles.devant !== regDev.checked || !!C.regles.parDeux !== regDeux.checked) { C.regles.devant = regDev.checked; C.regles.parDeux = regDeux.checked; marquer(C); }
+    if (C.alterner) ui.voirSexe = true;
+    if (hasard.checked) P.places = resoudre(C, S, P);
+    etat.plans.unshift(P); marquer(P); temp.nouveauPlan = null; toast("Plan créé."); aller("plans", P.id);
+  } }, el("h2", { text: "Nouveau plan" }),
+    el("div", { class: "champs" }, el("label", { for: "nomPlan", text: "Nom" }), nom, el("label", { for: "planClasse", text: "Classe" }), selC, el("label", { for: "planSalle", text: "Salle" }), selS),
+    el("div", { class: "options" }, el("label", {}, hasard, el("span", { text: "Placer les élèves au hasard tout de suite, en respectant les contraintes" })),
+      el("label", {}, alt, el("span", {}, "Alterner filles et garçons ", el("span", { class: "puces" }, el("i", { class: "sexe F" }), el("i", { class: "sexe G" })))),
+      el("label", {}, regDev, el("span", { text: "Remplir d'abord les places de devant (les places libres restent au fond)" })),
+      el("label", {}, regDeux, el("span", { text: "Pas d'élève seul à une table (élèves par deux sur les tables incomplètes)" }))),
+    el("div", { class: "ligne" }, el("button", { class: "btn principal", type: "submit", text: "Créer le plan" }), el("button", { class: "btn", type: "button", text: "Annuler", onclick: () => { temp.nouveauPlan = null; render(); } })));
+}
+function vuePlan(P) {
+  const C = trouve("classes", P.classeId), S = trouve("salles", P.salleId);
+  const f = el("div");
+  f.append(retour("Mes plans", "plans"), el("div", { class: "entete" },
+    el("div", { class: "titre-bloc" }, el("input", { class: "titre-champ", id: "nomObjet", type: "text", value: P.nom, "aria-label": "Nom du plan", oninput: e => { P.nom = e.target.value; marquer(P); } }), P.exemple ? badgeEx() : null),
+    el("div", { class: "ligne" },
+      el("button", { class: "btn", type: "button", text: "Dupliquer", onclick: () => { const Q = JSON.parse(JSON.stringify(P)); Q.id = uid("p-"); Q.cree = Date.now(); Q.nom = P.nom + " (copie)"; delete Q.exemple; etat.plans.unshift(Q); marquer(Q); toast("Plan dupliqué."); aller("plans", Q.id); } }),
+      confirmer("Supprimer", "Confirmer la suppression ?", () => { oter(P); toast("Plan supprimé."); aller("plans", null); }))));
+  // Le menu « Classe » passe au plan actuel de l'autre classe : il ne réattribue jamais ce plan
+  // (réattribuer retirait du plan tous les élèves de la classe quittée, et le vidait).
+  const allerClasse = v => { if (v === C.id) return; const D = trouve("classes", v), Q = planActuel(D); if (Q) aller("plans", Q.id); else { ui.filtre = v; temp.nouveauPlan = { classeId: v, salleId: S.id }; aller("plans", null); } };
+  // Changer de salle peut ôter des élèves de leur place : on prévient avant.
+  const selSalle = choix(etat.salles.map(x => [x.id, x.nom]), S.id, v => {
+    const T = trouve("salles", v), faire = () => { memo(P); P.salleId = v; retirerHors(P, T); marquer(P); render(); };
+    const perdus = Object.keys(P.places).filter(id => { const [r, k] = rc(id); return r >= T.lignes || k >= T.colonnes || !T.cases[r][k]; }).length;
+    if (!perdus) return faire();
+    selSalle.value = S.id;
+    dialogue("Changer de salle", `${perdus} élève${s(perdus)} de ce plan n'${perdus > 1 ? "ont" : "a"} pas de table dans « ${T.nom} » et ${perdus > 1 ? "seront retirés" : "sera retiré"} du plan.`, [["Annuler", "btn", null], ["Changer de salle", "btn principal", faire]]);
+  });
+  f.append(el("div", { class: "meta" },
+    el("label", { title: "Ouvre le plan actuel de la classe choisie" }, "Classe", choix(etat.classes.map(c => [c.id, c.nom]), C.id, allerClasse)),
+    el("button", { class: "lien", type: "button", text: "Modifier la classe", onclick: () => aller("classes", C.id) }),
+    el("label", {}, "Salle", selSalle),
+    el("button", { class: "lien", type: "button", text: "Modifier la salle", onclick: () => aller("salles", S.id) })));
+
+  // options cochables, appliquées au prochain placement
+  function optionsPlacement() {
+    const sansSexe = C.eleves.filter(e => !e.sexe).length;
+    return el("div", { class: "options" },
+      el("label", {}, el("input", { type: "checkbox", checked: !!C.alterner, onchange: e => { C.alterner = e.target.checked; if (C.alterner) ui.voirSexe = true; marquer(C); render(); } }),
+        el("span", {}, "Alterner filles et garçons ", el("span", { class: "puces" }, el("i", { class: "sexe F" }), el("i", { class: "sexe G" })),
+          C.alterner && sansSexe ? el("span", { class: "aide", text: `${sansSexe} élève${s(sansSexe)} sans sexe renseigné (onglet Élèves de la classe).` }) : null)),
+      ...reglesCases(C, () => render()),
+      el("label", {}, el("input", { type: "checkbox", checked: !!P.eviterVoisins, onchange: e => { P.eviterVoisins = e.target.checked; marquer(P); render(); } }),
+        el("span", {}, "Changer les voisins par rapport aux plans précédents", el("span", { class: "aide", text: plansClasse(C).some(Q => Q !== P && (Q.cree || 0) < (P.cree || 0)) ? "Les élèves déjà voisins sont séparés si possible." : "Aucun plan antérieur pour cette classe." }))));
+  }
+  // panneau de gauche : placement, IA, élèves non placés, bilan
+  const nonPlaces = el("div", { class: "non-places" }), bilan = el("div", { style: "display:grid;gap:8px" });
+  const gauche = el("aside", { class: "colonne" }, carteClaude(C, S, P), el("div", { class: "panneau" },
+    el("h3", { text: "Placement au hasard" }),
+    el("div", { class: "ligne" }, el("button", { class: "btn principal", type: "button", text: "Placer au hasard", title: "Respecte les contraintes de la classe et garde les élèves épinglés (double-clic sur une place)", disabled: !C.eleves.length, onclick: () => { memo(P); P.places = resoudre(C, S, P, P.iaTemp || []); marquer(P); maj(); toast("Élèves placés."); } }),
+      el("button", { class: "btn", type: "button", text: "Vider", onclick: () => { memo(P); const g = {}; for (const x in P.places) if (P.verrous[x]) g[x] = P.places[x]; P.places = g; marquer(P); maj(); } })),
+    optionsPlacement(),
+    el("h3", { text: "Plan suivant" }),
+    el("p", { class: "aide", text: "Crée un nouveau plan à partir de celui-ci : les élèves du fond passent devant, ceux de devant au fond, en respectant les contraintes. Celui-ci reste dans l'historique." }),
+    el("div", { class: "ligne" },
+      el("button", { class: "btn", type: "button", text: "Échange complet", title: "Le premier rang va au dernier, le dernier au premier", disabled: !Object.keys(P.places).length, onclick: () => creerSuivant(1) }),
+      el("button", { class: "btn", type: "button", text: "Échange modéré", title: "Chacun fait environ la moitié du chemin vers l'autre bout de la salle", disabled: !Object.keys(P.places).length, onclick: () => creerSuivant(.5) })),
+    el("h3", { text: "Élèves non placés" }), nonPlaces, bilan));
+  function creerSuivant(alpha) { const Q = planSuivant(C, S, P, alpha); etat.plans.unshift(Q); marquer(Q); toast(alpha === 1 ? "Nouveau plan : le fond passe devant, le devant au fond." : "Nouveau plan : chacun s'est rapproché de l'autre bout de la salle."); aller("plans", Q.id); }
+
+  // plan
+  const zone = el("div", { class: "salle" }), scene = el("div", { class: "scene" }, zone);
+  const seg = el("div", { class: "segment", role: "group", "aria-label": "Point de vue" },
+    el("button", { type: "button", text: "Vue élèves", "aria-pressed": String(!ui.vueProf), onclick: () => { ui.vueProf = false; render(); } }),
+    el("button", { type: "button", text: "Vue professeur", "aria-pressed": String(ui.vueProf), onclick: () => { ui.vueProf = true; render(); } }));
+  const btnAnnuler = el("button", { type: "button", text: "↶ Annuler", title: "Annuler le dernier placement (⌘Z)", onclick: () => { if (deplacerHistorique(P, "annuler", "retablir")) { toast("Placement annulé."); maj(); } } });
+  const btnRetablir = el("button", { type: "button", text: "↷", title: "Rétablir (⇧⌘Z)", "aria-label": "Rétablir", onclick: () => { if (deplacerHistorique(P, "retablir", "annuler")) { toast("Placement rétabli."); maj(); } } });
+  const histo = el("div", { class: "segment", role: "group", "aria-label": "Annuler ou rétablir" }, btnAnnuler, btnRetablir);
+  const affichage = el("details", { class: "menu" }, el("summary", { class: "btn", text: "Affichage" }), el("div", { class: "menu-liste reglages-affichage" },
+    el("label", {}, el("span", { text: "Noms" }), choix([["auto", "Prénom (initiale si homonyme)"], ["pi", "Prénom N."], ["p", "Prénom seul"], ["pn", "Prénom Nom"], ["np", "NOM Prénom"]], P.format || "auto", v => { P.format = v; marquer(P); maj(); }, { "aria-label": "Affichage des noms" })),
+    el("label", { title: C.alterner ? "Affichés d'office quand on alterne filles et garçons" : null }, el("input", { type: "checkbox", checked: ui.voirSexe || !!C.alterner, disabled: !!C.alterner, onchange: e => { ui.voirSexe = e.target.checked; ecrireJSON(LSUI, ui); maj(); } }), " Repères ", el("span", { class: "puces" }, el("i", { class: "sexe F" }), el("i", { class: "sexe G" })), " F/G"),
+    el("label", {}, el("input", { type: "checkbox", checked: !!ui.numeros, onchange: e => { ui.numeros = e.target.checked; ecrireJSON(LSUI, ui); maj(); } }), " N° de place")));
+  const outils = el("div", { class: "outils" }, seg, histo, affichage,
+    el("span", { class: "espace" }),
+    telech ? menuPdf(P) : null,
+    el("button", { class: "btn principal", type: "button", text: "Projeter", onclick: () => ouvrirProjection(P) }));
+  const legende = el("div", { class: "legende" }, el("span", { text: "Cliquez sur deux élèves pour les échanger (ou glissez-les)." }), el("span", { text: "📌 Double-clic : épingler." }), el("span", { text: "⌘Z : annuler." }));
+  function maj() {
+    btnAnnuler.disabled = !(pile.annuler[P.id] || []).length; btnRetablir.disabled = !(pile.retablir[P.id] || []).length;
+    const extra = P.iaTemp || [];
+    const { viol, repetes } = evaluer(C, S, P.places, extra, true, { hist: P.eviterVoisins ? historique(C, P) : null });
+    const pos = {}; for (const x in P.places) pos[P.places[x]] = x;
+    const conflits = new Set(); viol.forEach(v => { if (pos[v.a]) conflits.add(pos[v.a]); if (v.b && pos[v.b]) conflits.add(pos[v.b]); });
+    dessinerSalle(zone, C, S, P, { ...tailles(S, scene.clientWidth - 44, null, false), prof: ui.vueProf, sexe: ui.voirSexe || !!C.alterner, conflits, interactif: true, numeros: !!ui.numeros, choisie: selection?.de });
+    nonPlaces.textContent = "";
+    const assis = new Set(Object.values(P.places)), reste = C.eleves.filter(e => !assis.has(e.id));
+    if (!reste.length) nonPlaces.append(el("span", { class: "aide", text: C.eleves.length ? "Tous les élèves sont placés." : "La classe n'a pas encore d'élèves." }));
+    for (const e of reste) nonPlaces.append(el("span", { class: "carte-eleve" + (selection && !selection.de && selection.e === e.id ? " choisie" : ""), "data-e": e.id, text: nomComplet(e) }));
+    bilan.textContent = "";
+    const nS = sieges(S).length;
+    if (C.eleves.length > nS) bilan.append(el("p", { class: "aide", style: "color:var(--alerte)", text: `${C.eleves.length} élèves pour ${nS} places : ajoutez des places dans la salle.` }));
+    if (viol.length) bilan.append(el("h3", { text: "Contraintes non respectées" }), el("ul", { class: "alertes" }, viol.map(v => el("li", { text: phrase(C, v) }))));
+    else if (Object.keys(P.places).length && (C.contraintes.length || extra.length)) bilan.append(el("p", { class: "ok", text: "✓ Toutes les contraintes sont respectées." }));
+    if (P.eviterVoisins && repetes.length) { const n = id => nomComplet(C.eleves.find(e => e.id === id)); bilan.append(el("p", { class: "aide", text: `Voisins déjà vus dans un plan précédent : ${repetes.slice(0, 4).map(([a, b]) => n(a) + " et " + n(b)).join(", ")}${repetes.length > 4 ? "…" : ""}` })); }
+  }
+  courant = { P, C, S, maj };
+  f.append(el("div", { class: "deux" }, gauche, el("div", { style: "display:grid;gap:12px;min-width:0" }, outils, scene, legende)));
+  return f;
+}
+
+// ------------------------------------------------------------------ IA : consignes en français, traduites en contraintes
+let iaCtl = null, sample = null;
+const icoClaude = () => { const d = document.createElementNS("http://www.w3.org/2000/svg", "svg"); d.setAttribute("width", "34"); d.setAttribute("height", "34"); d.setAttribute("viewBox", "0 0 24 24"); d.setAttribute("aria-hidden", "true");
+  d.innerHTML = '<path fill="currentColor" d="M12 2l1.9 5.6L19.5 9.5l-5.6 1.9L12 17l-1.9-5.6L4.5 9.5l5.6-1.9zM19 14l.9 2.6 2.6.9-2.6.9L19 21l-.9-2.6-2.6-.9 2.6-.9zM5 15l.7 1.8 1.8.7-1.8.7L5 20l-.7-1.8-1.8-.7 1.8-.7z"/>'; return d; };
+// consignes en français -> contraintes (identifiants vérifiés), avec l'échange précédent pour pouvoir préciser
+async function demanderClaude(C, S, texte, deja, echange) {
+  const liste = C.eleves.map(e => ({ id: e.id, nom: e.nom, prenom: e.prenom, sexe: e.sexe || "" }));
+  const prompt = `Tu aides un professeur à faire le plan de classe de sa classe « ${C.nom} ». Traduis ses consignes en contraintes de placement. Ses consignes peuvent viser des élèves précis (contraintes) ou la disposition générale de la classe dans la salle (règles générales) : ne refuse pas une consigne générale.
+Élèves (identifiants à utiliser) : ${JSON.stringify(liste)}
+${S ? `Salle : ${rangsOccupes(S).length} rangées, ${sieges(S).length} places pour ${C.eleves.length} élèves ; bureau du professeur devant, ${S.bureau || "gauche"}${S.porte ? ", porte : " + S.porte : ""}${S.fenetres ? ", fenêtres : " + S.fenetres : ""}.` : ""}
+Contraintes déjà enregistrées pour la classe (ne pas les répéter) : ${JSON.stringify(C.contraintes.map(x => ({ type: x.type, a: x.a, b: x.b || null })))}
+${echange.length ? `Échange précédent :\n${echange.map(m => (m.role === "moi" ? "Professeur : " : "Toi : ") + m.texte).join("\n")}\nContraintes déjà déduites de cet échange : ${JSON.stringify(deja.map(x => ({ type: x.type, a: x.a, b: x.b || null })))}` : ""}
+Nouveau message du professeur : """${texte}"""
+
+Types possibles : "pas_a_cote" (a et b pas voisins), "eloignes" (a et b loin l'un de l'autre), "a_cote" (a et b voisins), "devant" (a devant), "fond" (a au fond), "pres_bureau" (a près du bureau), "isole" (a sans voisin), "pres_porte" (a près de la porte), "pres_fenetre" (a près d'une fenêtre), "loin_fenetre" (a loin des fenêtres).
+Règles générales possibles : "devant" (remplir d'abord les places de devant, laisser les places libres au fond), "par_deux" (pas d'élève seul à une table : sur les tables incomplètes, placer les élèves par deux côte à côte). Règles déjà actives : ${JSON.stringify({ devant: !!C.regles?.devant, par_deux: !!C.regles?.parDeux })}.
+Réponds uniquement avec un objet JSON : {"contraintes":[{"type":"...","a":"id","b":"id ou null"}],"alterner":true|false|null,"regles":{"devant":true|false|null,"par_deux":true|false|null},"reponse":"deux phrases au plus, en français, adressées au professeur : ce que tu as compris, et ce qui est ambigu ou impossible"}.
+"contraintes" est la liste COMPLÈTE issue de tout l'échange (reprends celles déjà déduites si elles valent toujours, retire celles que le professeur annule). N'utilise que les identifiants fournis ; si un prénom est ambigu ou absent, dis-le dans la réponse. "alterner" vaut true si le professeur demande d'alterner filles et garçons, false s'il demande d'arrêter, null s'il n'en parle pas. Même principe pour chaque règle générale : true pour l'activer, false pour l'arrêter, null s'il n'en parle pas.`;
+  const r = await sample.json(prompt, { signal: iaCtl.signal, cache: false });
+  const ids = new Set(C.eleves.map(e => e.id));
+  const cs = (Array.isArray(r?.contraintes) ? r.contraintes : []).filter(x => TYPES[x?.type] && ids.has(String(x.a)) && (!TYPES[x.type].deux || (ids.has(String(x.b)) && String(x.b) !== String(x.a))))
+    .map(x => ({ id: uid(), type: x.type, a: String(x.a), b: TYPES[x.type].deux ? String(x.b) : undefined, ia: true }));
+  const b = v => v === true || v === false ? v : null;
+  return { cs, alterner: b(r?.alterner), regles: { devant: b(r?.regles?.devant), parDeux: b(r?.regles?.par_deux) }, reponse: String(r?.reponse || r?.resume || "") };
+}
+function appliquerRegles(C, rg) { if (!rg) return; C.regles ||= {}; let ch = false; for (const k of ["devant", "parDeux"]) if (rg[k] !== null && rg[k] !== undefined && !!C.regles[k] !== rg[k]) { C.regles[k] = rg[k]; ch = true; } if (ch) marquer(C); }
+const erreurIA = e => e?.code === "local" ? e.message : e?.code === "cancelled" ? "Demande arrêtée." : e?.code === "not_granted" ? "L'accès à Claude a été refusé pour cette page : vous pouvez le rétablir dans le menu Autorisations de l'artefact." : e?.code === "rate_limited" ? "Trop de demandes d'un coup : réessayez dans un moment." : "Claude n'a pas pu répondre. Réessayez, ou reformulez.";
+function exemplesClaude(C, champ) {
+  const p = C.eleves.map(e => e.prenom || e.nom).filter(Boolean);
+  const ex = p.length >= 4 ? [`Sépare ${p[1]} et ${p[3]}, ils bavardent`, `Mets ${p[0]} devant, elle voit mal`, "Alterne filles et garçons", `${p[2]} près du bureau`, "Remplis d'abord les places de devant, et pas d'élève seul au fond"] : ["Alterne filles et garçons", "Remplis d'abord les places de devant, et pas d'élève seul au fond"];
+  return el("div", { class: "exemples" }, el("span", { class: "aide", text: "Exemples :" }), ex.map(t => el("button", { type: "button", text: t, onclick: () => { champ.value = (champ.value.trim() ? champ.value.trim().replace(/[.;,]?$/, ", ") : "") + t.charAt(0).toLowerCase() + t.slice(1); if (!champ.value.match(/^[A-ZÉ]/)) champ.value = champ.value.charAt(0).toUpperCase() + champ.value.slice(1); champ.focus(); champ.dispatchEvent(new Event("input")); } })));
+}
+function carteClaude(C, S, P) { return null;
+  const fil = P.chat ||= [], cs = P.iaTemp ||= [];
+  const tete = el("div", { class: "claude-tete" }, icoClaude(), el("div", {}, el("h2", { text: "Demander à Claude" }),
+    el("p", { text: "Expliquez en français comment placer vos élèves : Claude traduit vos consignes en contraintes et replace la classe. Vous pouvez ensuite préciser ou corriger." })));
+  const carte = el("section", { class: "claude", "aria-label": "Demander à Claude" }, tete);
+  if (!sample) { carte.append(el("p", { class: "aide", text: "Claude répond quand la page est ouverte dans claude.ai, avec votre compte. Ici, le placement au hasard et les contraintes de la classe restent disponibles." })); return carte; }
+  if (fil.length) { const f = el("div", { class: "fil", "aria-live": "polite" }, fil.map(m => el("div", { class: "bulle " + (m.role === "moi" ? "moi" : "ia") + (m.attente ? " attente" : ""), text: m.texte }))); carte.append(f); setTimeout(() => f.scrollTop = f.scrollHeight, 0); }
+  const champ = el("textarea", { id: "prefsIA", value: P.prefsIA || "", placeholder: fil.length ? "Précisez ou corrigez : « finalement, mets aussi Hugo devant »…" : "Par exemple : sépare Léo et Nathan qui bavardent, mets Inès devant, elle voit mal, et alterne filles et garçons.", "aria-label": "Message pour Claude", oninput: e => { P.prefsIA = e.target.value; marquer(P); },
+    onkeydown: e => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); envoyer(); } } });
+  const enCours = fil.some(m => m.attente);
+  const btn = el("button", { class: "btn ia", type: "button", text: enCours ? "Arrêter" : (fil.length ? "Envoyer" : "Placer avec Claude"), onclick: () => enCours ? iaCtl?.abort() : envoyer() });
+  carte.append(el("div", { class: "saisie" }, champ, btn));
+  if (!fil.length) carte.append(exemplesClaude(C, champ));
+  if (cs.length) {
+    const n = id => (C.eleves.find(e => e.id === id)?.prenom) || "?";
+    carte.append(el("div", { class: "compris" }, el("span", { class: "aide", text: "Contraintes comprises :" }),
+      cs.map(ct => el("span", { class: "pastille" }, el("span", { text: TYPES[ct.type].deux ? `${n(ct.a)} et ${n(ct.b)} : ${TYPES[ct.type].lib}` : `${n(ct.a)} : ${TYPES[ct.type].lib}` }),
+        el("button", { type: "button", text: "✕", title: "Retirer cette contrainte", "aria-label": "Retirer cette contrainte", onclick: () => { memo(P); P.iaTemp = cs.filter(x => x !== ct); P.places = resoudre(C, S, P, P.iaTemp); marquer(P); render(); } })))),
+      el("div", { class: "ligne" },
+        el("button", { class: "btn petit", type: "button", text: "Garder ces contraintes dans la classe", title: "Elles serviront pour tous les prochains plans de la classe", onclick: () => { memo(P); cs.forEach(x => { delete x.ia; C.contraintes.push(x); }); P.iaTemp = []; fil.push({ role: "ia", texte: `C'est noté : ${cs.length} contrainte${s(cs.length)} enregistrée${s(cs.length)} dans la classe ${C.nom}, pour tous ses plans.` }); marquer(C); render(); } }),
+        el("button", { class: "btn petit", type: "button", text: "Nouvelle conversation", onclick: () => { P.chat = []; P.iaTemp = []; P.prefsIA = ""; marquer(P); render(); } })));
+  } else if (fil.length) carte.append(el("div", { class: "ligne" }, el("button", { class: "btn petit", type: "button", text: "Nouvelle conversation", onclick: () => { P.chat = []; P.prefsIA = ""; marquer(P); render(); } })));
+  async function envoyer() {
+    const texte = champ.value.trim();
+    if (!texte) { champ.focus(); return; }
+    if (!C.eleves.length) { fil.push({ role: "ia", texte: "La classe n'a pas encore d'élèves : importez d'abord la liste." }); render(); return; }
+    const echange = fil.filter(m => !m.attente).slice(-8);
+    fil.push({ role: "moi", texte }, { role: "ia", texte: "Claude réfléchit…", attente: true });
+    P.prefsIA = ""; marquer(P); iaCtl = new AbortController(); render();
+    try {
+      const r = await demanderClaude(C, S, texte, P.iaTemp || [], echange);
+      P.iaTemp = r.cs;
+      if (r.alterner !== null && r.alterner !== C.alterner) { C.alterner = r.alterner; marquer(C); }
+      appliquerRegles(C, r.regles);
+      memo(P); P.places = resoudre(C, S, P, r.cs); marquer(P);
+      fil.pop(); fil.push({ role: "ia", texte: (r.reponse || "C'est fait.") + ` Le plan a été refait avec ${r.cs.length} contrainte${s(r.cs.length)} issue${s(r.cs.length)} de notre échange.` });
+    } catch (e) { fil.pop(); fil.push({ role: "ia", texte: erreurIA(e) }); }
+    marquer(P);
+    if (courant?.P === P && !projId) render();
+  }
+  return carte;
+}
+// dans l'onglet Contraintes : une phrase -> contraintes enregistrées pour la classe
+function carteClaudeClasse(C) { return null;
+  const carte = el("section", { class: "claude", style: "margin-bottom:0" }, el("div", { class: "claude-tete" }, icoClaude(), el("div", {}, el("h2", { text: "Expliquer à Claude" }),
+    el("p", { text: "Décrivez vos consignes en français : Claude les ajoute aux contraintes de la classe, pour tous ses plans." }))));
+  if (!sample) { carte.append(el("p", { class: "aide", text: "Claude répond quand la page est ouverte dans claude.ai, avec votre compte." })); return carte; }
+  const rep = temp.repClasse[C.id];
+  if (rep) carte.append(el("div", { class: "fil" }, el("div", { class: "bulle ia" + (rep.attente ? " attente" : ""), text: rep.texte })));
+  const champ = el("textarea", { placeholder: "Par exemple : Léo et Nathan ne doivent pas être ensemble, Inès devant.", "aria-label": "Consignes pour Claude" });
+  const btn = el("button", { class: "btn ia", type: "button", text: rep?.attente ? "Arrêter" : "Ajouter avec Claude", onclick: async () => {
+    if (rep?.attente) { iaCtl?.abort(); return; }
+    const texte = champ.value.trim(); if (!texte) { champ.focus(); return; }
+    if (!C.eleves.length) { temp.repClasse[C.id] = { texte: "La classe n'a pas encore d'élèves." }; render(); return; }
+    temp.repClasse[C.id] = { texte: "Claude réfléchit…", attente: true }; iaCtl = new AbortController(); render();
+    try {
+      const r = await demanderClaude(C, null, texte, [], []);
+      const deja = new Set(C.contraintes.map(x => x.type + x.a + (x.b || ""))); let n = 0;
+      r.cs.forEach(x => { if (!deja.has(x.type + x.a + (x.b || ""))) { delete x.ia; C.contraintes.push(x); n++; } });
+      if (r.alterner !== null) C.alterner = r.alterner;
+      appliquerRegles(C, r.regles);
+      marquer(C); temp.repClasse[C.id] = { texte: (r.reponse || "") + ` ${n} contrainte${s(n)} ajoutée${s(n)} à la classe.` };
+    } catch (e) { temp.repClasse[C.id] = { texte: erreurIA(e) }; }
+    if (!projId) render();
+  } });
+  carte.append(el("div", { class: "saisie" }, champ, btn), exemplesClaude(C, champ));
+  return carte;
+}
+
+// ------------------------------------------------------------------ glisser-déposer
+let glisse = null;
+let selection = null;
+// déplace l'élève src.e (assis en src.de, ou non placé) vers la place x : échange avec l'occupant
+function deplacer(P, src, x) {
+  if (src.de === x) return;
+  memo(P);
+  const occupant = P.places[x];
+  if (src.de) {
+    if (occupant) P.places[src.de] = occupant; else delete P.places[src.de];
+    const vDe = P.verrous[src.de], vX = P.verrous[x];
+    if (vX) P.verrous[src.de] = true; else delete P.verrous[src.de];
+    if (vDe) P.verrous[x] = true; else delete P.verrous[x];
+  } else delete P.verrous[x];
+  P.places[x] = src.e;
+}
+document.addEventListener("pointerdown", ev => {
+  if (!courant || ev.button > 0) return;
+  const src = ev.target.closest("#contenu .place, #contenu .carte-eleve"); if (!src) return;
+  glisse = { e: src.dataset.e || null, de: src.dataset.s || null, x: ev.clientX, y: ev.clientY, ghost: null };
+});
+document.addEventListener("pointermove", ev => {
+  if (!glisse || !courant || !glisse.e) return;
+  if (!glisse.ghost) {
+    if (Math.hypot(ev.clientX - glisse.x, ev.clientY - glisse.y) < 6) return;
+    const E = courant.C.eleves.find(e => e.id === glisse.e);
+    glisse.ghost = el("div", { class: "carte-eleve fantome", text: libelle(E, courant.P.format, courant.C) }); document.body.append(glisse.ghost);
+  }
+  glisse.ghost.style.left = ev.clientX + "px"; glisse.ghost.style.top = ev.clientY + "px";
+  document.querySelectorAll(".cible").forEach(x => x.classList.remove("cible"));
+  document.elementFromPoint(ev.clientX, ev.clientY)?.closest("#contenu .place, #contenu .non-places")?.classList.add("cible");
+});
+document.addEventListener("pointerup", ev => {
+  if (!glisse) return;
+  const g = glisse; glisse = null;
+  document.querySelectorAll(".cible").forEach(x => x.classList.remove("cible"));
+  if (!courant) return;
+  const P = courant.P;
+  if (!g.ghost) {
+    // clic : premier élève choisi, puis la place ou l'élève avec qui l'échanger
+    if (!selection) { if (g.e) { selection = { e: g.e, de: g.de }; courant.maj(); } return; }
+    const s0 = selection; selection = null;
+    if (g.de && g.de !== s0.de) deplacer(P, s0, g.de);
+    else if (!g.de && g.e && s0.de) deplacer(P, { e: g.e, de: null }, s0.de);
+    else if (!g.de && g.e && !s0.de && g.e !== s0.e) { selection = { e: g.e, de: null }; courant.maj(); return; }
+    else { courant.maj(); return; }
+    marquer(P); courant.maj(); return;
+  }
+  g.ghost.remove(); selection = null;
+  const sous = document.elementFromPoint(ev.clientX, ev.clientY);
+  const place = sous?.closest("#contenu .place"), np = sous?.closest("#contenu .non-places");
+  if (place) deplacer(P, g, place.dataset.s);
+  else if (np && g.de) { memo(P); delete P.places[g.de]; delete P.verrous[g.de]; }
+  else return;
+  marquer(P); courant.maj();
+});
+document.addEventListener("keydown", e => { if (e.key === "Escape" && selection && !projId) { selection = null; courant?.maj(); } });
+document.addEventListener("pointercancel", () => { if (glisse?.ghost) glisse.ghost.remove(); glisse = null; });
+$("contenu").addEventListener("dblclick", ev => {
+  const pl = ev.target.closest(".place[data-e]"); if (!pl || !courant) return;
+  const P = courant.P, x = pl.dataset.s;
+  memo(P); if (P.verrous[x]) delete P.verrous[x]; else P.verrous[x] = true;
+  marquer(P); courant.maj();
+});
+
+// ------------------------------------------------------------------ projection plein écran
+let projId = null;
+function ouvrirProjection(P) {
+  projId = P.id; $("projection").hidden = false; document.body.style.overflow = "hidden";
+  try { $("projection").requestFullscreen?.()?.catch?.(() => {}); } catch (e) {}
+  dessinerProjection();
+}
+function fermerProjection() {
+  projId = null; $("projection").hidden = true; document.body.style.overflow = "";
+  try { if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); } catch (e) {}
+}
+function dessinerProjection() {
+  const P = projId && trouve("plans", projId); if (!P) return fermerProjection();
+  const C = trouve("classes", P.classeId), S = trouve("salles", P.salleId);
+  $("projTitre").textContent = `${C.nom} · ${P.nom}`;
+  $("projEleve").setAttribute("aria-pressed", String(!ui.vueProf)); $("projProf").setAttribute("aria-pressed", String(ui.vueProf));
+  const sc = $("projScene");
+  dessinerSalle($("projSalle"), C, S, P, { ...tailles(S, sc.clientWidth - 16, sc.clientHeight - 150, true), prof: ui.vueProf, sexe: false, numeros: !!ui.numeros });
+}
+$("projEleve").onclick = () => { ui.vueProf = false; dessinerProjection(); ecrireJSON(LSUI, ui); };
+$("projProf").onclick = () => { ui.vueProf = true; dessinerProjection(); ecrireJSON(LSUI, ui); };
+$("projQuitter").onclick = () => { fermerProjection(); render(); };
+document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement && projId) { fermerProjection(); render(); } else if (projId) dessinerProjection(); });
+window.addEventListener("keydown", e => { if (e.key === "Escape" && projId) { fermerProjection(); render(); } });
+let minRes = null;
+window.addEventListener("resize", () => { clearTimeout(minRes); minRes = setTimeout(() => { if (projId) dessinerProjection(); else courant?.maj(); }, 120); });
+
+// ------------------------------------------------------------------ lecture des listes d'élèves
+function decoder(buf) { try { return new TextDecoder("utf-8", { fatal: true }).decode(buf); } catch (e) { return new TextDecoder("windows-1252").decode(buf); } }
+function separerNomComplet(t) {
+  const mots = t.trim().split(/\s+/), maj = mots.filter(m => m.length > 1 && m === m.toUpperCase() && /\p{L}/u.test(m));
+  if (maj.length && maj.length < mots.length) return { nom: maj.join(" "), prenom: mots.filter(m => !maj.includes(m)).join(" ") };
+  return { nom: mots.slice(0, 1).join(" "), prenom: mots.slice(1).join(" ") };
+}
+function sexeDe(v) { v = String(v || "").trim().toUpperCase(); if (/^(F|FILLE|FÉMININ|FEMININ|FEMME)/.test(v)) return "F"; if (/^(M|G|GARÇON|GARCON|MASCULIN|HOMME)/.test(v)) return "G"; return ""; }
+function lireCsv(texte) {
+  texte = texte.replace(/^﻿/, "");
+  const lignes = texte.split(/\r?\n/).filter(l => l.trim());
+  if (!lignes.length) return [];
+  const sep = [";", "\t", ","].map(c => [c, lignes[0].split(c).length - 1]).sort((a, b) => b[1] - a[1])[0][0];
+  const cellules = l => { const out = []; let cur = "", q = false; for (let i = 0; i < l.length; i++) { const ch = l[i]; if (ch === '"') { if (q && l[i + 1] === '"') { cur += '"'; i++; } else q = !q; } else if (ch === sep && !q) { out.push(cur); cur = ""; } else cur += ch; } out.push(cur); return out.map(x => x.trim()); };
+  const tete = cellules(lignes[0]).map(h => h.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, ""));
+  const iNom = tete.findIndex(h => /^nom( de famille)?$|^nom eleve/.test(h)), iPre = tete.findIndex(h => /prenom/.test(h)), iSexe = tete.findIndex(h => /^(sexe|genre)/.test(h));
+  const iComplet = tete.findIndex(h => /^(eleve|eleves|nom prenom|nom et prenom|nom - prenom|identite|nom complet)$/.test(h));
+  const aTete = iNom >= 0 || iPre >= 0 || iComplet >= 0, res = [];
+  for (const l of (aTete ? lignes.slice(1) : lignes)) {
+    const c = cellules(l); let nom = "", prenom = "";
+    if (iNom >= 0 && iPre >= 0) { nom = c[iNom] || ""; prenom = c[iPre] || ""; }
+    else { const src = iComplet >= 0 ? c[iComplet] : (iNom >= 0 ? c[iNom] : c[0]); ({ nom, prenom } = separerNomComplet(src || "")); if (!aTete && c[1] && !prenom) prenom = c[1]; }
+    if (!nom && !prenom) continue;
+    res.push({ id: uid(), nom: nom.toUpperCase(), prenom, sexe: iSexe >= 0 ? sexeDe(c[iSexe]) : "" });
+  }
+  return res;
+}
+
+// ------------------------------------------------------------------ démarrage
+const sui = lireJSON(LSUI); if (sui && ESPACES.includes(sui.espace)) ui = Object.assign(ui, sui, { ouvert: Object.assign({ classes: null, salles: null, plans: null }, sui.ouvert || {}) });
+let local = lireJSON(LS2);
+if (!local) { const v1 = lireJSON(LS1); if (v1?.classes?.length) local = migrerV1(v1.classes.filter(c => !c.exemple)); }
+etat = local && (local.classes?.length || local.salles?.length) ? normaliser(local) : exemples();
+const h = (location.hash || "").slice(1); if (ESPACES.includes(h)) ui.espace = h;
+for (const k of ESPACES) if (ui.ouvert[k] && !trouve(k, ui.ouvert[k])) ui.ouvert[k] = null;
+render();
+majEtat("Enregistré dans ce navigateur");
+brancherStockage();
+(async () => {
+  if (!window.claude?.use) return;
+  try { sample = await claude.use("sample"); } catch (e) { sample = null; }
+  try { telech = await claude.use("downloads"); } catch (e) { telech = null; }
+  if (telech && !projId) render();
+})();
+})();
+</script>
+</body></html>
