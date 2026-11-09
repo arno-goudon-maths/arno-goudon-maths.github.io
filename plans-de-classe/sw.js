@@ -1,6 +1,6 @@
 // Service worker de « Plan de classe » (version web) : l'application marche hors ligne.
 // Réseau d'abord, pour recevoir les mises à jour ; le cache prend le relais sans connexion.
-const CACHE = "plan-de-classe-5f8ee4e3dd";
+const CACHE = "plan-de-classe-fea98eb223";
 const FICHIERS = ["./", "index.html", "pont-web.js", "manifest.webmanifest", "lexend.css", "jspdf.umd.min.js", "lexend-0.woff2", "lexend-2.woff2", "lexend-1.woff2", "icone-32.png", "icone-180.png", "icone-192.png", "icone-512.png"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FICHIERS))); self.skipWaiting(); });
 self.addEventListener("activate", e => {

@@ -151,6 +151,9 @@ input[type=checkbox], input[type=radio] { width: 20px; height: 20px; accent-colo
 .menu-liste { position: absolute; right: 0; top: calc(100% + 6px); z-index: 30; background: var(--carte); border: 1.5px solid var(--filet); border-radius: 12px; box-shadow: var(--ombre); padding: 6px; display: grid; min-width: 260px; }
 .menu-liste button { border: 0; background: none; text-align: left; padding: 10px 12px; border-radius: 8px; font-size: 16px; }
 .menu-liste button:hover { background: var(--survol); }
+.menu-liste.versions { right: auto; left: 0; width: min(380px, 86vw); max-height: 60vh; overflow: auto; }
+.menu-liste.versions button { display: grid; gap: 2px; }
+.menu-liste.versions p { margin: 6px 12px 8px; }
 .reglages-affichage { left: 0; right: auto; gap: 4px; }
 .reglages-affichage label { display: flex; gap: 10px; align-items: center; padding: 8px 10px; font-size: 16px; border-radius: 8px; }
 .reglages-affichage label:hover { background: var(--survol); }
@@ -518,7 +521,7 @@ function integrer(C, nouveaux) {
 // ------------------------------------------------------------------ annuler / rétablir (placements d'un plan, le temps de la séance)
 const pile = { annuler: {}, retablir: {} };
 const instantane = P => JSON.stringify({ places: P.places, verrous: P.verrous || {} });
-function memo(P) { const h = pile.annuler[P.id] ||= []; h.push(instantane(P)); if (h.length > 50) h.shift(); pile.retablir[P.id] = []; }
+function memo(P, raison) { version(P, raison, !!raison); const h = pile.annuler[P.id] ||= []; h.push(instantane(P)); if (h.length > 50) h.shift(); pile.retablir[P.id] = []; }
 function deplacerHistorique(P, depuis, vers) {
   const h = pile[depuis][P.id]; if (!h || !h.length) return false;
   (pile[vers][P.id] ||= []).push(instantane(P));
@@ -537,6 +540,57 @@ document.addEventListener("keydown", e => {
   if ((e.metaKey || e.ctrlKey) && !e.altKey && e.key.toLowerCase() === "z" && window.__annulerPlan(e.shiftKey)) e.preventDefault();
   else if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "y" && window.__annulerPlan(true)) e.preventDefault();
 });
+
+// ------------------------------------------------------------------ versions d'un plan (enregistrées avec lui, pour le restaurer)
+// Une version est gardée avant chaque changement important (raison donnée) et, sinon, à la première
+// modification d'une séance puis au plus toutes les dix minutes. Les noms des élèves sont gardés avec
+// elle : si la liste de la classe a été réimportée (nouveaux identifiants), on les retrouve par leur nom.
+const MAX_VERSIONS = 20, versionnes = new Set();
+const cleNom = e => ((e.nom || "") + "|" + (e.prenom || "")).toLowerCase();
+function version(P, raison, forcer) {
+  if (!P || !Object.keys(P.places || {}).length) return;
+  const v = P.versions ||= [], der = v[v.length - 1], sig = o => JSON.stringify([o.salleId, o.places, o.verrous || {}]);
+  if (der && sig(der) === sig(P)) return;
+  if (!forcer && versionnes.has(P.id) && der && Date.now() - der.t < 10 * 60000) return;
+  const C = trouve("classes", P.classeId), noms = {};
+  for (const id of Object.values(P.places)) { const e = C?.eleves.find(x => x.id === id); if (e) noms[id] = cleNom(e); }
+  v.push({ t: Date.now(), raison: raison || "", salleId: P.salleId, places: { ...P.places }, verrous: { ...(P.verrous || {}) }, noms });
+  if (v.length > MAX_VERSIONS) v.shift();
+  versionnes.add(P.id);
+}
+function restaurerVersion(P, V) {
+  const C = trouve("classes", P.classeId), S = trouve("salles", V.salleId) || trouve("salles", P.salleId);
+  memo(P, "avant de restaurer une version");
+  const ids = new Set(C.eleves.map(e => e.id)), parNom = {}; C.eleves.forEach(e => parNom[cleNom(e)] = e.id);
+  const places = {}, verrous = {}, pris = new Set();
+  for (const [x, id] of Object.entries(V.places)) {
+    const e = ids.has(id) ? id : parNom[(V.noms || {})[id]];
+    if (e && !pris.has(e)) { places[x] = e; pris.add(e); if ((V.verrous || {})[x]) verrous[x] = true; }
+  }
+  P.salleId = S.id; P.places = places; P.verrous = verrous; retirerHors(P, S); marquer(P);
+  return Object.keys(V.places).length - Object.keys(P.places).length;
+}
+function menuVersions(P, apres) {
+  const d = el("details", { class: "menu" }), liste = el("div", { class: "menu-liste versions" });
+  const quand = t => new Date(t).toLocaleString("fr-FR", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+  d.append(el("summary", { class: "btn", text: "Versions", title: "Revenir à un état précédent de ce plan" }), liste);
+  d.addEventListener("toggle", () => {
+    if (!d.open) return;
+    liste.textContent = "";
+    const v = [...(P.versions || [])].reverse();
+    liste.append(el("p", { class: "aide", text: v.length ? "Une version est gardée avant chaque changement important. Restaurer s'annule par ⌘Z." : "Aucune version pour l'instant. Une version est gardée avant chaque changement important (placement au hasard, vidage, changement de salle, liste d'élèves modifiée) et au début de chaque séance de modifications." }));
+    for (const V of v) {
+      const n = Object.keys(V.places).length;
+      liste.append(el("button", { type: "button", onclick: () => {
+        d.open = false;
+        const perdus = restaurerVersion(P, V);
+        toast(`Version du ${quand(V.t)} restaurée` + (perdus > 0 ? ` (${perdus} élève${s(perdus)} absent${s(perdus)} de la classe ou sans table : non replacé${s(perdus)}).` : "."));
+        apres();
+      } }, el("b", { text: quand(V.t) }), el("span", { class: "aide", text: `${n} élève${s(n)} placé${s(n)}${V.raison ? " — " + V.raison : ""}` })));
+    }
+  });
+  return d;
+}
 
 // ------------------------------------------------------------------ données
 let etat = { classes: [], salles: [], plans: [] };
@@ -951,7 +1005,7 @@ function panneauEleves(C) {
   const remplacer = () => mode.querySelector("input:checked").value === "remplacer";
   function importer(liste, source) {
     if (!liste.length) { msg.textContent = "Aucun élève trouvé dans " + source + "."; return; }
-    if (remplacer()) { C.eleves = []; C.contraintes = []; etat.plans.filter(p => p.classeId === C.id).forEach(p => { p.places = {}; p.verrous = {}; marquer(p); }); }
+    if (remplacer()) { C.eleves = []; C.contraintes = []; etat.plans.filter(p => p.classeId === C.id).forEach(p => { version(p, "avant le remplacement de la liste d'élèves", true); p.places = {}; p.verrous = {}; marquer(p); }); }
     const deja = new Set(C.eleves.map(e => (e.nom + "|" + e.prenom).toLowerCase())); let n = 0;
     const ajoutes = [];
     for (const e of liste) { const k = (e.nom + "|" + e.prenom).toLowerCase(); if (!deja.has(k)) { C.eleves.push(e); deja.add(k); ajoutes.push(e); n++; } }
@@ -976,7 +1030,7 @@ function panneauEleves(C) {
       el("td", {}, choix([["", "—"], ["F", "F"], ["G", "G"]], e.sexe || "", v => { e.sexe = v; marquer(C); }, { "aria-label": "Sexe de " + nomComplet(e) })),
       el("td", { style: "text-align:right" }, confirmer("Retirer", "Confirmer ?", () => {
         C.eleves = C.eleves.filter(y => y !== e); C.contraintes = C.contraintes.filter(k => k.a !== e.id && k.b !== e.id);
-        etat.plans.filter(p => p.classeId === C.id).forEach(p => { for (const x in p.places) if (p.places[x] === e.id) { delete p.places[x]; delete p.verrous[x]; } marquer(p); });
+        etat.plans.filter(p => p.classeId === C.id).forEach(p => { if (Object.values(p.places).includes(e.id)) version(p, "avant le retrait de " + nomComplet(e), true); for (const x in p.places) if (p.places[x] === e.id) { delete p.places[x]; delete p.verrous[x]; } marquer(p); });
         marquer(C); toast(`${nomComplet(e)} retiré${e.sexe === "F" ? "e" : ""} de la classe et de ses plans.`); render(); }, "btn petit danger"))));
   }
   if (!C.eleves.length) tb.append(el("tr", {}, el("td", { colspan: "4", class: "aide", style: "padding:18px 6px", text: "Aucun élève pour l'instant : importez le fichier .csv de la classe ou collez la liste à gauche." })));
@@ -1203,14 +1257,14 @@ function vuePlan(P) {
   f.append(retour("Mes plans", "plans"), el("div", { class: "entete" },
     el("div", { class: "titre-bloc" }, el("input", { class: "titre-champ", id: "nomObjet", type: "text", value: P.nom, "aria-label": "Nom du plan", oninput: e => { P.nom = e.target.value; marquer(P); } }), P.exemple ? badgeEx() : null),
     el("div", { class: "ligne" },
-      el("button", { class: "btn", type: "button", text: "Dupliquer", onclick: () => { const Q = JSON.parse(JSON.stringify(P)); Q.id = uid("p-"); Q.cree = Date.now(); Q.nom = P.nom + " (copie)"; delete Q.exemple; etat.plans.unshift(Q); marquer(Q); toast("Plan dupliqué."); aller("plans", Q.id); } }),
+      el("button", { class: "btn", type: "button", text: "Dupliquer", onclick: () => { const Q = JSON.parse(JSON.stringify(P)); Q.id = uid("p-"); Q.cree = Date.now(); Q.nom = P.nom + " (copie)"; delete Q.exemple; delete Q.versions; etat.plans.unshift(Q); marquer(Q); toast("Plan dupliqué."); aller("plans", Q.id); } }),
       confirmer("Supprimer", "Confirmer la suppression ?", () => { oter(P); toast("Plan supprimé."); aller("plans", null); }))));
   // Le menu « Classe » passe au plan actuel de l'autre classe : il ne réattribue jamais ce plan
   // (réattribuer retirait du plan tous les élèves de la classe quittée, et le vidait).
   const allerClasse = v => { if (v === C.id) return; const D = trouve("classes", v), Q = planActuel(D); if (Q) aller("plans", Q.id); else { ui.filtre = v; temp.nouveauPlan = { classeId: v, salleId: S.id }; aller("plans", null); } };
   // Changer de salle peut ôter des élèves de leur place : on prévient avant.
   const selSalle = choix(etat.salles.map(x => [x.id, x.nom]), S.id, v => {
-    const T = trouve("salles", v), faire = () => { memo(P); P.salleId = v; retirerHors(P, T); marquer(P); render(); };
+    const T = trouve("salles", v), faire = () => { memo(P, "avant le changement de salle"); P.salleId = v; retirerHors(P, T); marquer(P); render(); };
     const perdus = Object.keys(P.places).filter(id => { const [r, k] = rc(id); return r >= T.lignes || k >= T.colonnes || !T.cases[r][k]; }).length;
     if (!perdus) return faire();
     selSalle.value = S.id;
@@ -1237,8 +1291,8 @@ function vuePlan(P) {
   const nonPlaces = el("div", { class: "non-places" }), bilan = el("div", { style: "display:grid;gap:8px" });
   const gauche = el("aside", { class: "colonne" }, carteClaude(C, S, P), el("div", { class: "panneau" },
     el("h3", { text: "Placement au hasard" }),
-    el("div", { class: "ligne" }, el("button", { class: "btn principal", type: "button", text: "Placer au hasard", title: "Respecte les contraintes de la classe et garde les élèves épinglés (double-clic sur une place)", disabled: !C.eleves.length, onclick: () => { memo(P); P.places = resoudre(C, S, P, P.iaTemp || []); marquer(P); maj(); toast("Élèves placés."); } }),
-      el("button", { class: "btn", type: "button", text: "Vider", onclick: () => { memo(P); const g = {}; for (const x in P.places) if (P.verrous[x]) g[x] = P.places[x]; P.places = g; marquer(P); maj(); } })),
+    el("div", { class: "ligne" }, el("button", { class: "btn principal", type: "button", text: "Placer au hasard", title: "Respecte les contraintes de la classe et garde les élèves épinglés (double-clic sur une place)", disabled: !C.eleves.length, onclick: () => { memo(P, "avant « Placer au hasard »"); P.places = resoudre(C, S, P, P.iaTemp || []); marquer(P); maj(); toast("Élèves placés."); } }),
+      el("button", { class: "btn", type: "button", text: "Vider", onclick: () => { memo(P, "avant « Vider »"); const g = {}; for (const x in P.places) if (P.verrous[x]) g[x] = P.places[x]; P.places = g; marquer(P); maj(); } })),
     optionsPlacement(),
     el("h3", { text: "Plan suivant" }),
     el("p", { class: "aide", text: "Crée un nouveau plan à partir de celui-ci : les élèves du fond passent devant, ceux de devant au fond, en respectant les contraintes. Celui-ci reste dans l'historique." }),
@@ -1260,7 +1314,7 @@ function vuePlan(P) {
     el("label", {}, el("span", { text: "Noms" }), choix([["auto", "Prénom (initiale si homonyme)"], ["pi", "Prénom N."], ["p", "Prénom seul"], ["pn", "Prénom Nom"], ["np", "NOM Prénom"]], P.format || "auto", v => { P.format = v; marquer(P); maj(); }, { "aria-label": "Affichage des noms" })),
     el("label", { title: C.alterner ? "Affichés d'office quand on alterne filles et garçons" : null }, el("input", { type: "checkbox", checked: ui.voirSexe || !!C.alterner, disabled: !!C.alterner, onchange: e => { ui.voirSexe = e.target.checked; ecrireJSON(LSUI, ui); maj(); } }), " Repères ", el("span", { class: "puces" }, el("i", { class: "sexe F" }), el("i", { class: "sexe G" })), " F/G"),
     el("label", {}, el("input", { type: "checkbox", checked: !!ui.numeros, onchange: e => { ui.numeros = e.target.checked; ecrireJSON(LSUI, ui); maj(); } }), " N° de place")));
-  const outils = el("div", { class: "outils" }, seg, histo, affichage,
+  const outils = el("div", { class: "outils" }, seg, histo, menuVersions(P, () => render()), affichage,
     el("span", { class: "espace" }),
     telech ? menuPdf(P) : null,
     el("button", { class: "btn principal", type: "button", text: "Projeter", onclick: () => ouvrirProjection(P) }));
@@ -1354,7 +1408,7 @@ function carteClaude(C, S, P) { return null;
       P.iaTemp = r.cs;
       if (r.alterner !== null && r.alterner !== C.alterner) { C.alterner = r.alterner; marquer(C); }
       appliquerRegles(C, r.regles);
-      memo(P); P.places = resoudre(C, S, P, r.cs); marquer(P);
+      memo(P, "avant le placement de Claude"); P.places = resoudre(C, S, P, r.cs); marquer(P);
       fil.pop(); fil.push({ role: "ia", texte: (r.reponse || "C'est fait.") + ` Le plan a été refait avec ${r.cs.length} contrainte${s(r.cs.length)} issue${s(r.cs.length)} de notre échange.` });
     } catch (e) { fil.pop(); fil.push({ role: "ia", texte: erreurIA(e) }); }
     marquer(P);
