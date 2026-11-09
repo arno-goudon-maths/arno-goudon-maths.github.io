@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;box-sizing:border-box}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head><body>
+<title>La pression en altitude</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* TD2 de 1re spécifique, exercice 20 : 1 000 hPa au niveau de la mer, 500 hPa à 5 000 m.
+   Modèle affine P(x) = 1000 − 0,1x, x altitude en mètres, entre 0 et 5 000 m.
+   L'air est figuré par des points, plus serrés en bas ; la colonne d'air au-dessus du randonneur est en bleu. */
+:root {
+  --papier: #f7f8fa; --carte: #ffffff; --encre: #1b1f24; --discret: #5d6672; --filet: #d9dee5;
+  --ciel-haut: #c9dcf2; --ciel-bas: #eef5fc; --air: #9aa9bb; --colonne: #1a56db; --colonne-fond: rgba(26, 86, 219, 0.12);
+  --roche: #8b8f96; --roche-fonce: #5f636a; --neige: #ffffff; --mer: #4a90c8; --marcheur: #f07800; --aiguille: #e0202a; --lecture: #e0202a;
+  --math: "STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --ui: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --ciel-haut: #0f1726; --ciel-bas: #1d2a3d; --air: #6d7a8c; --colonne: #6fa3f0; --colonne-fond: rgba(111, 163, 240, 0.16); --roche: #5b6068; --roche-fonce: #3d4148; --neige: #dfe6ee; --mer: #2d6a9c; --marcheur: #ff9a3c; --aiguille: #ff5a5f; --lecture: #ff5a5f; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --ciel-haut: #0f1726; --ciel-bas: #1d2a3d; --air: #6d7a8c; --colonne: #6fa3f0; --colonne-fond: rgba(111, 163, 240, 0.16); --roche: #5b6068; --roche-fonce: #3d4148; --neige: #dfe6ee; --mer: #2d6a9c; --marcheur: #ff9a3c; --aiguille: #ff5a5f; --lecture: #ff5a5f; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--papier); color: var(--encre); font-family: var(--ui); font-size: 15px; line-height: 1.5; margin: 0; }
+.page { max-width: 960px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 40px; display: grid; gap: 14px; }
+.niveau { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--discret); }
+h1 { font-family: var(--math); font-weight: 600; font-size: clamp(26px, 4vw, 36px); line-height: 1.15; margin: 0; text-wrap: balance; }
+.chapeau { margin: 0; color: var(--discret); max-width: 70ch; }
+.figure { background: var(--carte); border: 1px solid var(--filet); border-radius: 10px; padding: 6px; touch-action: none; }
+svg { display: block; width: 100%; height: auto; user-select: none; -webkit-user-select: none; }
+.prise { cursor: grab; } .prise:active { cursor: grabbing; }
+.constat { font-size: clamp(16px, 2.2vw, 21px); text-align: center; margin: 0; padding: 10px 14px; border-radius: 10px; border: 1.5px solid var(--filet); background: var(--carte); }
+.constat i { font-family: var(--math); font-size: 1.1em; }
+.constat b { color: var(--aiguille); }
+</style>
+
+<div class="page">
+  <span class="niveau">Première spécifique · Chapitre 2 · TD2, exercice 20</span>
+  <h1>La pression en altitude</h1>
+  <p class="chapeau">La pression atmosphérique, c'est le poids de l'air qui est au-dessus de nous. Faites grimper le randonneur orange : plus il monte, moins il a d'air au-dessus de lui (la colonne bleue), et plus la pression lue sur le baromètre diminue.</p>
+  <div class="figure"><svg id="mont" viewBox="0 0 900 580" role="img" aria-label="Montagne, colonne d'air au-dessus d'un randonneur et baromètre"></svg></div>
+  <p class="constat" id="constat" aria-live="polite"></p>
+</div>
+
+<script>
+(() => {
+  const NS = "http://www.w3.org/2000/svg", $ = id => document.getElementById(id);
+  const el = (t, at, txt) => { const e = document.createElementNS(NS, t); for (const k in at) e.setAttribute(k, at[k]); if (txt != null) e.textContent = txt; return e; };
+  const milliers = v => String(Math.round(v)).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  const P = x => 1000 - 0.1 * x;
+  const BAS = 530, HAUT = 40, AMAX = 5800, yA = a => BAS - a * (BAS - HAUT) / AMAX;   // altitude -> pixels
+  const PIED = 110, SOMMET = 520, xA = a => PIED + a / 5000 * (SOMMET - PIED);          // randonneur sur le versant gauche
+  const svg = $("mont");
+  let alt = 2000;
+
+  // ---- ciel et air : des points d'autant plus serrés que la pression est forte ----
+  const defs = el("defs", {}), lg = el("linearGradient", { id: "ciel", x1: 0, y1: 0, x2: 0, y2: 1 });
+  lg.appendChild(el("stop", { offset: "0", "stop-color": "var(--ciel-haut)" })); lg.appendChild(el("stop", { offset: "1", "stop-color": "var(--ciel-bas)" }));
+  defs.appendChild(lg); svg.appendChild(defs);
+  svg.appendChild(el("rect", { x: 0, y: 0, width: 900, height: BAS, fill: "url(#ciel)" }));
+  let graine = 7; const hasard = () => (graine = (graine * 16807) % 2147483647) / 2147483647;
+  const points = [];
+  while (points.length < 1500) {
+    const x = 80 + hasard() * 560, a = hasard() * AMAX;
+    if (hasard() < P(a) / 1000) points.push([x, a]);
+  }
+  const gColonne = el("g", {}); svg.appendChild(gColonne);
+  const gAir = el("g", {}); svg.appendChild(gAir);
+  // ---- montagne ----
+  // versant gauche rectiligne : le randonneur y reste posé quelle que soit l'altitude
+  const versant = `M${PIED - 60},${BAS} L${PIED},${yA(0)} L${SOMMET},${yA(5000)} L${SOMMET + 60},${yA(4100)} L${SOMMET + 90},${yA(4300)} L${SOMMET + 140},${yA(2600)} L${780},${BAS} Z`;
+  svg.appendChild(el("path", { d: versant, fill: "var(--roche)", stroke: "var(--roche-fonce)", "stroke-width": 2 }));
+  svg.appendChild(el("path", { d: `M${xA(4300)},${yA(4300)} L${SOMMET},${yA(5000)} L${SOMMET + 45},${yA(4350)} L${SOMMET + 25},${yA(4450)} L${SOMMET + 5},${yA(4250)} L${xA(4550)},${yA(4450)} Z`, fill: "var(--neige)" }));
+  svg.appendChild(el("rect", { x: 0, y: BAS, width: 900, height: 50, fill: "var(--mer)" }));
+  svg.appendChild(el("text", { x: 14, y: BAS + 32, "font-size": 13, fill: "var(--carte)" }, "niveau de la mer"));
+  // ---- échelle des altitudes ----
+  svg.appendChild(el("line", { x1: 48, y1: yA(0), x2: 48, y2: yA(5000), stroke: "var(--encre)", "stroke-width": 1.6 }));
+  for (let a = 0; a <= 5000; a += 500) {
+    svg.appendChild(el("line", { x1: 42, y1: yA(a), x2: 54, y2: yA(a), stroke: "var(--encre)", "stroke-width": a % 1000 ? 1 : 1.6 }));
+    if (a % 1000 === 0) svg.appendChild(el("text", { x: 38, y: yA(a) + 4, "text-anchor": "end", "font-size": 12, fill: "var(--encre)" }, milliers(a)));
+  }
+  svg.appendChild(el("text", { x: 8, y: yA(5000) - 16, "font-size": 12, fill: "var(--discret)" }, "altitude (m)"));
+  // ---- baromètre ----
+  const BX = 775, BY = 215, R = 95, A0 = 225, AMP = 270, VMIN = 400, VMAX = 1100;
+  const ang = v => (A0 - (v - VMIN) / (VMAX - VMIN) * AMP) * Math.PI / 180;
+  svg.appendChild(el("rect", { x: 670, y: 70, width: 210, height: 300, rx: 14, fill: "var(--carte)", stroke: "var(--filet)" }));
+  svg.appendChild(el("text", { x: BX, y: 96, "text-anchor": "middle", "font-size": 13, "font-weight": 600, fill: "var(--discret)" }, "BAROMÈTRE (hPa)"));
+  svg.appendChild(el("circle", { cx: BX, cy: BY, r: R, fill: "var(--papier)", stroke: "var(--encre)", "stroke-width": 2 }));
+  for (let v = VMIN; v <= VMAX; v += 50) {
+    const t = ang(v), g = v % 100 === 0, r1 = R - (g ? 14 : 8);
+    svg.appendChild(el("line", { x1: BX + R * Math.cos(t) * .97, y1: BY - R * Math.sin(t) * .97, x2: BX + r1 * Math.cos(t), y2: BY - r1 * Math.sin(t), stroke: "var(--encre)", "stroke-width": g ? 1.6 : 1 }));
+    if (v % 100 === 0) svg.appendChild(el("text", { x: BX + (R - 30) * Math.cos(t), y: BY - (R - 30) * Math.sin(t) + 4, "text-anchor": "middle", "font-size": 12, fill: "var(--encre)", "font-variant-numeric": "tabular-nums" }, milliers(v)));
+  }
+  const dyn = el("g", {}); svg.appendChild(dyn);
+
+  function dessin() {
+    const p = P(alt), xm = xA(alt), ym = yA(alt);
+    // colonne d'air au-dessus du randonneur, et points d'air
+    gColonne.textContent = ""; gAir.textContent = "";
+    const L = 34;
+    gColonne.appendChild(el("rect", { x: xm - L, y: yA(AMAX), width: 2 * L, height: ym - yA(AMAX), fill: "var(--colonne-fond)", stroke: "var(--colonne)", "stroke-width": 1.5, "stroke-dasharray": "6 4" }));
+    for (const [x, a] of points) {
+      const dedans = Math.abs(x - xm) < L && a > alt;
+      gAir.appendChild(el("circle", { cx: x, cy: yA(a), r: dedans ? 2.6 : 1.8, fill: dedans ? "var(--colonne)" : "var(--air)", opacity: dedans ? .95 : .6 }));
+    }
+    dyn.textContent = "";
+    // lecture de l'altitude
+    dyn.appendChild(el("line", { x1: 54, y1: ym, x2: xm - 14, y2: ym, stroke: "var(--lecture)", "stroke-width": 1.6, "stroke-dasharray": "4 4" }));
+    dyn.appendChild(el("circle", { cx: 48, cy: ym, r: 5, fill: "var(--lecture)" }));
+    // randonneur
+    const g = el("g", { class: "prise", transform: `translate(${xm},${ym})` });
+    g.appendChild(el("rect", { x: -30, y: -50, width: 60, height: 60, fill: "transparent" }));
+    g.appendChild(el("line", { x1: 0, y1: -14, x2: -6, y2: 0, stroke: "var(--encre)", "stroke-width": 3, "stroke-linecap": "round" }));
+    g.appendChild(el("line", { x1: 0, y1: -14, x2: 7, y2: -2, stroke: "var(--encre)", "stroke-width": 3, "stroke-linecap": "round" }));
+    g.appendChild(el("line", { x1: 0, y1: -14, x2: 2, y2: -30, stroke: "var(--marcheur)", "stroke-width": 6, "stroke-linecap": "round" }));
+    g.appendChild(el("rect", { x: -9, y: -31, width: 8, height: 12, rx: 2, fill: "var(--roche-fonce)" }));
+    g.appendChild(el("circle", { cx: 3, cy: -37, r: 5.5, fill: "var(--marcheur)" }));
+    g.appendChild(el("line", { x1: 4, y1: -24, x2: 12, y2: 0, stroke: "var(--encre)", "stroke-width": 1.6 }));
+    dyn.appendChild(g); prise(g);
+    dyn.appendChild(el("text", { x: xm - 18, y: ym + 22, "text-anchor": "end", "font-size": 14, "font-weight": 600, fill: "var(--encre)", stroke: "var(--ciel-bas)", "stroke-width": 3, "paint-order": "stroke" }, `${milliers(alt)} m`));
+    // aiguille et valeur
+    const t = ang(p);
+    dyn.appendChild(el("line", { x1: BX, y1: BY, x2: BX + (R - 50) * Math.cos(t), y2: BY - (R - 50) * Math.sin(t), stroke: "var(--aiguille)", "stroke-width": 3.5, "stroke-linecap": "round" }));
+    dyn.appendChild(el("circle", { cx: BX, cy: BY, r: 6, fill: "var(--aiguille)" }));
+    dyn.appendChild(el("text", { x: BX, y: BY + R + 42, "text-anchor": "middle", "font-family": "var(--math)", "font-size": 28, "font-weight": 600, fill: "var(--aiguille)" }, `${milliers(p)} hPa`));
+    $("constat").innerHTML = `À <i>x</i> = ${milliers(alt)} m d'altitude, la pression atmosphérique est d'environ <b>${milliers(p)} hPa</b>.`;
+  }
+
+  function point(evt) { const r = svg.getBoundingClientRect(); return (evt.clientY - r.top) * 580 / r.height; }
+  const regle = y => Math.max(0, Math.min(5000, Math.round((BAS - y) * AMAX / (BAS - HAUT) / 100) * 100));
+  function prise(g) {
+    g.addEventListener("pointerdown", e => {
+      e.preventDefault(); e.stopPropagation();
+      const bouge = ev => { const n = regle(point(ev)); if (n !== alt) { alt = n; dessin(); } };
+      const fin = () => { window.removeEventListener("pointermove", bouge); window.removeEventListener("pointerup", fin); };
+      window.addEventListener("pointermove", bouge); window.addEventListener("pointerup", fin);
+    });
+  }
+  // un clic sur la montagne déplace aussi le randonneur à cette altitude
+  svg.addEventListener("pointerdown", e => {
+    const r = svg.getBoundingClientRect(), x = (e.clientX - r.left) * 900 / r.width, y = (e.clientY - r.top) * 580 / r.height;
+    if (x > 60 && x < 660 && y < BAS) { alt = regle(y); dessin(); }
+  });
+  dessin();
+})();
+</script>
+
+<!-- plein-ecran : bouton commun à toutes les pages interactives -->
+<style>
+#pleinEcran { position: fixed; top: calc(10px + env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); z-index: 50; font: 500 13px var(--ui, system-ui, sans-serif); padding: 6px 12px; border-radius: 999px; border: 1px solid var(--filet, #d9dee5); background: var(--carte, #fff); color: var(--encre, #1b1f24); cursor: pointer; opacity: .9; }
+#pleinEcran:hover { opacity: 1; }
+body.plein-ecran .niveau, body.plein-ecran h1, body.plein-ecran h1 + .chapeau { display: none !important; }
+body.plein-ecran .page { max-width: none !important; min-height: 100vh; padding-top: 48px !important; align-content: start; }
+body.plein-ecran .page svg:not(.mini) { max-height: 76vh; }
+body.plein-ecran.plein-multi .page svg:not(.mini) { max-height: 46vh; }
+body.plein-ecran .constat { font-size: clamp(20px, 2.6vw, 30px); }
+</style>
+<script>
+(() => {
+  const b = document.createElement("button");
+  b.type = "button"; b.id = "pleinEcran"; document.body.appendChild(b);
+  function etat(on) { document.body.classList.toggle("plein-ecran", on); b.textContent = on ? "✕ Quitter le plein écran" : "⛶ Plein écran"; b.setAttribute("aria-pressed", on); window.dispatchEvent(new Event("resize")); }
+  b.addEventListener("click", async () => {
+    const on = !document.body.classList.contains("plein-ecran");
+    etat(on);
+    try { on ? await document.documentElement.requestFullscreen() : (document.fullscreenElement && await document.exitFullscreen()); } catch (e) {}
+  });
+  document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement && document.body.classList.contains("plein-ecran")) etat(false); });
+  window.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("plein-ecran")) etat(false); });
+  if (document.querySelectorAll(".page svg:not(.mini), .page canvas").length > 1) document.body.classList.add("plein-multi");
+  etat(location.hash === "#plein");
+})();
+</script>
+
+</body></html>

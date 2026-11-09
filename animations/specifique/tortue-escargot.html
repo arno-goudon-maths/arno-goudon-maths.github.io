@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;box-sizing:border-box}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head><body>
+<title>La tortue et l'escargot</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* TD2 de 1re spécifique, exercice 10 (d'après le sujet zéro n° 1 de l'épreuve anticipée, bac 2026).
+   Tortue : part de x = 0, 2 m par minute. Escargot : part de x = 12, 0,5 m par minute.
+   Tortue en bleu, escargot en orange, rattrapage en violet, lectures sur l'axe en rouge. */
+:root {
+  --papier: #f7f8fa; --carte: #ffffff; --encre: #1b1f24; --discret: #5d6672; --filet: #d9dee5; --grille: #e4e8ee;
+  --tortue: #1a56db; --tortue-fonce: #123d9c; --escargot: #f07800; --escargot-fonce: #b35900; --corps: #c9b79c;
+  --rencontre: #7c3aed; --lecture: #e0202a; --piste: #eef1f5;
+  --math: "STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --ui: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #262c35; --tortue: #6fa3f0; --tortue-fonce: #3d74c8; --escargot: #ff9a3c; --escargot-fonce: #c96d17; --corps: #8f806b; --rencontre: #b48cff; --lecture: #ff5a5f; --piste: #22272f; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #262c35; --tortue: #6fa3f0; --tortue-fonce: #3d74c8; --escargot: #ff9a3c; --escargot-fonce: #c96d17; --corps: #8f806b; --rencontre: #b48cff; --lecture: #ff5a5f; --piste: #22272f; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--papier); color: var(--encre); font-family: var(--ui); font-size: 15px; line-height: 1.5; margin: 0; }
+.page { max-width: 960px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 40px; display: grid; gap: 14px; }
+.niveau { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--discret); }
+h1 { font-family: var(--math); font-weight: 600; font-size: clamp(26px, 4vw, 36px); line-height: 1.15; margin: 0; text-wrap: balance; }
+.chapeau { margin: 0; color: var(--discret); max-width: 70ch; }
+.chapeau .t { color: var(--tortue); font-weight: 600; } .chapeau .e { color: var(--escargot); font-weight: 600; }
+.figure { background: var(--carte); border: 1px solid var(--filet); border-radius: 10px; padding: 6px; touch-action: none; }
+svg { display: block; width: 100%; height: auto; user-select: none; -webkit-user-select: none; }
+.animal { cursor: grab; } .animal:active { cursor: grabbing; }
+.commandes { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 14px; font-size: 14px; }
+.commandes button { font: 500 14px var(--ui); padding: 5px 14px; border-radius: 999px; border: 1px solid var(--filet); background: var(--carte); color: var(--encre); cursor: pointer; }
+.commandes button:hover { border-color: var(--encre); }
+.commandes label { display: inline-flex; align-items: center; gap: 6px; color: var(--discret); }
+.commandes input { width: 110px; accent-color: var(--encre); }
+.constat { font-size: clamp(16px, 2.2vw, 20px); text-align: center; margin: 0; padding: 10px 14px; border-radius: 10px; border: 1.5px solid var(--filet); background: var(--carte); }
+.constat.atteint { border-color: var(--rencontre); }
+.constat i { font-family: var(--math); font-size: 1.1em; }
+.constat .t { color: var(--tortue); font-weight: 600; } .constat .e { color: var(--escargot); font-weight: 600; } .constat .r { color: var(--rencontre); font-weight: 600; }
+details { background: var(--carte); border: 1px solid var(--filet); border-radius: 10px; padding: 8px 12px; }
+summary { cursor: pointer; font-weight: 500; }
+details p { margin: 8px 0; color: var(--discret); max-width: 70ch; }
+details .math { font-family: var(--math); font-size: 1.08em; color: var(--encre); }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } }
+</style>
+
+<div class="page">
+  <span class="niveau">Première spécifique · Chapitre 2 · TD2, exercice 10</span>
+  <h1>La tortue et l'escargot</h1>
+  <p class="chapeau">La <span class="t">tortue</span> part de 0 et avance de 2 m par minute ; l'<span class="e">escargot</span> part de 12 et avance de 0,5 m par minute. Faites glisser l'escargot (ou la tortue) le long de sa piste : l'autre avance au même moment, à son propre rythme.</p>
+  <div class="figure"><svg id="course" viewBox="0 0 900 330" role="img" aria-label="Course de la tortue et de l'escargot sur un axe gradué en mètres"></svg></div>
+  <div class="commandes">
+    <button type="button" id="lancer">▶ Lancer la course</button>
+    <button type="button" id="zero">↺ Retour au départ</button>
+    <label for="vitesse">Vitesse <input type="range" id="vitesse" min="0.25" max="3" step="0.25" value="1"></label>
+  </div>
+  <p class="constat" id="constat" aria-live="polite"></p>
+  <details>
+    <summary>Pour aller plus loin : les positions en fonction du temps</summary>
+    <p>Au bout de <span class="math"><i>t</i></span> minutes, la tortue est à l'abscisse <span class="math">2<i>t</i></span> et l'escargot à l'abscisse <span class="math">12 + 0,5<i>t</i></span> : deux fonctions affines du temps.</p>
+    <svg id="graphe" class="mini" viewBox="0 0 900 380" role="img" aria-label="Positions de la tortue et de l'escargot en fonction du temps"></svg>
+  </details>
+</div>
+
+<script>
+(() => {
+  const NS = "http://www.w3.org/2000/svg", $ = id => document.getElementById(id);
+  const el = (t, at, txt) => { const e = document.createElementNS(NS, t); for (const k in at) e.setAttribute(k, at[k]); if (txt != null) e.textContent = txt; return e; };
+  const VT = 2, VE = 0.5, E0 = 12, TMAX = 10, TR = 8, XR = 16;      // rattrapage : t = 8 min, x = 16 m
+  const XMAX = 21, G = 40, D = 860, mx = x => G + x * (D - G) / XMAX;   // abscisse en mètres -> pixels
+  const nb = v => String(Math.round(v * 100) / 100).replace(".", ",");
+  const svg = $("course"), gr = $("graphe");
+  let t = 0, joue = false, dernier = 0;
+  const PT = 105, PE = 205, AXE = 275;                                // pistes et axe
+
+  // ---- dessins des deux concurrents, tournés vers la droite, origine au point de contact avec le sol ----
+  function tortue() {
+    const g = el("g", { class: "animal" });
+    g.appendChild(el("ellipse", { cx: 0, cy: -2, rx: 34, ry: 8, fill: "transparent" }));
+    for (const dx of [-18, 14]) g.appendChild(el("rect", { x: dx - 4, y: -12, width: 9, height: 12, rx: 3, fill: "var(--tortue-fonce)" }));
+    g.appendChild(el("ellipse", { cx: 28, cy: -14, rx: 9, ry: 7, fill: "var(--tortue-fonce)" }));
+    g.appendChild(el("circle", { cx: 31, cy: -16, r: 1.8, fill: "var(--carte)" }));
+    g.appendChild(el("path", { d: "M-28,-10 A28,24 0 0 1 28,-10 Z", fill: "var(--tortue)", stroke: "var(--tortue-fonce)", "stroke-width": 2 }));
+    g.appendChild(el("path", { d: "M-14,-10 L-8,-26 M8,-26 L14,-10 M-19,-20 L19,-20", stroke: "var(--tortue-fonce)", "stroke-width": 1.6, fill: "none", opacity: .6 }));
+    g.appendChild(el("path", { d: "M-28,-11 L-36,-7", stroke: "var(--tortue-fonce)", "stroke-width": 4, "stroke-linecap": "round" }));
+    g.appendChild(el("rect", { x: -40, y: -42, width: 84, height: 46, fill: "transparent" }));   // zone de prise
+    return g;
+  }
+  function escargot() {
+    const g = el("g", { class: "animal" });
+    g.appendChild(el("path", { d: "M-32,0 L22,0 Q30,0 30,-8 L30,-20 Q30,-24 26,-24 Q22,-24 22,-20 L22,-12 Q22,-8 16,-8 L-26,-8 Q-34,-8 -32,0 Z", fill: "var(--corps)" }));
+    g.appendChild(el("path", { d: "M25,-23 L21,-36 M28,-23 L32,-36", stroke: "var(--corps)", "stroke-width": 2.2, "stroke-linecap": "round" }));
+    g.appendChild(el("circle", { cx: 21, cy: -37, r: 2.4, fill: "var(--encre)" })); g.appendChild(el("circle", { cx: 32, cy: -37, r: 2.4, fill: "var(--encre)" }));
+    g.appendChild(el("circle", { cx: -6, cy: -24, r: 18, fill: "var(--escargot)", stroke: "var(--escargot-fonce)", "stroke-width": 2 }));
+    g.appendChild(el("path", { d: "M-6,-24 m0,0 a3,3 0 1 1 3,3 a7,7 0 1 1 -8,-8 a11,11 0 1 1 13,13", fill: "none", stroke: "var(--escargot-fonce)", "stroke-width": 2, "stroke-linecap": "round" }));
+    g.appendChild(el("rect", { x: -38, y: -46, width: 76, height: 50, fill: "transparent" }));   // zone de prise
+    return g;
+  }
+
+  // ---- décor fixe ----
+  const fond = el("g", {}), dyn = el("g", {});
+  svg.appendChild(fond); svg.appendChild(dyn);
+  for (const [y, nom, c] of [[PT, "Tortue", "var(--tortue)"], [PE, "Escargot", "var(--escargot)"]]) {
+    fond.appendChild(el("rect", { x: mx(0) - 10, y: y - 52, width: mx(XMAX) - mx(0) + 10, height: 62, rx: 8, fill: "var(--piste)" }));
+    fond.appendChild(el("line", { x1: mx(0) - 10, y1: y, x2: mx(XMAX), y2: y, stroke: "var(--filet)", "stroke-width": 2 }));
+    fond.appendChild(el("text", { x: mx(0) - 4, y: y - 38, "font-size": 13, "font-weight": 600, fill: c }, nom));
+  }
+  fond.appendChild(el("line", { x1: mx(0) - 10, y1: AXE, x2: mx(XMAX) + 16, y2: AXE, stroke: "var(--encre)", "stroke-width": 1.8 }));
+  fond.appendChild(el("path", { d: `M${mx(XMAX) + 16},${AXE} l-10,-5 v10 z`, fill: "var(--encre)" }));
+  for (let x = 0; x <= XMAX; x++) {
+    fond.appendChild(el("line", { x1: mx(x), y1: AXE - 5, x2: mx(x), y2: AXE + 5, stroke: "var(--encre)", "stroke-width": 1.4 }));
+    fond.appendChild(el("text", { x: mx(x), y: AXE + 22, "text-anchor": "middle", "font-size": 13, fill: "var(--discret)", "font-variant-numeric": "tabular-nums" }, x));
+  }
+  fond.appendChild(el("text", { x: D + 24, y: AXE + 40, "text-anchor": "end", "font-size": 12, fill: "var(--discret)" }, "en mètres"));
+  const gT = tortue(), gE = escargot();
+
+  function dessin() {
+    dyn.textContent = "";
+    const xT = VT * t, xE = E0 + VE * t, ok = t >= TR - 1e-9;
+    // traces : un point par minute écoulée, pour voir le rythme de chacun
+    dyn.appendChild(el("line", { x1: mx(0), y1: PT, x2: mx(xT), y2: PT, stroke: "var(--tortue)", "stroke-width": 5, "stroke-linecap": "round", opacity: .35 }));
+    dyn.appendChild(el("line", { x1: mx(E0), y1: PE, x2: mx(xE), y2: PE, stroke: "var(--escargot)", "stroke-width": 5, "stroke-linecap": "round", opacity: .35 }));
+    for (let m = 1; m <= Math.floor(t + 1e-9); m++) {
+      dyn.appendChild(el("circle", { cx: mx(VT * m), cy: PT, r: 3.5, fill: "var(--tortue)" }));
+      dyn.appendChild(el("circle", { cx: mx(E0 + VE * m), cy: PE, r: 3.5, fill: "var(--escargot)" }));
+    }
+    // rattrapage
+    if (ok) {
+      dyn.appendChild(el("line", { x1: mx(XR), y1: PT - 52, x2: mx(XR), y2: AXE, stroke: "var(--rencontre)", "stroke-width": 2.5, "stroke-dasharray": "7 5" }));
+      dyn.appendChild(el("circle", { cx: mx(XR), cy: AXE, r: 7, fill: "var(--rencontre)" }));
+      const lab = el("text", { x: mx(XR), y: PT - 60, "text-anchor": "middle", "font-size": 15, "font-weight": 600, fill: "var(--rencontre)" }, "rattrapé en x = 16");
+      dyn.appendChild(lab);
+    }
+    // lectures des abscisses sur l'axe
+    const lecture = (x, y, c) => {
+      dyn.appendChild(el("line", { x1: mx(x), y1: y + 4, x2: mx(x), y2: AXE, stroke: "var(--lecture)", "stroke-width": 1.6, "stroke-dasharray": "3 4" }));
+      dyn.appendChild(el("circle", { cx: mx(x), cy: AXE, r: 4.5, fill: c }));
+    };
+    lecture(xT, PT, "var(--tortue)"); lecture(xE, PE, "var(--escargot)");
+    // chronomètre
+    dyn.appendChild(el("text", { x: D, y: 26, "text-anchor": "end", "font-family": "var(--math)", "font-size": 22, fill: "var(--encre)" }, `t = ${nb(t)} min`));
+    // concurrents (ajoutés une seule fois, déplacés)
+    gT.setAttribute("transform", `translate(${mx(xT)},${PT})`); gE.setAttribute("transform", `translate(${mx(xE)},${PE})`);
+    dyn.appendChild(gT); dyn.appendChild(gE);
+    // étiquettes de position
+    const pos = (x, y, c) => dyn.appendChild(el("text", { x: mx(x), y: y + 28, "text-anchor": "middle", "font-size": 13, "font-weight": 600, fill: c, "font-variant-numeric": "tabular-nums" }, `${nb(x)} m`));
+    pos(xT, PT, "var(--tortue)"); pos(xE, PE, "var(--escargot)");
+    // constat
+    const c = $("constat"); c.classList.toggle("atteint", ok);
+    const ecart = xE - xT;
+    if (t === 0) c.innerHTML = `Au départ, l'escargot a <b>12 m</b> d'avance sur la tortue.`;
+    else if (!ok) c.innerHTML = `Au bout de ${nb(t)} min : <span class="t">tortue en ${nb(xT)} m</span>, <span class="e">escargot en ${nb(xE)} m</span>. Il reste <b>${nb(ecart)} m</b> d'écart.`;
+    else if (Math.abs(t - TR) < 1e-9) c.innerHTML = `Au bout de <b>8 min</b>, les deux sont à l'abscisse <span class="r">16</span> : la tortue rattrape l'escargot.`;
+    else c.innerHTML = `La tortue a rattrapé l'escargot à l'abscisse <span class="r">16</span>, au bout de 8 min ; elle a maintenant <b>${nb(-ecart)} m</b> d'avance.`;
+    graphe();
+  }
+
+  // ---- graphique des positions (repli « Pour aller plus loin ») ----
+  function graphe() {
+    gr.textContent = "";
+    const L = 70, R = 860, H = 30, B = 330, tx = v => L + v * (R - L) / TMAX, py = v => B - v * (B - H) / 22;
+    for (let v = 0; v <= TMAX; v++) gr.appendChild(el("line", { x1: tx(v), y1: py(0), x2: tx(v), y2: py(22), stroke: "var(--grille)" }));
+    for (let v = 0; v <= 22; v += 2) gr.appendChild(el("line", { x1: tx(0), y1: py(v), x2: tx(TMAX), y2: py(v), stroke: "var(--grille)" }));
+    gr.appendChild(el("line", { x1: tx(0), y1: py(0), x2: tx(TMAX) + 10, y2: py(0), stroke: "var(--encre)", "stroke-width": 1.6 }));
+    gr.appendChild(el("line", { x1: tx(0), y1: py(0), x2: tx(0), y2: py(22) - 8, stroke: "var(--encre)", "stroke-width": 1.6 }));
+    for (let v = 0; v <= TMAX; v++) gr.appendChild(el("text", { x: tx(v), y: py(0) + 20, "text-anchor": "middle", "font-size": 13, fill: "var(--discret)" }, v));
+    for (let v = 2; v <= 22; v += 2) gr.appendChild(el("text", { x: tx(0) - 8, y: py(v) + 4, "text-anchor": "end", "font-size": 13, fill: "var(--discret)" }, v));
+    gr.appendChild(el("text", { x: tx(TMAX), y: py(0) + 42, "text-anchor": "end", "font-size": 13, fill: "var(--discret)" }, "temps t (min)"));
+    gr.appendChild(el("text", { x: tx(0) + 8, y: py(22) + 4, "font-size": 13, fill: "var(--discret)" }, "abscisse (m)"));
+    gr.appendChild(el("line", { x1: tx(0), y1: py(0), x2: tx(TMAX), y2: py(VT * TMAX), stroke: "var(--tortue)", "stroke-width": 3.5 }));
+    gr.appendChild(el("line", { x1: tx(0), y1: py(E0), x2: tx(TMAX), y2: py(E0 + VE * TMAX), stroke: "var(--escargot)", "stroke-width": 3.5, "stroke-dasharray": "14 7" }));
+    gr.appendChild(el("text", { x: tx(9.2), y: py(VT * 9.2) - 10, "text-anchor": "end", "font-family": "var(--math)", "font-style": "italic", "font-size": 18, fill: "var(--tortue)" }, "2t"));
+    gr.appendChild(el("text", { x: tx(2), y: py(E0 + VE * 2) - 12, "text-anchor": "middle", "font-family": "var(--math)", "font-style": "italic", "font-size": 18, fill: "var(--escargot)" }, "12 + 0,5t"));
+    gr.appendChild(el("line", { x1: tx(t), y1: py(0), x2: tx(t), y2: py(22), stroke: "var(--lecture)", "stroke-width": 1.6, "stroke-dasharray": "3 4" }));
+    gr.appendChild(el("circle", { cx: tx(t), cy: py(VT * t), r: 6, fill: "var(--tortue)" }));
+    gr.appendChild(el("circle", { cx: tx(t), cy: py(E0 + VE * t), r: 6, fill: "var(--escargot)" }));
+    if (t >= TR - 1e-9) {
+      gr.appendChild(el("circle", { cx: tx(TR), cy: py(XR), r: 7, fill: "var(--rencontre)" }));
+      gr.appendChild(el("text", { x: tx(TR) + 12, y: py(XR) + 24, "font-size": 14, "font-weight": 600, fill: "var(--rencontre)" }, "(8 ; 16)"));
+    }
+  }
+
+  // ---- glisser un concurrent : l'autre suit à son rythme ----
+  function point(evt) { const r = svg.getBoundingClientRect(); return (evt.clientX - r.left) * 900 / r.width; }
+  const aimant = v => Math.abs(v - TR) < 0.15 ? TR : v;
+  function glisse(g, versT) {
+    g.addEventListener("pointerdown", e => {
+      e.preventDefault(); joue = false; majBouton();
+      const bouge = ev => { const x = (point(ev) - G) * XMAX / (D - G); t = aimant(Math.max(0, Math.min(TMAX, versT(x)))); dessin(); };
+      const fin = () => { window.removeEventListener("pointermove", bouge); window.removeEventListener("pointerup", fin); };
+      window.addEventListener("pointermove", bouge); window.addEventListener("pointerup", fin);
+    });
+  }
+  glisse(gE, x => (x - E0) / VE); glisse(gT, x => x / VT);
+
+  // ---- course automatique ----
+  const bouton = $("lancer");
+  function majBouton() { bouton.textContent = joue ? "⏸ Pause" : (t >= TMAX ? "▶ Relancer" : "▶ Lancer la course"); }
+  function pas(h) {
+    if (!joue) return;
+    const dt = Math.min(0.1, (h - dernier) / 1000); dernier = h;
+    const avant = t; t = Math.min(TMAX, t + dt * 1.2 * Number($("vitesse").value));
+    if (avant < TR && t >= TR) { t = TR; joue = false; dessin(); majBouton(); return; }   // arrêt au rattrapage
+    if (t >= TMAX) joue = false;
+    dessin(); majBouton();
+    if (joue) requestAnimationFrame(pas);
+  }
+  bouton.addEventListener("click", () => {
+    if (!joue && t >= TMAX) t = 0;
+    joue = !joue; majBouton();
+    if (joue) { dernier = performance.now(); requestAnimationFrame(pas); }
+  });
+  $("zero").addEventListener("click", () => { joue = false; t = 0; dessin(); majBouton(); });
+  dessin(); majBouton();
+})();
+</script>
+
+<!-- plein-ecran : bouton commun à toutes les pages interactives -->
+<style>
+#pleinEcran { position: fixed; top: calc(10px + env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); z-index: 50; font: 500 13px var(--ui, system-ui, sans-serif); padding: 6px 12px; border-radius: 999px; border: 1px solid var(--filet, #d9dee5); background: var(--carte, #fff); color: var(--encre, #1b1f24); cursor: pointer; opacity: .9; }
+#pleinEcran:hover { opacity: 1; }
+body.plein-ecran .niveau, body.plein-ecran h1, body.plein-ecran h1 + .chapeau { display: none !important; }
+body.plein-ecran .page { max-width: none !important; min-height: 100vh; padding-top: 48px !important; align-content: start; }
+body.plein-ecran .page svg:not(.mini) { max-height: 76vh; }
+body.plein-ecran.plein-multi .page svg:not(.mini) { max-height: 46vh; }
+body.plein-ecran .constat { font-size: clamp(20px, 2.6vw, 30px); }
+</style>
+<script>
+(() => {
+  const b = document.createElement("button");
+  b.type = "button"; b.id = "pleinEcran"; document.body.appendChild(b);
+  function etat(on) { document.body.classList.toggle("plein-ecran", on); b.textContent = on ? "✕ Quitter le plein écran" : "⛶ Plein écran"; b.setAttribute("aria-pressed", on); window.dispatchEvent(new Event("resize")); }
+  b.addEventListener("click", async () => {
+    const on = !document.body.classList.contains("plein-ecran");
+    etat(on);
+    try { on ? await document.documentElement.requestFullscreen() : (document.fullscreenElement && await document.exitFullscreen()); } catch (e) {}
+  });
+  document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement && document.body.classList.contains("plein-ecran")) etat(false); });
+  window.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("plein-ecran")) etat(false); });
+  if (document.querySelectorAll(".page svg:not(.mini), .page canvas").length > 1) document.body.classList.add("plein-multi");
+  etat(location.hash === "#plein");
+})();
+</script>
+
+</body></html>

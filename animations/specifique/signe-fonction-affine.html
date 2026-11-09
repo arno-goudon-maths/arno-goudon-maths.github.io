@@ -9,7 +9,9 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <style>
 /* Cours de 1re spécifique, chapitre 2 : f(x) = ax + b, a coefficient directeur, b ordonnée à l'origine.
-   Positif en bleu, négatif en orange ; le tableau de signes se construit sous la droite. */
+   Positif en bleu, négatif en orange, racine en violet ; le tableau de signes se construit sous la droite.
+   La droite passe par deux points A et B du quadrillage : tirer un point la fait pivoter autour de l'autre,
+   tirer la droite la déplace. */
 :root {
   --papier: #f7f8fa; --carte: #ffffff; --encre: #1b1f24; --discret: #5d6672; --filet: #d9dee5; --grille: #e4e8ee;
   --pos: #1a56db; --neg: #f07800; --zero: #7c3aed;
@@ -26,9 +28,18 @@ body { background: var(--papier); color: var(--encre); font-family: var(--ui); f
 .niveau { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--discret); }
 h1 { font-family: var(--math); font-weight: 600; font-size: clamp(26px, 4vw, 36px); line-height: 1.15; margin: 0; text-wrap: balance; }
 .chapeau { margin: 0; color: var(--discret); max-width: 68ch; }
-.figure { background: var(--carte); border: 1px solid var(--filet); border-radius: 10px; padding: 6px; touch-action: none; }
+.figure { background: var(--carte); border: 1px solid var(--filet); border-radius: 10px; padding: 6px; touch-action: none; display: grid; gap: 4px; }
+.bandeau { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; padding: 6px 10px 0; }
+.expr { font-family: var(--math); font-size: clamp(20px, 3vw, 26px); }
+.expr i { font-style: italic; }
+.signeA { display: inline-flex; align-items: center; gap: 8px; font-size: clamp(15px, 2vw, 18px); padding: 4px 12px 4px 10px; border-radius: 999px; border: 2px solid var(--encre); font-weight: 600; }
+.signeA .math { font-family: var(--math); font-size: 1.2em; font-weight: 600; }
+.signeA .fleche { font-size: 1.3em; line-height: 1; }
+.fr { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; font-size: .78em; line-height: 1.05; margin: 0 .1em; }
+.fr > span:first-child { border-bottom: 1.5px solid currentColor; padding: 0 .15em; }
 svg { display: block; width: 100%; height: auto; user-select: none; -webkit-user-select: none; }
-.poignee { cursor: grab; } .poignee:active { cursor: grabbing; }
+.poignee { cursor: grab; } .poignee:active, .glisse-droite:active { cursor: grabbing; }
+.glisse-droite { cursor: move; }
 .constat { font-size: clamp(16px, 2.2vw, 20px); text-align: center; margin: 0; padding: 10px 14px; border-radius: 10px; border: 1.5px solid var(--filet); background: var(--carte); }
 .constat i { font-family: var(--math); font-size: 1.1em; }
 .pos { color: var(--pos); font-weight: 600; } .neg { color: var(--neg); font-weight: 600; }
@@ -37,79 +48,139 @@ svg { display: block; width: 100%; height: auto; user-select: none; -webkit-user
 <div class="page">
   <span class="niveau">Première spécifique · Chapitre 2 · Fonctions affines</span>
   <h1>Signe d'une fonction affine</h1>
-  <p class="chapeau">Faites glisser les deux points de la droite : le point de l'axe des ordonnées règle <i>b</i>, l'autre règle le coefficient directeur <i>a</i>. Le tableau de signes se construit en dessous.</p>
-  <div class="figure"><svg id="g" viewBox="0 0 900 620" role="img" aria-label="Droite représentant une fonction affine et son tableau de signes"></svg></div>
+  <p class="chapeau">Tirez un des points <b>A</b> ou <b>B</b> pour faire pivoter la droite, ou tirez la droite elle-même pour la déplacer. Le tableau de signes se construit en dessous.</p>
+  <div class="figure">
+    <div class="bandeau">
+      <span class="expr" id="expr"></span>
+      <span class="signeA" id="signeA"></span>
+    </div>
+    <svg id="g" viewBox="0 0 900 640" role="img" aria-label="Droite représentant une fonction affine et son tableau de signes"></svg>
+  </div>
   <p class="constat" id="constat" aria-live="polite"></p>
 </div>
 
 <script>
 (() => {
   const NS = "http://www.w3.org/2000/svg", $ = id => document.getElementById(id);
-  const el = (t, a, txt) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); if (txt != null) e.textContent = txt; return e; };
+  const el = (t, at, txt) => { const e = document.createElementNS(NS, t); for (const k in at) e.setAttribute(k, at[k]); if (txt != null) e.textContent = txt; return e; };
   const XMIN = -8, XMAX = 8, YMIN = -4, YMAX = 4, U = 52, OX = 450, OY = 230;
   const px = x => OX + x * U, py = y => OY - y * U;
+  const ux = X => (X - OX) / U, uy = Y => (OY - Y) / U;
   const svg = $("g");
-  let a = 2, b = -3;
+  // les deux points de la droite, sur des nœuds du quadrillage (valeurs exactes)
+  let A = { x: 0, y: -3 }, B = { x: 2, y: 1 };
+
+  // rationnels [num, den], den > 0, simplifiés
   const pgcd = (m, n) => n ? pgcd(n, m % n) : Math.abs(m);
-  const s = n => (n < 0 ? "−" : "") + Math.abs(n);
-  function frac(num, den) {           // num/den simplifié, en texte
-    if (den < 0) { num = -num; den = -den; }
-    const g = pgcd(num, den) || 1; num /= g; den /= g;
-    return den === 1 ? s(num) : (num < 0 ? "−" : "") + Math.abs(num) + "/" + den;
-  }
-  const expr = () => {
-    const ta = a === 1 ? "x" : a === -1 ? "−x" : s(a) + "x";
-    return "f(x) = " + ta + (b > 0 ? " + " + b : b < 0 ? " − " + (-b) : "");
+  const Q = (n, d) => { if (d < 0) { n = -n; d = -d; } const g = pgcd(n, d) || 1; return [n / g, d / g]; };
+  const val = q => q[0] / q[1];
+  const moins = n => (n < 0 ? "−" : "") + Math.abs(n);
+  const qHTML = (q, absolu) => {        // nombre en HTML, fraction empilée
+    const n = absolu ? Math.abs(q[0]) : q[0];
+    if (q[1] === 1) return moins(n);
+    return (n < 0 ? "−" : "") + `<span class="fr"><span>${Math.abs(n)}</span><span>${q[1]}</span></span>`;
   };
+  function svgNombre(x, y, q, couleur, taille) {   // nombre centré en (x, y), fraction empilée si besoin
+    const g = el("g", {}), f = { "text-anchor": "middle", "font-family": "var(--math)", "font-size": taille, fill: couleur };
+    if (q[1] === 1) { g.appendChild(el("text", { x, y: y + taille * 0.35, ...f }, moins(q[0]))); return g; }
+    const s = q[0] < 0, larg = Math.max(String(Math.abs(q[0])).length, String(q[1]).length) * taille * 0.55 + 6;
+    const xc = x + (s ? taille * 0.3 : 0);
+    if (s) g.appendChild(el("text", { x: xc - larg / 2 - taille * 0.35, y: y + taille * 0.35, ...f }, "−"));
+    g.appendChild(el("text", { x: xc, y: y - 4, ...f, "font-size": taille * 0.85 }, Math.abs(q[0])));
+    g.appendChild(el("line", { x1: xc - larg / 2, y1: y, x2: xc + larg / 2, y2: y, stroke: couleur, "stroke-width": 1.6 }));
+    g.appendChild(el("text", { x: xc, y: y + taille * 0.85, ...f, "font-size": taille * 0.85 }, q[1]));
+    return g;
+  }
 
   function dessin() {
+    const a = Q(B.y - A.y, B.x - A.x);
+    const b = Q(A.y * (B.x - A.x) - (B.y - A.y) * A.x, B.x - A.x);
+    const r = Q(-b[0] * a[1], b[1] * a[0]);           // racine −b/a
+    const av = val(a), bv = val(b), rv = val(r), plus = av > 0;
     svg.textContent = "";
+    const defs = el("defs", {}), m = el("marker", { id: "pointe", viewBox: "0 0 10 10", refX: 6, refY: 5, markerWidth: 5, markerHeight: 5, orient: "auto" });
+    m.appendChild(el("path", { d: "M0,0 L10,5 L0,10 z", fill: "var(--encre)" })); defs.appendChild(m); svg.appendChild(defs);
+    // quadrillage et axes
     for (let x = XMIN; x <= XMAX; x++) svg.appendChild(el("line", { x1: px(x), y1: py(YMIN), x2: px(x), y2: py(YMAX), stroke: "var(--grille)" }));
     for (let y = YMIN; y <= YMAX; y++) svg.appendChild(el("line", { x1: px(XMIN), y1: py(y), x2: px(XMAX), y2: py(y), stroke: "var(--grille)" }));
     svg.appendChild(el("line", { x1: px(XMIN), y1: OY, x2: px(XMAX), y2: OY, stroke: "var(--encre)", "stroke-width": 1.6 }));
     svg.appendChild(el("line", { x1: OX, y1: py(YMIN), x2: OX, y2: py(YMAX), stroke: "var(--encre)", "stroke-width": 1.6 }));
-    for (let x = XMIN; x <= XMAX; x += 2) if (x) svg.appendChild(el("text", { x: px(x), y: OY + 18, "text-anchor": "middle", "font-size": 12, fill: "var(--discret)" }, s(x)));
-    for (let y = YMIN; y <= YMAX; y += 2) if (y) svg.appendChild(el("text", { x: OX - 8, y: py(y) + 4, "text-anchor": "end", "font-size": 12, fill: "var(--discret)" }, s(y)));
-    const x0 = -b / a;
-    // droite, coupée en x0 : partie positive en bleu, négative en orange
-    const clipX = y => (y - b) / a;
-    let xa = Math.max(XMIN, Math.min(clipX(YMIN), clipX(YMAX))), xb = Math.min(XMAX, Math.max(clipX(YMIN), clipX(YMAX)));
-    const seg = (u, v, c) => { if (v > u) svg.appendChild(el("line", { x1: px(u), y1: py(a * u + b), x2: px(v), y2: py(a * v + b), stroke: c, "stroke-width": 5, "stroke-linecap": "round" })); };
-    const xm = Math.max(xa, Math.min(xb, x0));
-    if (a > 0) { seg(xa, xm, "var(--neg)"); seg(xm, xb, "var(--pos)"); } else { seg(xa, xm, "var(--pos)"); seg(xm, xb, "var(--neg)"); }
+    for (let x = XMIN; x <= XMAX; x += 2) if (x) svg.appendChild(el("text", { x: px(x), y: OY + 18, "text-anchor": "middle", "font-size": 12, fill: "var(--discret)" }, moins(x)));
+    for (let y = YMIN; y <= YMAX; y += 2) if (y) svg.appendChild(el("text", { x: OX - 8, y: py(y) + 4, "text-anchor": "end", "font-size": 12, fill: "var(--discret)" }, moins(y)));
+    // droite limitée au repère, coupée à la racine : positive en bleu, négative en orange
+    const xY = y => (y - bv) / av;
+    const x1 = Math.max(XMIN, Math.min(xY(YMIN), xY(YMAX))), x2 = Math.min(XMAX, Math.max(xY(YMIN), xY(YMAX)));
+    const seg = (u, v, c) => { if (v > u) svg.appendChild(el("line", { x1: px(u), y1: py(av * u + bv), x2: px(v), y2: py(av * v + bv), stroke: c, "stroke-width": 5, "stroke-linecap": "round" })); };
+    const xm = Math.max(x1, Math.min(x2, rv));
+    if (plus) { seg(x1, xm, "var(--neg)"); seg(xm, x2, "var(--pos)"); } else { seg(x1, xm, "var(--pos)"); seg(xm, x2, "var(--neg)"); }
+    // flèche de parcours de gauche à droite, à côté de la droite : elle monte si a > 0, descend si a < 0
+    { const n = Math.hypot(1, av), dx = 1 / n, dy = av / n, L = Math.min(2.4, (x2 - x1) * n * 0.35);
+      const xc = x1 + (x2 - x1) * 0.25, cote = plus ? 1 : -1, ox = -dy * 0.6 * cote, oy = dx * 0.6 * cote;
+      const sx = xc + ox, sy = av * xc + bv + oy, ex = sx + dx * L, ey = sy + dy * L;
+      svg.appendChild(el("line", { x1: px(sx), y1: py(sy), x2: px(ex), y2: py(ey), stroke: "var(--encre)", "stroke-width": 2.5, opacity: .5, "stroke-linecap": "round", "marker-end": "url(#pointe)" })); }
+    // zone de saisie de la droite (large, invisible) pour la déplacer
+    const zone = el("line", { x1: px(x1), y1: py(av * x1 + bv), x2: px(x2), y2: py(av * x2 + bv), stroke: "transparent", "stroke-width": 28, class: "glisse-droite" });
+    svg.appendChild(zone); glisse(zone, "droite");
     // racine
-    if (x0 >= XMIN && x0 <= XMAX) {
-      svg.appendChild(el("circle", { cx: px(x0), cy: OY, r: 6, fill: "var(--zero)" }));
-      svg.appendChild(el("text", { x: px(x0) + (a > 0 ? -12 : 12), y: OY - 12, "text-anchor": a > 0 ? "end" : "start", "font-family": "var(--math)", "font-size": 19, fill: "var(--zero)" }, frac(-b, a)));
+    if (rv >= XMIN && rv <= XMAX) {
+      svg.appendChild(el("circle", { cx: px(rv), cy: OY, r: 6, fill: "var(--zero)" }));
+      const lab = svgNombre(px(rv) + (plus ? -26 : 26), OY - 26, r, "var(--zero)", 20);
+      svg.appendChild(lab);
     }
-    // poignées : (0 ; b) et (1 ; a + b)
-    const hb = el("circle", { cx: OX, cy: py(b), r: 11, fill: "var(--encre)", stroke: "var(--carte)", "stroke-width": 3, class: "poignee" });
-    const ha = el("circle", { cx: px(1), cy: py(a + b), r: 11, fill: "var(--encre)", stroke: "var(--carte)", "stroke-width": 3, class: "poignee" });
-    svg.appendChild(hb); svg.appendChild(ha);
-    glisse(hb, p => { const nb = Math.max(YMIN, Math.min(YMAX, Math.round((OY - p.y) / U))); if (Math.abs(a + nb) <= YMAX) b = nb; });
-    glisse(ha, p => { const y1 = Math.max(YMIN, Math.min(YMAX, Math.round((OY - p.y) / U))); const na = y1 - b; if (na !== 0) a = na; });
-    svg.appendChild(el("text", { x: px(XMAX) - 6, y: py(YMAX) + 22, "text-anchor": "end", "font-family": "var(--math)", "font-style": "italic", "font-size": 22, fill: "var(--encre)" }, expr()));
+    // poignées A et B
+    for (const [P, nom] of [[A, "A"], [B, "B"]]) {
+      const g = el("g", { class: "poignee" });
+      g.appendChild(el("circle", { cx: px(P.x), cy: py(P.y), r: 24, fill: "transparent" }));
+      g.appendChild(el("circle", { cx: px(P.x), cy: py(P.y), r: 11, fill: "var(--encre)", stroke: "var(--carte)", "stroke-width": 3 }));
+      g.appendChild(el("text", { x: px(P.x) + 14, y: py(P.y) - 12, "font-family": "var(--ui)", "font-weight": 600, "font-size": 16, fill: "var(--encre)" }, nom));
+      svg.appendChild(g); glisse(g, nom);
+    }
     // tableau de signes
-    const T = 470, H = 44, L0 = 150, L1 = 750;
-    const ligne = (x1, y1, x2, y2, w) => svg.appendChild(el("line", { x1, y1, x2, y2, stroke: "var(--encre)", "stroke-width": w || 1.5 }));
+    const T = 470, H = 46, L0 = 150, L1 = 750, xm2 = (L0 + L1) / 2;
+    const ligne = (a1, b1, a2, b2, w) => svg.appendChild(el("line", { x1: a1, y1: b1, x2: a2, y2: b2, stroke: "var(--encre)", "stroke-width": w || 1.5 }));
     ligne(L0 - 90, T, L1, T); ligne(L0 - 90, T + H, L1, T + H); ligne(L0 - 90, T + 2 * H, L1, T + 2 * H);
     ligne(L0 - 90, T, L0 - 90, T + 2 * H); ligne(L0, T, L0, T + 2 * H); ligne(L1, T, L1, T + 2 * H);
     const txt = (x, y, t, c, it) => svg.appendChild(el("text", { x, y, "text-anchor": "middle", "font-family": "var(--math)", "font-style": it ? "italic" : "normal", "font-size": 21, fill: c || "var(--encre)" }, t));
-    txt(L0 - 45, T + 29, "x", null, true); txt(L0 - 45, T + H + 29, "f(x)", null, true);
-    const xm2 = (L0 + L1) / 2;
-    txt(L0 + 26, T + 29, "−∞"); txt(L1 - 26, T + 29, "+∞"); txt(xm2, T + 29, frac(-b, a), "var(--zero)");
+    txt(L0 - 45, T + 30, "x", null, true); txt(L0 - 45, T + H + 30, "f(x)", null, true);
+    txt(L0 + 26, T + 30, "−∞"); txt(L1 - 26, T + 30, "+∞"); svg.appendChild(svgNombre(xm2, T + H / 2, r, "var(--zero)", 21));
     svg.appendChild(el("line", { x1: xm2, y1: T + H, x2: xm2, y2: T + 2 * H, stroke: "var(--encre)", "stroke-width": 1.2, "stroke-dasharray": "3 3" }));
-    txt(xm2, T + H + 29, "0", "var(--zero)");
-    const gauche = a > 0 ? ["−", "var(--neg)"] : ["+", "var(--pos)"], droite = a > 0 ? ["+", "var(--pos)"] : ["−", "var(--neg)"];
-    txt((L0 + xm2) / 2, T + H + 30, gauche[0], gauche[1]); txt((xm2 + L1) / 2, T + H + 30, droite[0], droite[1]);
-    $("constat").innerHTML = `<i>f</i> s'annule en <i>x</i> = ${frac(-b, a)} et son coefficient directeur <i>a</i> = ${s(a)} est ${a > 0 ? "positif" : "négatif"} : <i>f</i> est d'abord ${a > 0 ? '<span class="neg">négative</span>' : '<span class="pos">positive</span>'}, s'annule, puis est ${a > 0 ? '<span class="pos">positive</span>' : '<span class="neg">négative</span>'}.`;
+    txt(xm2, T + H + 30, "0", "var(--zero)");
+    const gauche = plus ? ["−", "var(--neg)"] : ["+", "var(--pos)"], droite = plus ? ["+", "var(--pos)"] : ["−", "var(--neg)"];
+    txt((L0 + xm2) / 2, T + H + 31, gauche[0], gauche[1]); txt((xm2 + L1) / 2, T + H + 31, droite[0], droite[1]);
+    // le lien avec le signe de a, sous le tableau
+    const note = (x, t) => svg.appendChild(el("text", { x, y: T + 2 * H + 24, "text-anchor": "middle", "font-family": "var(--ui)", "font-size": 14, fill: "var(--discret)" }, t));
+    note((L0 + xm2) / 2, "signe contraire de a"); note((xm2 + L1) / 2, "signe de a");
+
+    // bandeau : expression et signe de a
+    const ta = a[1] === 1 && Math.abs(a[0]) === 1 ? (a[0] < 0 ? "−" : "") : qHTML(a);
+    const tb = b[0] === 0 ? "" : (b[0] > 0 ? " + " : " − ") + qHTML(b, true);
+    $("expr").innerHTML = `<i>f</i>(<i>x</i>) = ${ta}<i>x</i>${tb}`;
+    const sa = $("signeA");
+    sa.style.borderColor = "var(--encre)";
+    sa.innerHTML = `<span class="math"><i>a</i> = ${qHTML(a)} ${plus ? "&gt;" : "&lt;"} 0</span><span class="fleche" aria-hidden="true">${plus ? "↗" : "↘"}</span><span>la droite ${plus ? "monte" : "descend"}</span>`;
+    $("constat").innerHTML = `<i>f</i> s'annule en <i>x</i> = ${qHTML(r)} et son coefficient directeur <i>a</i> = ${qHTML(a)} est ${plus ? "positif" : "négatif"} : <i>f</i> est d'abord ${plus ? '<span class="neg">négative</span>' : '<span class="pos">positive</span>'}, s'annule, puis est ${plus ? '<span class="pos">positive</span>' : '<span class="neg">négative</span>'}.`;
   }
 
-  function point(evt) { const r = svg.getBoundingClientRect(); return { x: (evt.clientX - r.left) * 900 / r.width, y: (evt.clientY - r.top) * 620 / r.height }; }
-  function glisse(node, maj) {
+  // déplacements : un point pivote autour de l'autre, la droite se translate ; tout reste sur le quadrillage
+  const dans = P => P.x >= XMIN && P.x <= XMAX && P.y >= YMIN && P.y <= YMAX;
+  const valide = (P, R) => dans(P) && dans(R) && P.x !== R.x && P.y !== R.y;   // a existe et a ≠ 0
+  function point(evt) { const r = svg.getBoundingClientRect(); return { x: (evt.clientX - r.left) * 900 / r.width, y: (evt.clientY - r.top) * 640 / r.height }; }
+  function glisse(node, quoi) {
     node.addEventListener("pointerdown", e => {
       e.preventDefault();
-      const bouge = ev => { maj(point(ev)); dessin(); };
+      const p0 = point(e), A0 = { ...A }, B0 = { ...B };
+      const bouge = ev => {
+        const p = point(ev);
+        if (quoi === "droite") {
+          const dx = Math.round(ux(p.x) - ux(p0.x)), dy = Math.round(uy(p.y) - uy(p0.y));
+          const nA = { x: A0.x + dx, y: A0.y + dy }, nB = { x: B0.x + dx, y: B0.y + dy };
+          if (valide(nA, nB) && (nA.x !== A.x || nA.y !== A.y)) { A = nA; B = nB; dessin(); }
+        } else {
+          const n = { x: Math.round(ux(p.x)), y: Math.round(uy(p.y)) }, autre = quoi === "A" ? B : A;
+          const actuel = quoi === "A" ? A : B;
+          if (valide(n, autre) && (n.x !== actuel.x || n.y !== actuel.y)) { if (quoi === "A") A = n; else B = n; dessin(); }
+        }
+      };
       const fin = () => { window.removeEventListener("pointermove", bouge); window.removeEventListener("pointerup", fin); };
       window.addEventListener("pointermove", bouge); window.addEventListener("pointerup", fin);
     });
