@@ -1,0 +1,518 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Japonais · kanji, mots et quiz audio</title>
+<meta name="theme-color" content="#1F7A7A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="日本語">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icone-180.png">
+<style>
+/* Application « Japonais » d'Arno : ses fiches de kanji (tracé, lectures, clé) et ses mots, avec
+   un bouton ▶ qui joue la prononciation sur place, et un quiz audio à écouter en marchant.
+   Le quiz assemble toute la séance en UNE piste (question, silence pour répondre, correction),
+   jouée par un seul élément <audio> : elle continue écran verrouillé. */
+:root {
+  --papier: #f4f1ea; --carte: #ffffff; --encre: #1d2326; --discret: #66706f; --filet: #dcd7cc;
+  --sarcelle: #1F7A7A; --sarcelle-clair: #d7ecea; --rouge: #c8442f; --trace: #222222; --grille: #e3ded3;
+  --ombre: rgba(30, 50, 50, .10);
+  --jp: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", sans-serif;
+  --ui: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --papier: #121718; --carte: #1b2224; --encre: #e8eeee; --discret: #9aa7a6; --filet: #2c3638;
+    --sarcelle: #4fb3b0; --sarcelle-clair: #1f3b3b; --rouge: #ff8a72; --trace: #eef2f2; --grille: #2c3638;
+    --ombre: rgba(0,0,0,.4); color-scheme: dark; }
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html { background: var(--papier); }
+body { margin: 0; background: var(--papier); color: var(--encre); font: 16px/1.45 var(--ui); }
+.haut { position: sticky; top: 0; z-index: 5; background: var(--papier); padding: calc(10px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) 8px max(16px, env(safe-area-inset-left, 0px)); border-bottom: 1px solid var(--filet); }
+.haut .ligne { max-width: 1180px; margin: 0 auto; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.logo { width: 38px; height: 38px; border-radius: 10px; background: var(--sarcelle); color: #fff; display: grid; place-items: center; font: 600 22px var(--jp); flex: none; }
+h1 { font-size: 19px; margin: 0; flex: 1; min-width: 0; }
+.onglets { display: flex; background: var(--carte); border-radius: 12px; padding: 3px; gap: 3px; box-shadow: 0 1px 6px var(--ombre); }
+.onglets button { border: 0; border-radius: 9px; padding: 7px 14px; background: transparent; color: var(--encre); font: 600 14px var(--ui); cursor: pointer; }
+.onglets button[aria-selected="true"] { background: var(--sarcelle); color: #fff; }
+main { max-width: 1180px; margin: 0 auto; padding: 14px max(16px, env(safe-area-inset-right, 0px)) calc(28px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
+.vue[hidden] { display: none; }
+.barre-outils { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+.segments { display: inline-grid; grid-auto-flow: column; background: var(--carte); border-radius: 11px; padding: 3px; gap: 3px; box-shadow: 0 1px 6px var(--ombre); }
+.segments button { border: 0; border-radius: 8px; padding: 6px 12px; background: transparent; color: var(--encre); font: 500 13px var(--ui); cursor: pointer; }
+.segments button[aria-pressed="true"] { background: var(--sarcelle-clair); color: var(--sarcelle); font-weight: 700; }
+input[type=search] { flex: 1; min-width: 160px; border: 1.5px solid var(--filet); background: var(--carte); color: var(--encre); border-radius: 11px; padding: 8px 12px; font: 15px var(--ui); }
+.puces { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 14px; }
+.puce { border: 1.5px solid var(--filet); background: var(--carte); color: var(--encre); border-radius: 999px; padding: 5px 12px; font: 500 14px var(--ui); cursor: pointer; }
+.puce[aria-pressed="true"] { background: var(--sarcelle); border-color: var(--sarcelle); color: #fff; }
+.puce small { opacity: .7; margin-left: 4px; }
+.titre-liste { font-size: 15px; color: var(--sarcelle); font-weight: 700; margin: 6px 0 10px; }
+/* fiches de kanji */
+.fiches { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 12px; }
+.fiche { background: var(--carte); border-radius: 16px; padding: 12px 14px 12px 12px; box-shadow: 0 2px 10px var(--ombre); display: grid; grid-template-columns: 118px 1fr; gap: 6px 14px; min-width: 0; }
+.fiche svg { width: 118px; height: 118px; display: block; }
+.fiche .infos { display: grid; gap: 2px; align-content: start; min-width: 0; }
+.fiche .num { font-size: 11px; color: var(--discret); }
+.fiche .sens { font-size: 17px; color: var(--sarcelle); font-weight: 600; line-height: 1.25; }
+.fiche .lec { display: flex; align-items: center; gap: 8px; font-family: var(--jp); font-size: 16px; min-width: 0; }
+.fiche .lec b { font-size: 11px; color: var(--discret); font-weight: 400; flex: none; }
+.fiche .lec span { min-width: 0; overflow-wrap: anywhere; }
+.fiche .petit { font-size: 12px; color: var(--discret); font-family: var(--jp); }
+.fiche .cle { font-size: 12.5px; color: var(--rouge); font-family: var(--jp); }
+.fiche .note { grid-column: 1 / -1; font-size: 13px; color: var(--discret); font-family: var(--jp); line-height: 1.4; }
+.jouer { flex: none; width: 34px; height: 34px; border-radius: 50%; border: 0; background: var(--sarcelle); color: #fff; cursor: pointer; display: grid; place-items: center; padding: 0; }
+.jouer svg { width: 14px; height: 14px; margin-left: 2px; }
+.jouer.joue { background: var(--rouge); }
+/* mots */
+.mots { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 8px; }
+.mot { background: var(--carte); border-radius: 13px; padding: 9px 12px; box-shadow: 0 1px 6px var(--ombre); display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 2px 10px; min-width: 0; }
+.mot .ecrit { font: 600 22px var(--jp); }
+.mot .lecture { font: 13px var(--jp); color: var(--discret); }
+.mot .lecture i { color: var(--rouge); font-style: normal; }
+.mot .sens { grid-column: 1 / 2; font-size: 14px; }
+.mot .jouer { grid-row: 1 / 4; grid-column: 2; }
+.vide { color: var(--discret); text-align: center; padding: 30px; }
+/* quiz */
+.etroit { max-width: 560px; margin: 0 auto; display: grid; gap: 14px; }
+.carte { background: var(--carte); border-radius: 16px; padding: 14px 16px; box-shadow: 0 2px 12px var(--ombre); display: grid; gap: 10px; }
+.carte h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; color: var(--discret); margin: 0; display: flex; justify-content: space-between; align-items: center; }
+.lien { border: 0; background: none; color: var(--sarcelle); font: 600 13px var(--ui); padding: 2px 4px; cursor: pointer; text-transform: none; letter-spacing: 0; }
+.carte .segments { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-flow: row; background: var(--papier); box-shadow: none; }
+.reglage { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 2px 12px; }
+.reglage output { font: 650 15px var(--ui); color: var(--sarcelle); min-width: 4.5em; text-align: right; }
+.reglage input[type=range] { grid-column: 1 / -1; width: 100%; accent-color: var(--sarcelle); }
+.case { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 15px; }
+.case input { width: 22px; height: 22px; accent-color: var(--sarcelle); }
+.grand { border: 0; border-radius: 16px; padding: 16px; font: 700 18px var(--ui); background: var(--sarcelle); color: #fff; cursor: pointer; box-shadow: 0 6px 18px rgba(31,122,122,.35); }
+.grand:disabled { opacity: .5; }
+.grand.second { background: var(--carte); color: var(--sarcelle); box-shadow: 0 2px 12px var(--ombre); }
+.resume, .note-q { color: var(--discret); font-size: 13px; text-align: center; margin: 0; }
+.ecran { text-align: center; padding: 22px 16px; }
+.ecran .etape { font-size: 12px; text-transform: uppercase; letter-spacing: .1em; color: var(--discret); }
+.ecran .question { font-size: 30px; font-weight: 650; min-height: 1.4em; }
+.ecran .question.jp { font-family: var(--jp); font-size: 40px; }
+.ecran .reponse { font-size: 22px; color: var(--sarcelle); min-height: 1.5em; font-family: var(--jp); }
+.ecran .lect { font-size: 15px; color: var(--discret); min-height: 1.3em; font-family: var(--jp); }
+.progres-barre { height: 6px; background: var(--papier); border-radius: 3px; overflow: hidden; }
+.progres-barre div { height: 100%; width: 0; background: var(--sarcelle); transition: width .3s linear; }
+.commandes { display: flex; justify-content: center; gap: 14px; align-items: center; }
+.rond { width: 56px; height: 56px; border-radius: 50%; border: 0; background: var(--sarcelle-clair); color: var(--sarcelle); font-size: 22px; cursor: pointer; display: grid; place-items: center; }
+.rond.principal { width: 76px; height: 76px; background: var(--sarcelle); color: #fff; font-size: 30px; }
+details { font-size: 14px; color: var(--discret); }
+details summary { cursor: pointer; color: var(--sarcelle); font-weight: 600; }
+@media (max-width: 420px) {
+  h1 { font-size: 16px; }
+  .onglets button { padding: 7px 10px; }
+  .fiche { grid-template-columns: 100px 1fr; }
+  .fiche svg { width: 100px; height: 100px; }
+}
+</style>
+</head>
+<body>
+<div class="haut">
+  <div class="ligne">
+    <div class="logo">音</div>
+    <h1>Japonais</h1>
+    <div class="onglets" role="tablist">
+      <button role="tab" data-vue="kanji">Kanji</button>
+      <button role="tab" data-vue="mots">Mots</button>
+      <button role="tab" data-vue="quiz">Quiz audio</button>
+    </div>
+  </div>
+</div>
+
+<main>
+  <!-- ===== Kanji ===== -->
+  <section class="vue" id="vue-kanji">
+    <div class="barre-outils">
+      <div class="segments" id="mode-kanji">
+        <button data-v="liste">Par liste</button>
+        <button data-v="theme">Par thème</button>
+      </div>
+      <input type="search" id="cherche-kanji" placeholder="Chercher : sens, kanji, lecture…">
+    </div>
+    <div class="puces" id="puces-kanji"></div>
+    <div id="fiches"></div>
+  </section>
+
+  <!-- ===== Mots ===== -->
+  <section class="vue" id="vue-mots" hidden>
+    <div class="barre-outils">
+      <input type="search" id="cherche-mots" placeholder="Chercher un mot, une lecture, un sens…">
+    </div>
+    <div class="puces" id="puces-mots"></div>
+    <div id="liste-mots"></div>
+  </section>
+
+  <!-- ===== Quiz audio ===== -->
+  <section class="vue" id="vue-quiz" hidden>
+    <div class="etroit" id="reglages">
+      <div class="carte">
+        <h2>Mots <button class="lien" data-tout="mots">tout</button></h2>
+        <div class="puces" id="g-mots" style="margin:0"></div>
+      </div>
+      <div class="carte">
+        <h2>Kanji (lecture japonaise) <button class="lien" data-tout="kanji">tout</button></h2>
+        <div class="puces" id="g-kanji" style="margin:0"></div>
+      </div>
+      <div class="carte">
+        <h2>Sens</h2>
+        <div class="segments" id="sens">
+          <button data-v="fj">Français → 日本語</button>
+          <button data-v="jf">日本語 → Français</button>
+          <button data-v="mix">Les deux</button>
+        </div>
+        <div class="reglage"><label for="delai">Temps pour répondre</label><output id="o-delai"></output><input id="delai" type="range" min="1" max="8" step="0.5"></div>
+        <div class="reglage"><label for="apres">Pause après la correction</label><output id="o-apres"></output><input id="apres" type="range" min="0.5" max="5" step="0.5"></div>
+        <div class="reglage"><label for="nombre">Nombre de questions</label><output id="o-nombre"></output><input id="nombre" type="range" min="5" max="120" step="5"></div>
+        <label class="case">Répéter la correction deux fois<input type="checkbox" id="repeter"></label>
+        <label class="case">Petit signal avant chaque question<input type="checkbox" id="signal"></label>
+      </div>
+      <button class="grand" id="lancer">Lancer la séance</button>
+      <p class="resume" id="resume"></p>
+      <details>
+        <summary>Mode d'emploi et hors connexion</summary>
+        <p>Choisis tes listes, règle le temps pour répondre, puis lance. La séance est préparée en une seule piste : tu peux verrouiller l'écran et la piloter depuis l'écran verrouillé ou tes AirPods (pause, question précédente ou suivante).</p>
+        <p>Pour installer l'application : dans Safari, bouton Partager, puis « Sur l'écran d'accueil » (sur le Mac : Fichier, puis « Ajouter au Dock »). Les sons déjà écoutés restent disponibles sans réseau ; le bouton ci-dessous les télécharge tous d'un coup.</p>
+        <button class="lien" id="horsligne">Tout télécharger pour le hors connexion</button>
+        <p id="o-horsligne"></p>
+      </details>
+    </div>
+    <div class="etroit" id="seance" hidden>
+      <div class="carte ecran">
+        <div class="etape" id="etape"></div>
+        <div class="question" id="question"></div>
+        <div class="reponse" id="reponse"></div>
+        <div class="lect" id="lecture"></div>
+        <div class="progres-barre"><div id="barre"></div></div>
+        <div class="resume" id="progres"></div>
+      </div>
+      <div class="commandes">
+        <button class="rond" id="prec" aria-label="Question précédente">⏮</button>
+        <button class="rond principal" id="lecturepause" aria-label="Lecture ou pause">⏸</button>
+        <button class="rond" id="suiv" aria-label="Question suivante">⏭</button>
+      </div>
+      <label class="case" style="justify-content:center;gap:10px">Afficher les mots à l'écran<input type="checkbox" id="afficher"></label>
+      <button class="grand second" id="arreter">Arrêter et revenir aux réglages</button>
+      <p class="note-q">Écran verrouillé, la séance continue ; les boutons des écouteurs passent d'une question à l'autre.</p>
+    </div>
+  </section>
+</main>
+
+<audio id="lecteur" preload="auto" playsinline></audio>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const AUDIO_JP = '../audio/', AUDIO_FR = '../audio/fr/';
+  const echapper = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  let fiches = null, vocab = null, version = '1';
+  const url = (dossier, cle) => `${dossier}${cle}.mp3?v=${version}`;
+
+  // ---------- réglages, gardés d'une ouverture à l'autre ----------
+  const DEFAUT = { vue: 'kanji', modeKanji: 'liste', choixKanji: null, choixMots: null,
+    groupes: null, sens: 'fj', delai: 3, apres: 1.5, nombre: 20, repeter: false, signal: true, afficher: false };
+  let R = Object.assign({}, DEFAUT);
+  try { Object.assign(R, JSON.parse(localStorage.getItem('japonais') || '{}')); } catch (e) {}
+  const garder = () => { try { localStorage.setItem('japonais', JSON.stringify(R)); } catch (e) {} };
+
+  // ---------- onglets (l'ancre #kanji, #mots, #quiz ouvre l'onglet voulu) ----------
+  function ouvrir(v) {
+    if (!['kanji', 'mots', 'quiz'].includes(v)) v = 'kanji';
+    R.vue = v; garder();
+    document.querySelectorAll('.onglets button').forEach((b) => b.setAttribute('aria-selected', b.dataset.vue === v));
+    for (const n of ['kanji', 'mots', 'quiz']) $('vue-' + n).hidden = n !== v;
+  }
+  document.querySelectorAll('.onglets button').forEach((b) => b.addEventListener('click', () => { ouvrir(b.dataset.vue); try { history.replaceState(null, '', '#' + b.dataset.vue); } catch (e) {} }));
+  window.addEventListener('hashchange', () => ouvrir(location.hash.slice(1)));
+  ouvrir(location.hash ? location.hash.slice(1) : R.vue);
+
+  // ---------- un son, joué sur place ----------
+  const voix = new Audio();
+  let boutonActif = null;
+  const PLAY = '<svg viewBox="0 0 10 12"><path d="M0 0 L10 6 L0 12 Z" fill="currentColor"/></svg>';
+  function jouer(b, adresse) {
+    if (boutonActif) boutonActif.classList.remove('joue');
+    boutonActif = b; b.classList.add('joue');
+    voix.src = adresse; voix.currentTime = 0;
+    voix.play().catch(() => b.classList.remove('joue'));
+  }
+  voix.addEventListener('ended', () => boutonActif && boutonActif.classList.remove('joue'));
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest('.jouer');
+    if (b && b.dataset.son) jouer(b, b.dataset.son);
+  });
+  const bouton = (adresse, titre) => adresse ? `<button class="jouer" data-son="${adresse}" aria-label="${echapper(titre)}">${PLAY}</button>` : '';
+
+  // ---------- tracé d'un kanji (KanjiVG, repère 109 × 109) ----------
+  function trace(t) {
+    let s = '<svg viewBox="0 0 109 109" aria-hidden="true">';
+    s += '<rect x="0.5" y="0.5" width="108" height="108" fill="none" stroke="var(--grille)" stroke-width="1"/>';
+    s += '<path d="M54.5 1V108M1 54.5H108" stroke="var(--grille)" stroke-width="0.8" stroke-dasharray="2 2.5"/>';
+    for (const d of t.d) s += `<path d="${d}" fill="none" stroke="var(--trace)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`;
+    for (const [x, y, a] of t.f) s += `<path d="M-3.2 -2.4 L3.2 0 L-3.2 2.4 Z" fill="#E0533A" opacity="0.6" transform="translate(${x} ${y}) rotate(${a})"/>`;
+    for (const [n, x, y] of t.n) s += `<text x="${x}" y="${y}" font-size="8" fill="#8a939f" font-family="var(--ui)">${n}</text>`;
+    return s + '</svg>';
+  }
+  function carteKanji(k) {
+    return `<article class="fiche">
+      <div>${trace(k.trace)}</div>
+      <div class="infos">
+        <div class="num">n° ${k.num} · liste ${k.liste}</div>
+        <div class="sens">${echapper(k.sens)}</div>
+        <div class="lec"><b>訓</b><span>${echapper(k.kun)}</span>${bouton(k.audio && url(AUDIO_JP, k.audio), 'Écouter ' + k.kun)}</div>
+        <div class="lec"><b>音</b><span>${echapper(k.on)}</span></div>
+        <div class="petit">画 ${k.traits} traits</div>
+        <div class="cle">${echapper(k.cle)}</div>
+      </div>
+      ${k.note ? `<div class="note">${echapper(k.note)}</div>` : ''}
+    </article>`;
+  }
+
+  // ---------- onglet Kanji ----------
+  const normal = (s) => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  function afficherKanji() {
+    if (!fiches) return;
+    document.querySelectorAll('#mode-kanji button').forEach((b) => b.setAttribute('aria-pressed', b.dataset.v === R.modeKanji));
+    const groupes = R.modeKanji === 'liste'
+      ? fiches.listes.map((l) => ({ id: 'l' + l.n, nom: 'Liste ' + l.n, titre: `Liste ${l.n}` + (l.date ? ` · ${l.date}` : ''), kanji: l.kanji }))
+      : fiches.themes.map((t) => ({ id: 't' + t.nom, nom: t.nom, titre: t.nom, kanji: t.kanji }));
+    if (!groupes.some((g) => g.id === R.choixKanji)) R.choixKanji = R.modeKanji === 'liste' ? groupes[groupes.length - 1].id : groupes[0].id;
+    $('puces-kanji').innerHTML = groupes.map((g) => `<button class="puce" data-g="${echapper(g.id)}" aria-pressed="${g.id === R.choixKanji}">${echapper(g.nom)}<small>${g.kanji.length}</small></button>`).join('');
+    const q = normal($('cherche-kanji').value.trim());
+    const parK = new Map(fiches.kanji.map((k) => [k.k, k]));
+    let html;
+    if (q) {
+      const trouves = fiches.kanji.filter((k) => [k.k, k.sens, k.kun, k.on].some((x) => normal(x).includes(q)));
+      html = `<div class="titre-liste">${trouves.length} résultat${trouves.length > 1 ? 's' : ''}</div><div class="fiches">${trouves.map(carteKanji).join('')}</div>`;
+      if (!trouves.length) html = '<div class="vide">Aucun kanji ne correspond.</div>';
+    } else {
+      const g = groupes.find((x) => x.id === R.choixKanji);
+      html = `<div class="titre-liste">${echapper(g.titre)}</div><div class="fiches">${g.kanji.map((c) => parK.get(c)).filter(Boolean).map(carteKanji).join('')}</div>`;
+    }
+    $('fiches').innerHTML = html;
+    garder();
+  }
+  document.querySelectorAll('#mode-kanji button').forEach((b) => b.addEventListener('click', () => { R.modeKanji = b.dataset.v; R.choixKanji = null; afficherKanji(); }));
+  $('puces-kanji').addEventListener('click', (e) => { const p = e.target.closest('.puce'); if (p) { R.choixKanji = p.dataset.g; $('cherche-kanji').value = ''; afficherKanji(); } });
+  $('cherche-kanji').addEventListener('input', afficherKanji);
+
+  // ---------- onglet Mots ----------
+  function carteMot(m) {
+    return `<div class="mot"><div class="ecrit">${echapper(m.mot)}</div><div class="lecture">${echapper(m.lecture)}${m.irr ? ' <i>*</i>' : ''}</div><div class="sens">${echapper(m.sens)}</div>${bouton(m.audio && url(AUDIO_JP, m.audio), 'Écouter ' + m.mot)}</div>`;
+  }
+  function afficherMots() {
+    if (!fiches) return;
+    if (!fiches.mots.some((r) => r.nom === R.choixMots)) R.choixMots = fiches.mots[0].nom;
+    $('puces-mots').innerHTML = fiches.mots.map((r) => `<button class="puce" data-r="${echapper(r.nom)}" aria-pressed="${r.nom === R.choixMots}">${echapper(r.nom)}<small>${r.mots.length}</small></button>`).join('');
+    const q = normal($('cherche-mots').value.trim());
+    let html;
+    if (q) {
+      const trouves = fiches.mots.flatMap((r) => r.mots).filter((m) => [m.mot, m.lecture, m.sens].some((x) => normal(x).includes(q)));
+      html = trouves.length ? `<div class="titre-liste">${trouves.length} résultat${trouves.length > 1 ? 's' : ''}</div><div class="mots">${trouves.map(carteMot).join('')}</div>` : '<div class="vide">Aucun mot ne correspond.</div>';
+    } else {
+      const r = fiches.mots.find((x) => x.nom === R.choixMots);
+      html = `<div class="titre-liste">${echapper(r.nom)}</div><div class="mots">${r.mots.map(carteMot).join('')}</div>`;
+      if (r.mots.some((m) => m.irr)) html += '<p class="resume" style="margin-top:10px"><span style="color:var(--rouge)">*</span> lecture irrégulière : le mot se lit d\'un bloc, pas kanji par kanji.</p>';
+    }
+    $('liste-mots').innerHTML = html;
+    garder();
+  }
+  $('puces-mots').addEventListener('click', (e) => { const p = e.target.closest('.puce'); if (p) { R.choixMots = p.dataset.r; $('cherche-mots').value = ''; afficherMots(); } });
+  $('cherche-mots').addEventListener('input', afficherMots);
+
+  fetch('fiches.json', { cache: 'no-cache' }).then((r) => r.json()).then((d) => {
+    fiches = d; version = d.version || version;
+    afficherKanji(); afficherMots();
+  }).catch(() => { $('fiches').innerHTML = '<div class="vide">Impossible de charger les fiches (pas de réseau ?).</div>'; });
+
+  // ======================================================================
+  // Quiz audio
+  // ======================================================================
+  const TAUX = 22050; // piste mono à 22 050 Hz : 120 questions tiennent en ~40 Mo
+  const lecteur = $('lecteur');
+  const fmt = (v) => String(v).replace('.', ',');
+  const choisies = () => (vocab && R.groupes ? vocab.questions.filter((q) => R.groupes.includes(q.g)) : []);
+  function majQuiz() {
+    $('o-delai').textContent = fmt(R.delai) + ' s';
+    $('o-apres').textContent = fmt(R.apres) + ' s';
+    const dispo = choisies().length, n = Math.min(R.nombre, dispo);
+    $('o-nombre').textContent = n + (R.nombre >= dispo && dispo ? ' (toutes)' : '');
+    document.querySelectorAll('#sens button').forEach((b) => b.setAttribute('aria-pressed', b.dataset.v === R.sens));
+    document.querySelectorAll('#g-mots .puce, #g-kanji .puce').forEach((p) => p.setAttribute('aria-pressed', !!R.groupes && R.groupes.includes(p.dataset.g)));
+    const duree = n * (2.2 + R.delai + 1.6 * (R.repeter ? 2 : 1) + R.apres + (R.signal ? 0.5 : 0));
+    $('resume').textContent = dispo ? `${n} questions, environ ${Math.max(1, Math.round(duree / 60))} min` : 'Choisis au moins une liste.';
+    $('lancer').disabled = !dispo;
+    garder();
+  }
+  for (const id of ['delai', 'apres', 'nombre']) {
+    $(id).value = R[id];
+    $(id).addEventListener('input', () => { R[id] = +$(id).value; majQuiz(); });
+  }
+  for (const id of ['repeter', 'signal', 'afficher']) {
+    $(id).checked = R[id];
+    $(id).addEventListener('change', () => { R[id] = $(id).checked; majQuiz(); afficherCourant(); });
+  }
+  document.querySelectorAll('#sens button').forEach((b) => b.addEventListener('click', () => { R.sens = b.dataset.v; majQuiz(); }));
+  document.querySelectorAll('[data-tout]').forEach((b) => b.addEventListener('click', () => {
+    if (!vocab) return;
+    const ids = vocab.groupes.filter((g) => g.type === b.dataset.tout).map((g) => g.id);
+    const tous = ids.every((i) => R.groupes.includes(i));
+    R.groupes = tous ? R.groupes.filter((i) => !ids.includes(i)) : [...new Set([...R.groupes, ...ids])];
+    majQuiz();
+  }));
+  fetch('vocab.json', { cache: 'no-cache' }).then((r) => r.json()).then((d) => {
+    vocab = d; version = d.version || version;
+    const ids = d.groupes.map((g) => g.id);
+    if (!R.groupes) R.groupes = d.groupes.filter((g) => g.type === 'mots').map((g) => g.id);
+    R.groupes = R.groupes.filter((g) => ids.includes(g));
+    for (const g of d.groupes) {
+      const n = d.questions.filter((q) => q.g === g.id).length;
+      const b = document.createElement('button');
+      b.className = 'puce'; b.dataset.g = g.id;
+      b.innerHTML = `${echapper(g.nom)}<small>${n}</small>`;
+      b.addEventListener('click', () => { R.groupes = R.groupes.includes(g.id) ? R.groupes.filter((x) => x !== g.id) : [...R.groupes, g.id]; majQuiz(); });
+      $(g.type === 'mots' ? 'g-mots' : 'g-kanji').appendChild(b);
+    }
+    majQuiz();
+  }).catch(() => { $('resume').textContent = 'Impossible de charger le quiz (pas de réseau ?).'; });
+
+  // ---------- assemblage de la séance en une piste ----------
+  let ctx = null;
+  const cacheSons = new Map();
+  async function son(adresse) {
+    if (cacheSons.has(adresse)) return cacheSons.get(adresse);
+    const tampon = await (await fetch(adresse)).arrayBuffer();
+    const buf = await new Promise((ok, ko) => ctx.decodeAudioData(tampon, ok, ko));
+    // mono, ré-échantillonné à TAUX, sans les silences du début et de la fin
+    const src = buf.getChannelData(0), k = buf.sampleRate / TAUX, n = Math.floor(src.length / k);
+    let out = new Float32Array(n);
+    for (let i = 0; i < n; i++) { const x = i * k, j = Math.floor(x), f = x - j; out[i] = (src[j] || 0) * (1 - f) + (src[j + 1] || 0) * f; }
+    let a = 0, b = n - 1;
+    while (a < n && Math.abs(out[a]) < 0.004) a++;
+    while (b > a && Math.abs(out[b]) < 0.004) b--;
+    out = out.slice(Math.max(0, a - 400), Math.min(n, b + 800));
+    cacheSons.set(adresse, out);
+    return out;
+  }
+  function bip() {
+    const d = Math.round(0.09 * TAUX), s = new Float32Array(d);
+    for (let i = 0; i < d; i++) s[i] = 0.12 * Math.sin((2 * Math.PI * 880 * i) / TAUX) * Math.sin((Math.PI * i) / d);
+    return s;
+  }
+  function wav(morceaux, total) {
+    const v = new DataView(new ArrayBuffer(44 + total * 2));
+    const ecrire = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+    ecrire(0, 'RIFF'); v.setUint32(4, 36 + total * 2, true); ecrire(8, 'WAVE'); ecrire(12, 'fmt ');
+    v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, TAUX, true);
+    v.setUint32(28, TAUX * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); ecrire(36, 'data'); v.setUint32(40, total * 2, true);
+    let o = 44;
+    for (const m of morceaux) {
+      if (typeof m === 'number') { o += m * 2; continue; } // silence : des zéros, déjà là
+      for (let i = 0; i < m.length; i++, o += 2) v.setInt16(o, Math.max(-1, Math.min(1, m[i])) * 32767, true);
+    }
+    return new Blob([v], { type: 'audio/wav' });
+  }
+  const melange = (t) => { for (let i = t.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [t[i], t[j]] = [t[j], t[i]]; } return t; };
+  let plan = [], urlPiste = null;
+  // un son muet joué pendant le toucher « Lancer » : iOS autorise ensuite la vraie piste, préparée après
+  const MUET = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAIlYAAESsAAACABAAZGF0YQAAAAA=';
+  $('lancer').addEventListener('click', async () => {
+    lecteur.src = MUET; lecteur.play().catch(() => {});
+    ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
+    $('lancer').disabled = true;
+    const qs = melange(choisies().slice()).slice(0, R.nombre);
+    const morceaux = []; let total = 0; plan = [];
+    const ajouter = (m) => { morceaux.push(m); total += typeof m === 'number' ? m : m.length; };
+    const silence = (s) => ajouter(Math.round(s * TAUX));
+    silence(0.6);
+    for (let i = 0; i < qs.length; i++) {
+      const q = qs[i];
+      $('lancer').textContent = `Préparation… ${i + 1} / ${qs.length}`;
+      const sens = R.sens === 'mix' ? (Math.random() < 0.5 ? 'fj' : 'jf') : R.sens;
+      let a, b;
+      try {
+        const fr = await son(url(AUDIO_FR, q.afr)), jp = await son(url(AUDIO_JP, q.ajp));
+        [a, b] = sens === 'fj' ? [fr, jp] : [jp, fr];
+      } catch (e) { continue; } // son introuvable (hors connexion) : on passe
+      const debut = total / TAUX;
+      if (R.signal) { ajouter(bip()); silence(0.35); }
+      ajouter(a); silence(R.delai);
+      const corr = total / TAUX;
+      ajouter(b);
+      if (R.repeter) { silence(0.7); ajouter(b); }
+      silence(R.apres);
+      plan.push({ debut, corr, fin: total / TAUX, q, sens });
+    }
+    silence(0.5);
+    $('lancer').textContent = 'Lancer la séance'; $('lancer').disabled = false;
+    if (!plan.length) { $('resume').textContent = 'Aucun son disponible : vérifie le réseau.'; return; }
+    if (urlPiste) URL.revokeObjectURL(urlPiste);
+    urlPiste = URL.createObjectURL(wav(morceaux, total));
+    lecteur.src = urlPiste;
+    $('reglages').hidden = true; $('seance').hidden = false;
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.metadata = new MediaMetadata({ title: 'Quiz audio · japonais', artist: `${plan.length} questions`, artwork: [{ src: 'icone-512.png', sizes: '512x512', type: 'image/png' }] });
+    }
+    lecteur.play().catch(() => { $('lecturepause').textContent = '▶'; });
+  });
+  const courant = () => { const t = lecteur.currentTime; const i = plan.findIndex((p) => t < p.fin); return i < 0 ? plan.length - 1 : i; };
+  function afficherCourant() {
+    if (!plan.length) return;
+    const i = courant(), p = plan[i], vu = lecteur.currentTime >= p.corr;
+    $('etape').textContent = p.sens === 'fj' ? 'Français → 日本語' : '日本語 → Français';
+    $('progres').textContent = `Question ${i + 1} / ${plan.length}`;
+    $('barre').style.width = (100 * (i + (vu ? 1 : 0.5)) / plan.length) + '%';
+    $('question').className = 'question' + (p.sens === 'jf' ? ' jp' : '');
+    $('question').textContent = R.afficher ? (p.sens === 'fj' ? p.q.fr : p.q.jp) : '🎧';
+    $('reponse').textContent = R.afficher && vu ? (p.sens === 'fj' ? p.q.jp : p.q.fr) : '';
+    $('lecture').textContent = R.afficher && vu ? p.q.lecture : '';
+  }
+  lecteur.addEventListener('timeupdate', afficherCourant);
+  lecteur.addEventListener('play', () => { $('lecturepause').textContent = '⏸'; });
+  lecteur.addEventListener('pause', () => { $('lecturepause').textContent = '▶'; });
+  lecteur.addEventListener('ended', () => { $('etape').textContent = 'Séance terminée'; $('barre').style.width = '100%'; });
+  const aller = (d) => {
+    if (!plan.length) return;
+    let i = courant();
+    if (d < 0 && lecteur.currentTime - plan[i].debut > 1.5) d = 0; // « précédent » en cours de question : son début
+    i = Math.max(0, Math.min(plan.length - 1, i + d));
+    lecteur.currentTime = plan[i].debut;
+    afficherCourant();
+  };
+  $('prec').addEventListener('click', () => aller(-1));
+  $('suiv').addEventListener('click', () => aller(1));
+  $('lecturepause').addEventListener('click', () => (lecteur.paused ? lecteur.play() : lecteur.pause()));
+  $('arreter').addEventListener('click', () => { lecteur.pause(); $('seance').hidden = true; $('reglages').hidden = false; });
+  if ('mediaSession' in navigator) {
+    try {
+      navigator.mediaSession.setActionHandler('play', () => lecteur.play());
+      navigator.mediaSession.setActionHandler('pause', () => lecteur.pause());
+      navigator.mediaSession.setActionHandler('previoustrack', () => aller(-1));
+      navigator.mediaSession.setActionHandler('nexttrack', () => aller(1));
+    } catch (e) {}
+  }
+
+  // ---------- hors connexion ----------
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+  $('horsligne').addEventListener('click', async () => {
+    if (!vocab || !fiches) return;
+    const urls = [...new Set([
+      ...vocab.questions.flatMap((q) => [url(AUDIO_FR, q.afr), url(AUDIO_JP, q.ajp)]),
+      ...fiches.kanji.filter((k) => k.audio).map((k) => url(AUDIO_JP, k.audio)),
+      ...fiches.mots.flatMap((r) => r.mots).filter((m) => m.audio).map((m) => url(AUDIO_JP, m.audio)),
+    ])];
+    let n = 0;
+    for (let i = 0; i < urls.length; i += 8) {
+      await Promise.all(urls.slice(i, i + 8).map((u) => fetch(u).then(() => n++).catch(() => {})));
+      $('o-horsligne').textContent = `${n} / ${urls.length} sons téléchargés`;
+    }
+    $('o-horsligne').textContent = `${n} / ${urls.length} sons disponibles hors connexion.`;
+  });
+})();
+</script>
+</body>
+</html>

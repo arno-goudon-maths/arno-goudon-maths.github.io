@@ -1,0 +1,14 @@
+{
+  "name": "Japonais · kanji, mots et quiz audio",
+  "short_name": "日本語",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f1ea",
+  "theme_color": "#1F7A7A",
+  "lang": "fr",
+  "icons": [
+    {"src": "icone-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "icone-512.png", "sizes": "512x512", "type": "image/png"}
+  ]
+}
