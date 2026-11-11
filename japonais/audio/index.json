@@ -2026,7 +2026,7 @@
   "kanji": "四",
   "kun": "よ(っつ) ・ よん",
   "sens": "quatre",
-  "dit": "四つ、よん"
+  "dit": "四つ、四"
  },
  "768dea20252e": {
   "kanji": "五",
@@ -2074,37 +2074,37 @@
   "kanji": "雨",
   "kun": "あめ",
   "sens": "pluie",
-  "dit": "あめ"
+  "dit": "雨"
  },
  "098fe3707851": {
   "kanji": "雷",
   "kun": "かみなり",
   "sens": "foudre, tonnerre",
-  "dit": "かみなり"
+  "dit": "雷"
  },
  "85ec4b710792": {
   "kanji": "雪",
   "kun": "ゆき",
   "sens": "neige",
-  "dit": "ゆき"
+  "dit": "雪"
  },
  "3c0ef9407592": {
   "kanji": "水",
   "kun": "みず",
   "sens": "eau",
-  "dit": "みず"
+  "dit": "水"
  },
  "f6c425d03310": {
   "kanji": "氷",
   "kun": "こおり",
   "sens": "glace",
-  "dit": "こおり"
+  "dit": "氷"
  },
  "7f7bf810907d": {
   "kanji": "海",
   "kun": "うみ",
   "sens": "mer",
-  "dit": "うみ"
+  "dit": "海"
  },
  "541702a59f46": {
   "kanji": "川",
@@ -2116,7 +2116,7 @@
   "kanji": "秋",
   "kun": "あき",
   "sens": "automne",
-  "dit": "あき"
+  "dit": "秋"
  },
  "03b63de8f6ce": {
   "kanji": "日",
@@ -2128,13 +2128,13 @@
   "kanji": "春",
   "kun": "はる",
   "sens": "printemps",
-  "dit": "はる"
+  "dit": "春"
  },
  "8590773a8394": {
   "kanji": "時",
   "kun": "とき",
   "sens": "temps, heure",
-  "dit": "とき"
+  "dit": "時"
  },
  "2cb781969063": {
   "kanji": "木",
@@ -2146,19 +2146,19 @@
   "kanji": "林",
   "kun": "はやし",
   "sens": "bois, bosquet",
-  "dit": "はやし"
+  "dit": "林"
  },
  "b23c8ac8c306": {
   "kanji": "森",
   "kun": "もり",
   "sens": "forêt",
-  "dit": "もり"
+  "dit": "森"
  },
  "c4a08901f102": {
   "kanji": "山",
   "kun": "やま",
   "sens": "montagne",
-  "dit": "やま"
+  "dit": "山"
  },
  "07efff1ed11b": {
   "kanji": "島",
@@ -2170,13 +2170,13 @@
   "kanji": "土",
   "kun": "つち",
   "sens": "terre (matière)",
-  "dit": "つち"
+  "dit": "土"
  },
  "39b789322125": {
   "kanji": "人",
   "kun": "ひと",
   "sens": "personne",
-  "dit": "ひと"
+  "dit": "人"
  },
  "b67dad0bb1c6": {
   "kanji": "大",
@@ -2194,13 +2194,13 @@
   "kanji": "金",
   "kun": "かね",
   "sens": "or, métal",
-  "dit": "かね"
+  "dit": "金"
  },
  "97958b645a2d": {
   "kanji": "月",
   "kun": "つき",
   "sens": "lune, mois",
-  "dit": "つき"
+  "dit": "月"
  },
  "ba917edef132": {
   "kanji": "火",
@@ -2218,7 +2218,7 @@
   "kanji": "石",
   "kun": "いし",
   "sens": "pierre",
-  "dit": "いし"
+  "dit": "石"
  },
  "50c1faeda5d8": {
   "kanji": "田",
@@ -2230,7 +2230,7 @@
   "kanji": "花",
   "kun": "はな",
   "sens": "fleur",
-  "dit": "はな"
+  "dit": "花"
  },
  "41c06619fd63": {
   "kanji": "年",
@@ -2242,19 +2242,19 @@
   "kanji": "音",
   "kun": "おと",
   "sens": "son",
-  "dit": "おと"
+  "dit": "音"
  },
  "cf3576642da0": {
   "kanji": "空",
   "kun": "そら",
   "sens": "ciel, vide",
-  "dit": "そら"
+  "dit": "空"
  },
  "84fb70350112": {
   "kanji": "神",
   "kun": "かみ",
   "sens": "dieu",
-  "dit": "かみ"
+  "dit": "神"
  },
  "1574a3095cd7": {
   "kanji": "分",
@@ -2266,19 +2266,19 @@
   "kanji": "光",
   "kun": "ひかり",
   "sens": "lumière",
-  "dit": "ひかり"
+  "dit": "光"
  },
  "77b48b5b83a3": {
   "kanji": "冬",
   "kun": "ふゆ",
   "sens": "hiver",
-  "dit": "ふゆ"
+  "dit": "冬"
  },
  "7e48765b8cc3": {
   "kanji": "夏",
   "kun": "なつ",
   "sens": "été",
-  "dit": "なつ"
+  "dit": "夏"
  },
  "d6fb06cf037b": {
   "kanji": "全",
@@ -2296,13 +2296,13 @@
   "kanji": "今",
   "kun": "いま",
   "sens": "maintenant",
-  "dit": "いま"
+  "dit": "今"
  },
  "3d2c5e5900ba": {
   "kanji": "上",
   "kun": "うえ",
   "sens": "dessus, en haut",
-  "dit": "うえ"
+  "dit": "上"
  },
  "4ca7498343fe": {
   "kanji": "下",
@@ -2314,79 +2314,79 @@
   "kanji": "右",
   "kun": "みぎ",
   "sens": "droite",
-  "dit": "みぎ"
+  "dit": "右"
  },
  "f00ae3144951": {
   "kanji": "左",
   "kun": "ひだり",
   "sens": "gauche",
-  "dit": "ひだり"
+  "dit": "左"
  },
  "d6d0616dd5a7": {
   "kanji": "前",
   "kun": "まえ",
   "sens": "avant, devant",
-  "dit": "まえ"
+  "dit": "前"
  },
  "c8919619c1f0": {
   "kanji": "後",
   "kun": "うし(ろ) ・ あと",
   "sens": "après, derrière",
-  "dit": "後ろ、あと"
+  "dit": "後ろ、後"
  },
  "1db486711354": {
   "kanji": "中",
   "kun": "なか",
   "sens": "milieu, dedans",
-  "dit": "なか"
+  "dit": "中"
  },
  "6acefc7c0fe3": {
   "kanji": "内",
   "kun": "うち",
   "sens": "intérieur",
-  "dit": "うち"
+  "dit": "内"
  },
  "e98dae07c4c9": {
   "kanji": "外",
   "kun": "そと",
   "sens": "extérieur",
-  "dit": "そと"
+  "dit": "外"
  },
  "72a77b12f702": {
   "kanji": "北",
   "kun": "きた",
   "sens": "nord",
-  "dit": "きた"
+  "dit": "北"
  },
  "a0fe37e32b9f": {
   "kanji": "南",
   "kun": "みなみ",
   "sens": "sud",
-  "dit": "みなみ"
+  "dit": "南"
  },
  "039543e8f4d4": {
   "kanji": "東",
   "kun": "ひがし",
   "sens": "est (point cardinal)",
-  "dit": "ひがし"
+  "dit": "東"
  },
  "b3012051b7c7": {
   "kanji": "西",
   "kun": "にし",
   "sens": "ouest",
-  "dit": "にし"
+  "dit": "西"
  },
  "e14b1aaa3587": {
   "kanji": "国",
   "kun": "くに",
   "sens": "pays",
-  "dit": "くに"
+  "dit": "国"
  },
  "8ea9a946b1ea": {
   "kanji": "町",
   "kun": "まち",
   "sens": "ville",
-  "dit": "まち"
+  "dit": "町"
  },
  "313a59b28e2a": {
   "kanji": "店",
@@ -2428,19 +2428,19 @@
   "kanji": "車",
   "kun": "くるま",
   "sens": "voiture",
-  "dit": "くるま"
+  "dit": "車"
  },
  "9dc76926d6a6": {
   "kanji": "道",
   "kun": "みち",
   "sens": "voie, chemin",
-  "dit": "みち"
+  "dit": "道"
  },
  "16bec305776b": {
   "kanji": "家",
   "kun": "いえ ・ うち",
   "sens": "maison",
-  "dit": "いえ、うち"
+  "dit": "家、うち"
  },
  "7a1b14d1d9b5": {
   "kanji": "名",
@@ -2452,13 +2452,13 @@
   "kanji": "男",
   "kun": "おとこ",
   "sens": "homme",
-  "dit": "おとこ"
+  "dit": "男"
  },
  "343b4cb93b95": {
   "kanji": "女",
   "kun": "おんな",
   "sens": "femme",
-  "dit": "おんな"
+  "dit": "女"
  },
  "9029888cee08": {
   "kanji": "子",
@@ -2476,49 +2476,49 @@
   "kanji": "父",
   "kun": "ちち",
   "sens": "père",
-  "dit": "ちち"
+  "dit": "父"
  },
  "94a00e0c9b03": {
   "kanji": "母",
   "kun": "はは",
   "sens": "mère",
-  "dit": "はは"
+  "dit": "母"
  },
  "23ed21e23274": {
   "kanji": "兄",
   "kun": "あに",
   "sens": "grand frère",
-  "dit": "あに"
+  "dit": "兄"
  },
  "bd77266e5b65": {
   "kanji": "弟",
   "kun": "おとうと",
   "sens": "petit frère",
-  "dit": "おとうと"
+  "dit": "弟"
  },
  "6f947ee0928d": {
   "kanji": "姉",
   "kun": "あね",
   "sens": "grande sœur",
-  "dit": "あね"
+  "dit": "姉"
  },
  "934176fe6234": {
   "kanji": "妹",
   "kun": "いもうと",
   "sens": "petite sœur",
-  "dit": "いもうと"
+  "dit": "妹"
  },
  "b2a5e205aa7e": {
   "kanji": "友",
   "kun": "とも",
   "sens": "ami",
-  "dit": "とも"
+  "dit": "友"
  },
  "4ff050ab1a05": {
   "kanji": "力",
   "kun": "ちから",
   "sens": "force",
-  "dit": "ちから"
+  "dit": "力"
  },
  "e836f271a452": {
   "kanji": "目",
@@ -2530,7 +2530,7 @@
   "kanji": "口",
   "kun": "くち",
   "sens": "bouche",
-  "dit": "くち"
+  "dit": "口"
  },
  "ab53558c48a5": {
   "kanji": "耳",
@@ -2548,37 +2548,37 @@
   "kanji": "髪",
   "kun": "かみ",
   "sens": "cheveux",
-  "dit": "かみ"
+  "dit": "髪"
  },
  "73a6792c016b": {
   "kanji": "頭",
   "kun": "あたま",
   "sens": "tête",
-  "dit": "あたま"
+  "dit": "頭"
  },
  "985060bbb1d8": {
   "kanji": "体",
   "kun": "からだ",
   "sens": "corps",
-  "dit": "からだ"
+  "dit": "体"
  },
  "ac0e6f216249": {
   "kanji": "腹",
   "kun": "はら",
   "sens": "ventre",
-  "dit": "はら"
+  "dit": "腹"
  },
  "26d2e5f66cb2": {
   "kanji": "心",
   "kun": "こころ",
   "sens": "cœur, esprit",
-  "dit": "こころ"
+  "dit": "心"
  },
  "f024cab7bb9a": {
   "kanji": "足",
   "kun": "あし ・ た(りる)",
   "sens": "pied, jambe ; suffire",
-  "dit": "あし、足りる"
+  "dit": "足、足りる"
  },
  "82950ca51bd9": {
   "kanji": "手",
@@ -2596,97 +2596,97 @@
   "kanji": "羽",
   "kun": "はね ・ は",
   "sens": "plume, aile",
-  "dit": "はね、は"
+  "dit": "羽、は"
  },
  "b6d02487e802": {
   "kanji": "鳥",
   "kun": "とり",
   "sens": "oiseau",
-  "dit": "とり"
+  "dit": "鳥"
  },
  "d653f148110c": {
   "kanji": "魚",
   "kun": "さかな ・ うお",
   "sens": "poisson",
-  "dit": "さかな、うお"
+  "dit": "魚、うお"
  },
  "95eeac82aa02": {
   "kanji": "犬",
   "kun": "いぬ",
   "sens": "chien",
-  "dit": "いぬ"
+  "dit": "犬"
  },
  "642d1e598773": {
   "kanji": "猫",
   "kun": "ねこ",
   "sens": "chat",
-  "dit": "ねこ"
+  "dit": "猫"
  },
  "2bddfff4e9c6": {
   "kanji": "牛",
   "kun": "うし",
   "sens": "vache, bœuf",
-  "dit": "うし"
+  "dit": "牛"
  },
  "4839a1e4d845": {
   "kanji": "羊",
   "kun": "ひつじ",
   "sens": "mouton",
-  "dit": "ひつじ"
+  "dit": "羊"
  },
  "fb21d8047231": {
   "kanji": "馬",
   "kun": "うま",
   "sens": "cheval",
-  "dit": "うま"
+  "dit": "馬"
  },
  "c4096d3687ca": {
   "kanji": "鹿",
   "kun": "しか",
   "sens": "cerf",
-  "dit": "しか"
+  "dit": "鹿"
  },
  "d671db0bf059": {
   "kanji": "豚",
   "kun": "ぶた",
   "sens": "cochon",
-  "dit": "ぶた"
+  "dit": "豚"
  },
  "17dbeb42ebf4": {
   "kanji": "虫",
   "kun": "むし",
   "sens": "insecte",
-  "dit": "むし"
+  "dit": "虫"
  },
  "ed2b566e9da6": {
   "kanji": "色",
   "kun": "いろ",
   "sens": "couleur",
-  "dit": "いろ"
+  "dit": "色"
  },
  "c212c28c0443": {
   "kanji": "白",
   "kun": "しろ ・ しろ(い)",
   "sens": "blanc",
-  "dit": "しろ、白い"
+  "dit": "白、白い"
  },
  "2ae55ece5f30": {
   "kanji": "黒",
   "kun": "くろ ・ くろ(い)",
   "sens": "noir",
-  "dit": "くろ、黒い"
+  "dit": "黒、黒い"
  },
  "228d3ff16465": {
   "kanji": "赤",
   "kun": "あか ・ あか(い)",
   "sens": "rouge",
-  "dit": "あか、赤い"
+  "dit": "赤、赤い"
  },
  "3cc523495bd5": {
   "kanji": "青",
   "kun": "あお ・ あお(い)",
   "sens": "bleu (et vert)",
-  "dit": "あお、青い"
+  "dit": "青、青い"
  },
  "36a7a13be73b": {
   "kanji": "黄",
@@ -2698,19 +2698,19 @@
   "kanji": "緑",
   "kun": "みどり",
   "sens": "vert",
-  "dit": "みどり"
+  "dit": "緑"
  },
  "8f3226e06faf": {
   "kanji": "紫",
   "kun": "むらさき",
   "sens": "violet",
-  "dit": "むらさき"
+  "dit": "紫"
  },
  "7f4ac5ffceae": {
   "kanji": "米",
   "kun": "こめ",
   "sens": "riz (le grain)",
-  "dit": "こめ"
+  "dit": "米"
  },
  "0ea75730ea1e": {
   "kanji": "食",
@@ -2788,13 +2788,13 @@
   "kanji": "言",
   "kun": "い(う) ・ こと",
   "sens": "dire",
-  "dit": "言う、こと"
+  "dit": "言う、言"
  },
  "e7a1984d936c": {
   "kanji": "話",
   "kun": "はな(す) ・ はなし",
   "sens": "parler ; conversation",
-  "dit": "話す、はなし"
+  "dit": "話す、話"
  },
  "6179d067d26f": {
   "kanji": "語",
@@ -2842,7 +2842,7 @@
   "kanji": "生",
   "kun": "い(きる) ・ う(まれる) ・ なま",
   "sens": "vivre ; naître ; cru",
-  "dit": "生きる、生まれる、なま"
+  "dit": "生きる、生まれる、生"
  },
  "41c4082bd9b2": {
   "kanji": "死",
@@ -2860,19 +2860,19 @@
   "kanji": "紅",
   "kun": "べに ・ くれない",
   "sens": "cramoisi, rouge vif",
-  "dit": "べに、くれない"
+  "dit": "べに、紅"
  },
  "5aa3ea7ef894": {
   "kanji": "顔",
   "kun": "かお",
   "sens": "visage",
-  "dit": "かお"
+  "dit": "顔"
  },
  "667c73c7908e": {
   "kanji": "声",
   "kun": "こえ",
   "sens": "voix",
-  "dit": "こえ"
+  "dit": "声"
  },
  "c9638ee51d1a": {
   "kanji": "歯",
@@ -2884,49 +2884,49 @@
   "kanji": "舌",
   "kun": "した",
   "sens": "langue (organe)",
-  "dit": "した"
+  "dit": "舌"
  },
  "bf95c65e8504": {
   "kanji": "髭",
   "kun": "ひげ",
   "sens": "barbe, moustache",
-  "dit": "ひげ"
+  "dit": "髭"
  },
  "059c49621e0d": {
   "kanji": "首",
   "kun": "くび",
   "sens": "cou ; chef",
-  "dit": "くび"
+  "dit": "首"
  },
  "58b0fa3dc680": {
   "kanji": "肩",
   "kun": "かた",
   "sens": "épaule",
-  "dit": "かた"
+  "dit": "肩"
  },
  "d11d28570f6b": {
   "kanji": "腕",
   "kun": "うで",
   "sens": "bras ; habileté",
-  "dit": "うで"
+  "dit": "腕"
  },
  "78eea193ba80": {
   "kanji": "指",
   "kun": "ゆび ・ さ(す)",
   "sens": "doigt ; montrer du doigt",
-  "dit": "ゆび、指す"
+  "dit": "指、指す"
  },
  "6447ebd231fa": {
   "kanji": "爪",
   "kun": "つめ",
   "sens": "ongle, griffe",
-  "dit": "つめ"
+  "dit": "爪"
  },
  "0bb2aa812f0b": {
   "kanji": "胸",
   "kun": "むね",
   "sens": "poitrine",
-  "dit": "むね"
+  "dit": "胸"
  },
  "3af1083d8569": {
   "kanji": "背",
@@ -2938,13 +2938,13 @@
   "kanji": "肌",
   "kun": "はだ",
   "sens": "peau",
-  "dit": "はだ"
+  "dit": "肌"
  },
  "e8637d705213": {
   "kanji": "尻",
   "kun": "しり",
   "sens": "fesses ; derrière, bout",
-  "dit": "しり"
+  "dit": "尻"
  },
  "ebe0a3740ffd": {
   "kanji": "血",
@@ -3088,7 +3088,7 @@
   "kanji": "味",
   "kun": "あじ",
   "sens": "goût, saveur",
-  "dit": "あじ"
+  "dit": "味"
  },
  "f56fa155574a": {
   "kanji": "静",
@@ -3106,25 +3106,25 @@
   "kanji": "鶏",
   "kun": "にわとり ・ とり",
   "sens": "poule, poulet",
-  "dit": "にわとり、とり"
+  "dit": "鶏、とり"
  },
  "dacb16a518b4": {
   "kanji": "狸",
   "kun": "たぬき",
   "sens": "tanuki",
-  "dit": "たぬき"
+  "dit": "狸"
  },
  "d3c62e7cc31c": {
   "kanji": "兎",
   "kun": "うさぎ",
   "sens": "lapin, lièvre",
-  "dit": "うさぎ"
+  "dit": "兎"
  },
  "5c0d6cf6af8a": {
   "kanji": "歌",
   "kun": "うた ・ うた(う)",
   "sens": "chant, chanson",
-  "dit": "うた、歌う"
+  "dit": "歌、歌う"
  },
  "cecb621f3257": {
   "kanji": "妖",
@@ -3160,7 +3160,7 @@
   "kanji": "殿",
   "kun": "との ・ どの",
   "sens": "palais, seigneur",
-  "dit": "との、どの"
+  "dit": "殿、どの"
  },
  "5e082267c298": {
   "kanji": "箒",
@@ -3178,31 +3178,31 @@
   "kanji": "物",
   "kun": "もの",
   "sens": "chose, objet",
-  "dit": "もの"
+  "dit": "物"
  },
  "c6f086f4b7f4": {
   "kanji": "姫",
   "kun": "ひめ",
   "sens": "princesse",
-  "dit": "ひめ"
+  "dit": "姫"
  },
  "059879cc9948": {
   "kanji": "炎",
   "kun": "ほのお",
   "sens": "flamme",
-  "dit": "ほのお"
+  "dit": "炎"
  },
  "8875fb1401f2": {
   "kanji": "夜",
   "kun": "よる ・ よ",
   "sens": "nuit",
-  "dit": "よる、よ"
+  "dit": "夜、よ"
  },
  "73eac5df05e0": {
   "kanji": "仮",
   "kun": "かり",
   "sens": "provisoire, faux",
-  "dit": "かり"
+  "dit": "仮"
  },
  "eb19ba63d3c5": {
   "kanji": "面",
@@ -3214,13 +3214,13 @@
   "kanji": "狼",
   "kun": "おおかみ",
   "sens": "loup",
-  "dit": "おおかみ"
+  "dit": "狼"
  },
  "adfe18912f1d": {
   "kanji": "墓",
   "kun": "はか",
   "sens": "tombe",
-  "dit": "はか"
+  "dit": "墓"
  },
  "705678fbbc56": {
   "kanji": "霊",
@@ -3244,13 +3244,13 @@
   "kanji": "靴",
   "kun": "くつ",
   "sens": "chaussure",
-  "dit": "くつ"
+  "dit": "靴"
  },
  "16e6b9c44658": {
   "kanji": "袋",
   "kun": "ふくろ",
   "sens": "sac, poche",
-  "dit": "ふくろ"
+  "dit": "袋"
  },
  "660bb4e45bd2": {
   "kanji": "運",
@@ -3268,13 +3268,13 @@
   "kanji": "襟",
   "kun": "えり",
   "sens": "col (de vêtement)",
-  "dit": "えり"
+  "dit": "襟"
  },
  "82f8e84fbd02": {
   "kanji": "巻",
   "kun": "ま(く) ・ まき",
   "sens": "enrouler ; tome",
-  "dit": "巻く、まき"
+  "dit": "巻く、巻"
  },
  "1049ef334644": {
   "kanji": "装",
@@ -3286,7 +3286,7 @@
   "kanji": "飴",
   "kun": "あめ",
   "sens": "bonbon",
-  "dit": "あめ"
+  "dit": "飴"
  },
  "f25766852e79": {
   "kanji": "使",
@@ -3310,13 +3310,13 @@
   "kanji": "鬼",
   "kun": "おに",
   "sens": "oni, ogre",
-  "dit": "おに"
+  "dit": "鬼"
  },
  "b8bc976bacb9": {
   "kanji": "骨",
   "kun": "ほね",
   "sens": "os",
-  "dit": "ほね"
+  "dit": "骨"
  },
  "372951b141cd": {
   "kanji": "屋",
