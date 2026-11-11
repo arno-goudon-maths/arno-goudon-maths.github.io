@@ -1,0 +1,3339 @@
+{
+ "5e8d572fb2b9": {
+  "mot": "夜",
+  "lecture": "よる",
+  "dit": "夜"
+ },
+ "ce5bbbb0a4b6": {
+  "mot": "今夜",
+  "lecture": "こんや",
+  "dit": "今夜"
+ },
+ "0d04b7363471": {
+  "mot": "夜空",
+  "lecture": "よぞら",
+  "dit": "夜空"
+ },
+ "77b930a64a82": {
+  "mot": "夜中",
+  "lecture": "よなか",
+  "dit": "夜中"
+ },
+ "c6db0d793a07": {
+  "mot": "今日",
+  "lecture": "きょう",
+  "dit": "今日"
+ },
+ "799c4ce3a5f9": {
+  "mot": "今年",
+  "lecture": "ことし",
+  "dit": "今年"
+ },
+ "8f7c24f62194": {
+  "mot": "今月",
+  "lecture": "こんげつ",
+  "dit": "今月"
+ },
+ "0a85889561e8": {
+  "mot": "今週",
+  "lecture": "こんしゅう",
+  "dit": "今週"
+ },
+ "ee239a29131e": {
+  "mot": "今後",
+  "lecture": "こんご",
+  "dit": "今後"
+ },
+ "fb0d50d511e2": {
+  "mot": "一日",
+  "lecture": "いちにち",
+  "dit": "いちにち"
+ },
+ "27894b62b6b6": {
+  "mot": "一日",
+  "lecture": "ついたち",
+  "dit": "一日"
+ },
+ "0b6dcb009a03": {
+  "mot": "三日",
+  "lecture": "みっか",
+  "dit": "三日"
+ },
+ "8d943625cacc": {
+  "mot": "二十日",
+  "lecture": "はつか",
+  "dit": "二十日"
+ },
+ "2117107ce5f9": {
+  "mot": "一月",
+  "lecture": "いちがつ",
+  "dit": "一月"
+ },
+ "ac73c13eec6d": {
+  "mot": "一年",
+  "lecture": "いちねん",
+  "dit": "一年"
+ },
+ "123ee999f639": {
+  "mot": "半年",
+  "lecture": "はんとし",
+  "dit": "半年"
+ },
+ "a9da8ecb5269": {
+  "mot": "一時",
+  "lecture": "いちじ",
+  "dit": "一時"
+ },
+ "eaa1d53530d4": {
+  "mot": "一分",
+  "lecture": "いっぷん",
+  "dit": "いっぷん"
+ },
+ "af546e03edc4": {
+  "mot": "十秒",
+  "lecture": "じゅうびょう",
+  "dit": "十秒"
+ },
+ "b53533a0fb0e": {
+  "mot": "日中",
+  "lecture": "にっちゅう",
+  "dit": "にっちゅう"
+ },
+ "da18774ae233": {
+  "mot": "年中",
+  "lecture": "ねんじゅう",
+  "dit": "年中"
+ },
+ "90d6c140e2cf": {
+  "mot": "前日",
+  "lecture": "ぜんじつ",
+  "dit": "前日"
+ },
+ "11951d0f0192": {
+  "mot": "前半",
+  "lecture": "ぜんはん",
+  "dit": "前半"
+ },
+ "a4776d731e22": {
+  "mot": "後半",
+  "lecture": "こうはん",
+  "dit": "後半"
+ },
+ "1b59078b9f66": {
+  "mot": "春夏秋冬",
+  "lecture": "しゅんかしゅうとう",
+  "dit": "しゅんかしゅうとう"
+ },
+ "19fe3eea7d16": {
+  "mot": "春分",
+  "lecture": "しゅんぶん",
+  "dit": "春分"
+ },
+ "7e8710ba1883": {
+  "mot": "秋分",
+  "lecture": "しゅうぶん",
+  "dit": "しゅうぶん"
+ },
+ "c773a152bc1c": {
+  "mot": "新年",
+  "lecture": "しんねん",
+  "dit": "新年"
+ },
+ "03f0218dbec0": {
+  "mot": "本日",
+  "lecture": "ほんじつ",
+  "dit": "本日"
+ },
+ "13d621e5b141": {
+  "mot": "古今",
+  "lecture": "ここん",
+  "dit": "古今"
+ },
+ "bc5dcbd1c1e0": {
+  "mot": "大雨",
+  "lecture": "おおあめ",
+  "dit": "大雨"
+ },
+ "fc3e6ad282aa": {
+  "mot": "大雪",
+  "lecture": "おおゆき",
+  "dit": "大雪"
+ },
+ "1ae6200ae65e": {
+  "mot": "雷雨",
+  "lecture": "らいう",
+  "dit": "雷雨"
+ },
+ "1650e2aa32f7": {
+  "mot": "雨水",
+  "lecture": "あまみず",
+  "dit": "雨水"
+ },
+ "b0404c71d438": {
+  "mot": "雨音",
+  "lecture": "あまおと",
+  "dit": "雨音"
+ },
+ "8d491bb91d5c": {
+  "mot": "海水",
+  "lecture": "かいすい",
+  "dit": "海水"
+ },
+ "7c3914fc5100": {
+  "mot": "地下水",
+  "lecture": "ちかすい",
+  "dit": "地下水"
+ },
+ "5f7f6843503d": {
+  "mot": "火山",
+  "lecture": "かざん",
+  "dit": "火山"
+ },
+ "87a34550a054": {
+  "mot": "森林",
+  "lecture": "しんりん",
+  "dit": "森林"
+ },
+ "cef2eb371eb2": {
+  "mot": "山林",
+  "lecture": "さんりん",
+  "dit": "山林"
+ },
+ "4587f92eeb0e": {
+  "mot": "大空",
+  "lecture": "おおぞら",
+  "dit": "大空"
+ },
+ "7384ce98e47d": {
+  "mot": "天地",
+  "lecture": "てんち",
+  "dit": "天地"
+ },
+ "cd87d7cde87a": {
+  "mot": "春風",
+  "lecture": "はるかぜ",
+  "dit": "はるかぜ"
+ },
+ "01b30a5eb54f": {
+  "mot": "日光",
+  "lecture": "にっこう",
+  "dit": "日光"
+ },
+ "75a1474f93f3": {
+  "mot": "月光",
+  "lecture": "げっこう",
+  "dit": "月光"
+ },
+ "c86b8d707f54": {
+  "mot": "花火",
+  "lecture": "はなび",
+  "dit": "花火"
+ },
+ "b56062c69f36": {
+  "mot": "炎",
+  "lecture": "ほのお",
+  "dit": "炎"
+ },
+ "05178b0103dd": {
+  "mot": "雪国",
+  "lecture": "ゆきぐに",
+  "dit": "雪国"
+ },
+ "2c71b8a7bdb4": {
+  "mot": "上下",
+  "lecture": "じょうげ",
+  "dit": "上下"
+ },
+ "26f12d9da696": {
+  "mot": "左右",
+  "lecture": "さゆう",
+  "dit": "左右"
+ },
+ "a987ab5be98a": {
+  "mot": "前後",
+  "lecture": "ぜんご",
+  "dit": "前後"
+ },
+ "1cfe7c172066": {
+  "mot": "内外",
+  "lecture": "ないがい",
+  "dit": "内外"
+ },
+ "8d70560f78b5": {
+  "mot": "東西",
+  "lecture": "とうざい",
+  "dit": "東西"
+ },
+ "737ba31c4e2e": {
+  "mot": "南北",
+  "lecture": "なんぼく",
+  "dit": "南北"
+ },
+ "8c79b968f656": {
+  "mot": "地下",
+  "lecture": "ちか",
+  "dit": "地下"
+ },
+ "db14fe0c68be": {
+  "mot": "地上",
+  "lecture": "ちじょう",
+  "dit": "地上"
+ },
+ "c909c7c5efa3": {
+  "mot": "空中",
+  "lecture": "くうちゅう",
+  "dit": "空中"
+ },
+ "7396feaeb025": {
+  "mot": "川上",
+  "lecture": "かわかみ",
+  "dit": "川上"
+ },
+ "12b9a095acae": {
+  "mot": "年上",
+  "lecture": "としうえ",
+  "dit": "年上"
+ },
+ "92abf2832099": {
+  "mot": "年下",
+  "lecture": "としした",
+  "dit": "年下"
+ },
+ "72b97610aea4": {
+  "mot": "大人",
+  "lecture": "おとな",
+  "dit": "大人"
+ },
+ "6ac8c6f7bbcd": {
+  "mot": "一人",
+  "lecture": "ひとり",
+  "dit": "一人"
+ },
+ "5ae9f1be2924": {
+  "mot": "二人",
+  "lecture": "ふたり",
+  "dit": "二人"
+ },
+ "825e29cd3af4": {
+  "mot": "外国",
+  "lecture": "がいこく",
+  "dit": "外国"
+ },
+ "f2b939e3f480": {
+  "mot": "外国人",
+  "lecture": "がいこくじん",
+  "dit": "外国人"
+ },
+ "252a8b9fdc5e": {
+  "mot": "中国",
+  "lecture": "ちゅうごく",
+  "dit": "中国"
+ },
+ "0710845dbb0b": {
+  "mot": "全国",
+  "lecture": "ぜんこく",
+  "dit": "全国"
+ },
+ "70280328522b": {
+  "mot": "天国",
+  "lecture": "てんごく",
+  "dit": "天国"
+ },
+ "d9d383bcba10": {
+  "mot": "島国",
+  "lecture": "しまぐに",
+  "dit": "島国"
+ },
+ "6f70daed54af": {
+  "mot": "海外",
+  "lecture": "かいがい",
+  "dit": "海外"
+ },
+ "6902e87cba8e": {
+  "mot": "土地",
+  "lecture": "とち",
+  "dit": "土地"
+ },
+ "448ebd8bb369": {
+  "mot": "下町",
+  "lecture": "したまち",
+  "dit": "下町"
+ },
+ "8ea5e5c0aac9": {
+  "mot": "店内",
+  "lecture": "てんない",
+  "dit": "店内"
+ },
+ "f3e1ef330501": {
+  "mot": "山田",
+  "lecture": "やまだ",
+  "dit": "山田"
+ },
+ "8b93c57b120a": {
+  "mot": "田中",
+  "lecture": "たなか",
+  "dit": "田中"
+ },
+ "98163e1740ef": {
+  "mot": "日本",
+  "lecture": "にほん",
+  "dit": "にほん"
+ },
+ "3fe7fd2bfa51": {
+  "mot": "日本人",
+  "lecture": "にほんじん",
+  "dit": "にほんじん"
+ },
+ "0de1b2910d75": {
+  "mot": "日本海",
+  "lecture": "にほんかい",
+  "dit": "にほんかい"
+ },
+ "772bf896f822": {
+  "mot": "北海道",
+  "lecture": "ほっかいどう",
+  "dit": "北海道"
+ },
+ "88acd3dbbae0": {
+  "mot": "母国",
+  "lecture": "ぼこく",
+  "dit": "母国"
+ },
+ "3bea1491382f": {
+  "mot": "国家",
+  "lecture": "こっか",
+  "dit": "国家"
+ },
+ "b6b04766697b": {
+  "mot": "父母",
+  "lecture": "ふぼ",
+  "dit": "父母"
+ },
+ "3f4b8fce1086": {
+  "mot": "兄弟",
+  "lecture": "きょうだい",
+  "dit": "兄弟"
+ },
+ "674aaa015f59": {
+  "mot": "姉妹",
+  "lecture": "しまい",
+  "dit": "姉妹"
+ },
+ "beebec620efc": {
+  "mot": "男女",
+  "lecture": "だんじょ",
+  "dit": "男女"
+ },
+ "a39ae179e5e1": {
+  "mot": "男子",
+  "lecture": "だんし",
+  "dit": "男子"
+ },
+ "6734f4c1921f": {
+  "mot": "女子",
+  "lecture": "じょし",
+  "dit": "女子"
+ },
+ "f810ba6b1c5c": {
+  "mot": "男の子",
+  "lecture": "おとこのこ",
+  "dit": "男の子"
+ },
+ "c5716c889654": {
+  "mot": "女の子",
+  "lecture": "おんなのこ",
+  "dit": "女の子"
+ },
+ "47c63b26210e": {
+  "mot": "男の人",
+  "lecture": "おとこのひと",
+  "dit": "男の人"
+ },
+ "964fa7c3e88f": {
+  "mot": "女の人",
+  "lecture": "おんなのひと",
+  "dit": "女の人"
+ },
+ "635db6498347": {
+  "mot": "友人",
+  "lecture": "ゆうじん",
+  "dit": "友人"
+ },
+ "4096a2f7f81d": {
+  "mot": "美人",
+  "lecture": "びじん",
+  "dit": "美人"
+ },
+ "56655c630b03": {
+  "mot": "名人",
+  "lecture": "めいじん",
+  "dit": "名人"
+ },
+ "ff181ea26581": {
+  "mot": "家内",
+  "lecture": "かない",
+  "dit": "家内"
+ },
+ "84be423644e7": {
+  "mot": "大家",
+  "lecture": "おおや",
+  "dit": "大家"
+ },
+ "f68273d21f4e": {
+  "mot": "名前",
+  "lecture": "なまえ",
+  "dit": "名前"
+ },
+ "0881d4e077e5": {
+  "mot": "本名",
+  "lecture": "ほんみょう",
+  "dit": "本名"
+ },
+ "985d7779278a": {
+  "mot": "地名",
+  "lecture": "ちめい",
+  "dit": "地名"
+ },
+ "80b0f725ec52": {
+  "mot": "水道",
+  "lecture": "すいどう",
+  "dit": "水道"
+ },
+ "924035feca6d": {
+  "mot": "車道",
+  "lecture": "しゃどう",
+  "dit": "車道"
+ },
+ "0fcdda95d5b7": {
+  "mot": "山道",
+  "lecture": "やまみち",
+  "dit": "やまみち"
+ },
+ "1ff572fabee4": {
+  "mot": "神道",
+  "lecture": "しんとう",
+  "dit": "神道"
+ },
+ "0cd49cb2c352": {
+  "mot": "駅前",
+  "lecture": "えきまえ",
+  "dit": "駅前"
+ },
+ "86363dd0d602": {
+  "mot": "新車",
+  "lecture": "しんしゃ",
+  "dit": "新車"
+ },
+ "251f9d3871c3": {
+  "mot": "中古車",
+  "lecture": "ちゅうこしゃ",
+  "dit": "中古車"
+ },
+ "b4a2e25f35db": {
+  "mot": "古本",
+  "lecture": "ふるほん",
+  "dit": "古本"
+ },
+ "3f021623eb98": {
+  "mot": "手足",
+  "lecture": "てあし",
+  "dit": "手足"
+ },
+ "25156ee56593": {
+  "mot": "上手",
+  "lecture": "じょうず",
+  "dit": "じょうず"
+ },
+ "d6d50550dbf0": {
+  "mot": "下手",
+  "lecture": "へた",
+  "dit": "下手"
+ },
+ "96d2d1ea4184": {
+  "mot": "右手",
+  "lecture": "みぎて",
+  "dit": "右手"
+ },
+ "f86007d24281": {
+  "mot": "左手",
+  "lecture": "ひだりて",
+  "dit": "左手"
+ },
+ "f9573a2d4dcc": {
+  "mot": "手本",
+  "lecture": "てほん",
+  "dit": "手本"
+ },
+ "7cbe8849f79d": {
+  "mot": "足音",
+  "lecture": "あしおと",
+  "dit": "足音"
+ },
+ "9721a2aa9855": {
+  "mot": "目上",
+  "lecture": "めうえ",
+  "dit": "目上"
+ },
+ "8af75600fe4b": {
+  "mot": "一目",
+  "lecture": "ひとめ",
+  "dit": "一目"
+ },
+ "d4a98a8c7664": {
+  "mot": "耳目",
+  "lecture": "じもく",
+  "dit": "耳目"
+ },
+ "6ea9aab670ca": {
+  "mot": "人口",
+  "lecture": "じんこう",
+  "dit": "人口"
+ },
+ "bfca9ad1059b": {
+  "mot": "火口",
+  "lecture": "かこう",
+  "dit": "火口"
+ },
+ "15ee0c604880": {
+  "mot": "鼻水",
+  "lecture": "はなみず",
+  "dit": "鼻水"
+ },
+ "42d524d1c539": {
+  "mot": "髪の毛",
+  "lecture": "かみのけ",
+  "dit": "髪の毛"
+ },
+ "5df55a025949": {
+  "mot": "頭上",
+  "lecture": "ずじょう",
+  "dit": "頭上"
+ },
+ "4e552ae2b76e": {
+  "mot": "体力",
+  "lecture": "たいりょく",
+  "dit": "体力"
+ },
+ "f06022ba0759": {
+  "mot": "全体",
+  "lecture": "ぜんたい",
+  "dit": "全体"
+ },
+ "16c64d698dbc": {
+  "mot": "大体",
+  "lecture": "だいたい",
+  "dit": "大体"
+ },
+ "61b09daac0ba": {
+  "mot": "人体",
+  "lecture": "じんたい",
+  "dit": "人体"
+ },
+ "a01fe92fcc80": {
+  "mot": "全力",
+  "lecture": "ぜんりょく",
+  "dit": "全力"
+ },
+ "4c27efe022ba": {
+  "mot": "水力",
+  "lecture": "すいりょく",
+  "dit": "水力"
+ },
+ "40b31767201a": {
+  "mot": "中心",
+  "lecture": "ちゅうしん",
+  "dit": "中心"
+ },
+ "a29a5c14007c": {
+  "mot": "本心",
+  "lecture": "ほんしん",
+  "dit": "本心"
+ },
+ "b01d09bb903a": {
+  "mot": "空腹",
+  "lecture": "くうふく",
+  "dit": "空腹"
+ },
+ "78d20f2e819c": {
+  "mot": "お腹",
+  "lecture": "おなか",
+  "dit": "お腹"
+ },
+ "ffab69668e5a": {
+  "mot": "腹八分目",
+  "lecture": "はらはちぶんめ",
+  "dit": "はらはちぶんめ"
+ },
+ "9973ee09fc60": {
+  "mot": "笑顔",
+  "lecture": "えがお",
+  "dit": "笑顔"
+ },
+ "4adf06ab3379": {
+  "mot": "顔色",
+  "lecture": "かおいろ",
+  "dit": "顔色"
+ },
+ "571e6afe79a4": {
+  "mot": "大声",
+  "lecture": "おおごえ",
+  "dit": "大声"
+ },
+ "c209fe584e33": {
+  "mot": "歯医者",
+  "lecture": "はいしゃ",
+  "dit": "歯医者"
+ },
+ "30e53ff8b678": {
+  "mot": "首都",
+  "lecture": "しゅと",
+  "dit": "首都"
+ },
+ "3d1c71980930": {
+  "mot": "腕時計",
+  "lecture": "うでどけい",
+  "dit": "うでどけい"
+ },
+ "7dc85e5f27a7": {
+  "mot": "指輪",
+  "lecture": "ゆびわ",
+  "dit": "指輪"
+ },
+ "67fdb78a3475": {
+  "mot": "背中",
+  "lecture": "せなか",
+  "dit": "背中"
+ },
+ "f422871c8f87": {
+  "mot": "肩車",
+  "lecture": "かたぐるま",
+  "dit": "肩車"
+ },
+ "547ee0267ec4": {
+  "mot": "肌色",
+  "lecture": "はだいろ",
+  "dit": "肌色"
+ },
+ "58e20f96e6e7": {
+  "mot": "お尻",
+  "lecture": "おしり",
+  "dit": "お尻"
+ },
+ "b88fe6d9231a": {
+  "mot": "血液",
+  "lecture": "けつえき",
+  "dit": "血液"
+ },
+ "5fdc4382667f": {
+  "mot": "出血",
+  "lecture": "しゅっけつ",
+  "dit": "出血"
+ },
+ "7faa06d9a105": {
+  "mot": "鼻血",
+  "lecture": "はなぢ",
+  "dit": "鼻血"
+ },
+ "ecfd72f74148": {
+  "mot": "百円",
+  "lecture": "ひゃくえん",
+  "dit": "百円"
+ },
+ "0aa9bff88252": {
+  "mot": "千円",
+  "lecture": "せんえん",
+  "dit": "千円"
+ },
+ "7c4fc7aa0e39": {
+  "mot": "一万円",
+  "lecture": "いちまんえん",
+  "dit": "一万円"
+ },
+ "e4423ca65a78": {
+  "mot": "半分",
+  "lecture": "はんぶん",
+  "dit": "半分"
+ },
+ "830482e10855": {
+  "mot": "大金",
+  "lecture": "たいきん",
+  "dit": "大金"
+ },
+ "ae58a730f342": {
+  "mot": "年金",
+  "lecture": "ねんきん",
+  "dit": "年金"
+ },
+ "e7b312344337": {
+  "mot": "千年",
+  "lecture": "せんねん",
+  "dit": "千年"
+ },
+ "7f51f8624c5d": {
+  "mot": "金魚",
+  "lecture": "きんぎょ",
+  "dit": "金魚"
+ },
+ "c567aa79c741": {
+  "mot": "人魚",
+  "lecture": "にんぎょ",
+  "dit": "人魚"
+ },
+ "89c26b706827": {
+  "mot": "一石二鳥",
+  "lecture": "いっせきにちょう",
+  "dit": "いっせきにちょう"
+ },
+ "4bb4d7e62086": {
+  "mot": "水鳥",
+  "lecture": "みずとり",
+  "dit": "水鳥"
+ },
+ "b56f89bc3341": {
+  "mot": "一羽",
+  "lecture": "いちわ",
+  "dit": "一羽"
+ },
+ "244594e7b3a5": {
+  "mot": "三羽",
+  "lecture": "さんば",
+  "dit": "さんば"
+ },
+ "efbaf2a5fcfd": {
+  "mot": "羽毛",
+  "lecture": "うもう",
+  "dit": "羽毛"
+ },
+ "f5aad37a0dbd": {
+  "mot": "羊毛",
+  "lecture": "ようもう",
+  "dit": "羊毛"
+ },
+ "ac177c7c1634": {
+  "mot": "子犬",
+  "lecture": "こいぬ",
+  "dit": "子犬"
+ },
+ "81230efb0e42": {
+  "mot": "子猫",
+  "lecture": "こねこ",
+  "dit": "子猫"
+ },
+ "26dbe98bcb17": {
+  "mot": "子牛",
+  "lecture": "こうし",
+  "dit": "子牛"
+ },
+ "25b3ed73d930": {
+  "mot": "子羊",
+  "lecture": "こひつじ",
+  "dit": "子羊"
+ },
+ "6b61c911b104": {
+  "mot": "子馬",
+  "lecture": "こうま",
+  "dit": "子馬"
+ },
+ "cb7e97dffd7e": {
+  "mot": "子豚",
+  "lecture": "こぶた",
+  "dit": "子豚"
+ },
+ "a01b7fbd0d98": {
+  "mot": "子鹿",
+  "lecture": "こじか",
+  "dit": "子鹿"
+ },
+ "6a7d6abafbdf": {
+  "mot": "馬車",
+  "lecture": "ばしゃ",
+  "dit": "馬車"
+ },
+ "658cac91f28f": {
+  "mot": "木馬",
+  "lecture": "もくば",
+  "dit": "木馬"
+ },
+ "829c89f44ecb": {
+  "mot": "名犬",
+  "lecture": "めいけん",
+  "dit": "名犬"
+ },
+ "9d54550c7082": {
+  "mot": "馬鹿",
+  "lecture": "ばか",
+  "dit": "馬鹿"
+ },
+ "a05ccbe08dd3": {
+  "mot": "毛虫",
+  "lecture": "けむし",
+  "dit": "毛虫"
+ },
+ "02d8e1c5711a": {
+  "mot": "水虫",
+  "lecture": "みずむし",
+  "dit": "水虫"
+ },
+ "2a7a575ba940": {
+  "mot": "鶏肉",
+  "lecture": "とりにく",
+  "dit": "とりにく"
+ },
+ "de6446b8aa40": {
+  "mot": "鶏卵",
+  "lecture": "けいらん",
+  "dit": "鶏卵"
+ },
+ "1e1b34fcea60": {
+  "mot": "狸寝入り",
+  "lecture": "たぬきねいり",
+  "dit": "狸寝入り"
+ },
+ "353e04aab349": {
+  "mot": "鶏",
+  "lecture": "にわとり",
+  "dit": "鶏"
+ },
+ "a561eee2bf82": {
+  "mot": "狸",
+  "lecture": "たぬき",
+  "dit": "狸"
+ },
+ "167898bef7eb": {
+  "mot": "兎",
+  "lecture": "うさぎ",
+  "dit": "兎"
+ },
+ "74eda6f244e9": {
+  "mot": "狼",
+  "lecture": "おおかみ",
+  "dit": "狼"
+ },
+ "e5c3b9785ac3": {
+  "mot": "フェレット",
+  "lecture": "feretto",
+  "dit": "フェレット"
+ },
+ "48be951a5cba": {
+  "mot": "ロバ",
+  "lecture": "roba",
+  "dit": "ロバ"
+ },
+ "83a8564610cf": {
+  "mot": "リス",
+  "lecture": "risu",
+  "dit": "リス"
+ },
+ "4424a9c3e2b8": {
+  "mot": "ラクダ",
+  "lecture": "rakuda",
+  "dit": "ラクダ"
+ },
+ "ab82f53a35a0": {
+  "mot": "アライグマ",
+  "lecture": "araiguma",
+  "dit": "アライグマ"
+ },
+ "94195c5607ca": {
+  "mot": "白い",
+  "lecture": "しろい",
+  "dit": "白い"
+ },
+ "1fe1ea408c85": {
+  "mot": "黒い",
+  "lecture": "くろい",
+  "dit": "黒い"
+ },
+ "a1c92ffa4e79": {
+  "mot": "赤い",
+  "lecture": "あかい",
+  "dit": "赤い"
+ },
+ "f50610bd7e01": {
+  "mot": "青い",
+  "lecture": "あおい",
+  "dit": "青い"
+ },
+ "04b45ce861ca": {
+  "mot": "黄色",
+  "lecture": "きいろ",
+  "dit": "黄色"
+ },
+ "bad037d1c793": {
+  "mot": "緑色",
+  "lecture": "みどりいろ",
+  "dit": "緑色"
+ },
+ "533ade3bc222": {
+  "mot": "紫色",
+  "lecture": "むらさきいろ",
+  "dit": "紫色"
+ },
+ "90bb45cc894b": {
+  "mot": "水色",
+  "lecture": "みずいろ",
+  "dit": "水色"
+ },
+ "a92aad7e720a": {
+  "mot": "金色",
+  "lecture": "きんいろ",
+  "dit": "金色"
+ },
+ "802b907c5044": {
+  "mot": "灰色",
+  "lecture": "はいいろ",
+  "dit": "灰色"
+ },
+ "675ccb553f58": {
+  "mot": "茶色",
+  "lecture": "ちゃいろ",
+  "dit": "茶色"
+ },
+ "c68c569ba240": {
+  "mot": "紅色",
+  "lecture": "べにいろ",
+  "dit": "紅色"
+ },
+ "07a64f1953e5": {
+  "mot": "紅茶",
+  "lecture": "こうちゃ",
+  "dit": "紅茶"
+ },
+ "03781eb57215": {
+  "mot": "色々",
+  "lecture": "いろいろ",
+  "dit": "色々"
+ },
+ "a2be446f6df2": {
+  "mot": "白黒",
+  "lecture": "しろくろ",
+  "dit": "白黒"
+ },
+ "53da22ec6fb9": {
+  "mot": "白鳥",
+  "lecture": "はくちょう",
+  "dit": "白鳥"
+ },
+ "f3884f85d216": {
+  "mot": "白髪",
+  "lecture": "しらが",
+  "dit": "しらが"
+ },
+ "ce62a117b54c": {
+  "mot": "黒目",
+  "lecture": "くろめ",
+  "dit": "黒目"
+ },
+ "e3093aad455f": {
+  "mot": "赤ちゃん",
+  "lecture": "あかちゃん",
+  "dit": "赤ちゃん"
+ },
+ "b98677c10c40": {
+  "mot": "赤道",
+  "lecture": "せきどう",
+  "dit": "赤道"
+ },
+ "7a9c8b7de042": {
+  "mot": "青空",
+  "lecture": "あおぞら",
+  "dit": "青空"
+ },
+ "8a5225f26c59": {
+  "mot": "青年",
+  "lecture": "せいねん",
+  "dit": "青年"
+ },
+ "be312b26d5dd": {
+  "mot": "青春",
+  "lecture": "せいしゅん",
+  "dit": "青春"
+ },
+ "aabe73c7ae5a": {
+  "mot": "黄金",
+  "lecture": "おうごん",
+  "dit": "黄金"
+ },
+ "2b923685160b": {
+  "mot": "新緑",
+  "lecture": "しんりょく",
+  "dit": "新緑"
+ },
+ "45b8269237bc": {
+  "mot": "食べる",
+  "lecture": "たべる",
+  "dit": "食べる"
+ },
+ "be7c961dc168": {
+  "mot": "飲む",
+  "lecture": "のむ",
+  "dit": "飲む"
+ },
+ "7f544e908d0b": {
+  "mot": "見る",
+  "lecture": "みる",
+  "dit": "見る"
+ },
+ "ab5c95b0e777": {
+  "mot": "聞く",
+  "lecture": "きく",
+  "dit": "聞く"
+ },
+ "746a980bee0d": {
+  "mot": "行く",
+  "lecture": "いく",
+  "dit": "行く"
+ },
+ "d0e3513b33fd": {
+  "mot": "来る",
+  "lecture": "くる",
+  "dit": "来る"
+ },
+ "96f16f484d7e": {
+  "mot": "入る",
+  "lecture": "はいる",
+  "dit": "入る"
+ },
+ "8fc35eef5bbf": {
+  "mot": "出る",
+  "lecture": "でる",
+  "dit": "出る"
+ },
+ "bf1af1a1ea92": {
+  "mot": "歩く",
+  "lecture": "あるく",
+  "dit": "歩く"
+ },
+ "b87aabeb4aee": {
+  "mot": "止まる",
+  "lecture": "とまる",
+  "dit": "止まる"
+ },
+ "26a5a53055f4": {
+  "mot": "立つ",
+  "lecture": "たつ",
+  "dit": "立つ"
+ },
+ "4a7000d6bee6": {
+  "mot": "寝る",
+  "lecture": "ねる",
+  "dit": "寝る"
+ },
+ "49bec87abb70": {
+  "mot": "言う",
+  "lecture": "いう",
+  "dit": "言う"
+ },
+ "befce21fe669": {
+  "mot": "話す",
+  "lecture": "はなす",
+  "dit": "話す"
+ },
+ "ab02168390c3": {
+  "mot": "読む",
+  "lecture": "よむ",
+  "dit": "読む"
+ },
+ "0d61532641ca": {
+  "mot": "書く",
+  "lecture": "かく",
+  "dit": "書く"
+ },
+ "eb606abfb4b8": {
+  "mot": "学ぶ",
+  "lecture": "まなぶ",
+  "dit": "学ぶ"
+ },
+ "d595b6806b9a": {
+  "mot": "会う",
+  "lecture": "あう",
+  "dit": "会う"
+ },
+ "8d07ff217833": {
+  "mot": "買う",
+  "lecture": "かう",
+  "dit": "買う"
+ },
+ "f654ffbb4ae3": {
+  "mot": "売る",
+  "lecture": "うる",
+  "dit": "売る"
+ },
+ "9087f3e5b5ec": {
+  "mot": "生まれる",
+  "lecture": "うまれる",
+  "dit": "生まれる"
+ },
+ "532cb4ab5ba8": {
+  "mot": "死ぬ",
+  "lecture": "しぬ",
+  "dit": "死ぬ"
+ },
+ "891adb67ae88": {
+  "mot": "お茶",
+  "lecture": "おちゃ",
+  "dit": "お茶"
+ },
+ "5f550fcde0e6": {
+  "mot": "白米",
+  "lecture": "はくまい",
+  "dit": "白米"
+ },
+ "cc5b8275e766": {
+  "mot": "米国",
+  "lecture": "べいこく",
+  "dit": "米国"
+ },
+ "b34f6c5f90f0": {
+  "mot": "牛肉",
+  "lecture": "ぎゅうにく",
+  "dit": "牛肉"
+ },
+ "b7319c7b10c0": {
+  "mot": "豚肉",
+  "lecture": "ぶたにく",
+  "dit": "豚肉"
+ },
+ "d53f85d4b40e": {
+  "mot": "飲み水",
+  "lecture": "のみみず",
+  "dit": "飲み水"
+ },
+ "39870efd09bc": {
+  "mot": "花見",
+  "lecture": "はなみ",
+  "dit": "花見"
+ },
+ "3761f07c6d5f": {
+  "mot": "新聞",
+  "lecture": "しんぶん",
+  "dit": "新聞"
+ },
+ "e233387069cd": {
+  "mot": "来年",
+  "lecture": "らいねん",
+  "dit": "来年"
+ },
+ "4313f8089c95": {
+  "mot": "来週",
+  "lecture": "らいしゅう",
+  "dit": "来週"
+ },
+ "150093f8b64e": {
+  "mot": "入口",
+  "lecture": "いりぐち",
+  "dit": "入口"
+ },
+ "e3a2dfcea166": {
+  "mot": "出口",
+  "lecture": "でぐち",
+  "dit": "出口"
+ },
+ "a950858d5050": {
+  "mot": "外出",
+  "lecture": "がいしゅつ",
+  "dit": "外出"
+ },
+ "149eab26ee3a": {
+  "mot": "歩道",
+  "lecture": "ほどう",
+  "dit": "歩道"
+ },
+ "48ececb249c2": {
+  "mot": "中止",
+  "lecture": "ちゅうし",
+  "dit": "中止"
+ },
+ "66017645b71b": {
+  "mot": "寝言",
+  "lecture": "ねごと",
+  "dit": "寝言"
+ },
+ "21e3e767e325": {
+  "mot": "会話",
+  "lecture": "かいわ",
+  "dit": "会話"
+ },
+ "7f225cb1032a": {
+  "mot": "日本語",
+  "lecture": "にほんご",
+  "dit": "にほんご"
+ },
+ "9274bc4b6755": {
+  "mot": "読書",
+  "lecture": "どくしょ",
+  "dit": "読書"
+ },
+ "f25493720d85": {
+  "mot": "大学",
+  "lecture": "だいがく",
+  "dit": "大学"
+ },
+ "1d17bb25effc": {
+  "mot": "学生",
+  "lecture": "がくせい",
+  "dit": "学生"
+ },
+ "2d9c0194e459": {
+  "mot": "入学",
+  "lecture": "にゅうがく",
+  "dit": "入学"
+ },
+ "ea36f4318cc8": {
+  "mot": "売買",
+  "lecture": "ばいばい",
+  "dit": "売買"
+ },
+ "732e8d6b9577": {
+  "mot": "人生",
+  "lecture": "じんせい",
+  "dit": "人生"
+ },
+ "49eb8d50a9f6": {
+  "mot": "一生",
+  "lecture": "いっしょう",
+  "dit": "一生"
+ },
+ "fb6aaed47dd3": {
+  "mot": "生年月日",
+  "lecture": "せいねんがっぴ",
+  "dit": "せいねんがっぴ"
+ },
+ "856c88078440": {
+  "mot": "大きい",
+  "lecture": "おおきい",
+  "dit": "大きい"
+ },
+ "0ca880056059": {
+  "mot": "小さい",
+  "lecture": "ちいさい",
+  "dit": "小さい"
+ },
+ "8f2c65b75829": {
+  "mot": "良い",
+  "lecture": "よい ・ いい",
+  "dit": "良い"
+ },
+ "e9384cc57598": {
+  "mot": "悪い",
+  "lecture": "わるい",
+  "dit": "悪い"
+ },
+ "a375891d36df": {
+  "mot": "新しい",
+  "lecture": "あたらしい",
+  "dit": "新しい"
+ },
+ "396a0112bf35": {
+  "mot": "古い",
+  "lecture": "ふるい",
+  "dit": "古い"
+ },
+ "e8684d8b108f": {
+  "mot": "暑い",
+  "lecture": "あつい",
+  "dit": "暑い"
+ },
+ "7cbd2223a574": {
+  "mot": "熱い",
+  "lecture": "あつい",
+  "dit": "熱い"
+ },
+ "770d42f80b15": {
+  "mot": "寒い",
+  "lecture": "さむい",
+  "dit": "寒い"
+ },
+ "7c2624438fc8": {
+  "mot": "冷たい",
+  "lecture": "つめたい",
+  "dit": "冷たい"
+ },
+ "12a8fd578d92": {
+  "mot": "速い",
+  "lecture": "はやい",
+  "dit": "速い"
+ },
+ "0ffd61151054": {
+  "mot": "早い",
+  "lecture": "はやい",
+  "dit": "早い"
+ },
+ "6a2c87aca005": {
+  "mot": "遅い",
+  "lecture": "おそい",
+  "dit": "遅い"
+ },
+ "ff57823736c4": {
+  "mot": "強い",
+  "lecture": "つよい",
+  "dit": "強い"
+ },
+ "93e9ba31092a": {
+  "mot": "弱い",
+  "lecture": "よわい",
+  "dit": "弱い"
+ },
+ "12696960ffbf": {
+  "mot": "重い",
+  "lecture": "おもい",
+  "dit": "重い"
+ },
+ "7f998aeb0d91": {
+  "mot": "軽い",
+  "lecture": "かるい",
+  "dit": "軽い"
+ },
+ "66b6e11279b6": {
+  "mot": "高い",
+  "lecture": "たかい",
+  "dit": "高い"
+ },
+ "2f757dfb1916": {
+  "mot": "低い",
+  "lecture": "ひくい",
+  "dit": "低い"
+ },
+ "fab58cc94eea": {
+  "mot": "易しい",
+  "lecture": "やさしい",
+  "dit": "易しい"
+ },
+ "5583fc4747f2": {
+  "mot": "難しい",
+  "lecture": "むずかしい",
+  "dit": "難しい"
+ },
+ "9545846cf60a": {
+  "mot": "楽しい",
+  "lecture": "たのしい",
+  "dit": "楽しい"
+ },
+ "261f0b53c06b": {
+  "mot": "痛い",
+  "lecture": "いたい",
+  "dit": "痛い"
+ },
+ "bb7b79bbf0d3": {
+  "mot": "美しい",
+  "lecture": "うつくしい",
+  "dit": "美しい"
+ },
+ "07608fc08c1b": {
+  "mot": "醜い",
+  "lecture": "みにくい",
+  "dit": "醜い"
+ },
+ "dd3d1cb149c1": {
+  "mot": "かわいい",
+  "lecture": "かわいい",
+  "dit": "かわいい"
+ },
+ "8c0b1674cc06": {
+  "mot": "変な",
+  "lecture": "へんな",
+  "dit": "変な"
+ },
+ "64130da87831": {
+  "mot": "美味しい",
+  "lecture": "おいしい",
+  "dit": "美味しい"
+ },
+ "379893854e8e": {
+  "mot": "まずい",
+  "lecture": "まずい",
+  "dit": "まずい"
+ },
+ "7a3828899533": {
+  "mot": "うるさい",
+  "lecture": "うるさい",
+  "dit": "うるさい"
+ },
+ "0ab8d688345f": {
+  "mot": "静かな",
+  "lecture": "しずかな",
+  "dit": "静かな"
+ },
+ "858232289808": {
+  "mot": "優しい",
+  "lecture": "やさしい",
+  "dit": "優しい"
+ },
+ "d8429669ef1e": {
+  "mot": "意地悪な",
+  "lecture": "いじわるな",
+  "dit": "意地悪な"
+ },
+ "61a7c25ff476": {
+  "mot": "妖精",
+  "lecture": "ようせい",
+  "dit": "妖精"
+ },
+ "b67163a13659": {
+  "mot": "伝説",
+  "lecture": "でんせつ",
+  "dit": "伝説"
+ },
+ "3226eb153c43": {
+  "mot": "冒険",
+  "lecture": "ぼうけん",
+  "dit": "冒険"
+ },
+ "0e29acecf834": {
+  "mot": "冒険者",
+  "lecture": "ぼうけんしゃ",
+  "dit": "冒険者"
+ },
+ "a0186bcdb180": {
+  "mot": "妖怪",
+  "lecture": "ようかい",
+  "dit": "妖怪"
+ },
+ "4312887dfa5b": {
+  "mot": "歌",
+  "lecture": "うた",
+  "dit": "歌"
+ },
+ "1749a2265498": {
+  "mot": "歌う",
+  "lecture": "うたう",
+  "dit": "歌う"
+ },
+ "fadfb8b99320": {
+  "mot": "歌手",
+  "lecture": "かしゅ",
+  "dit": "歌手"
+ },
+ "23a05f5701f4": {
+  "mot": "精神",
+  "lecture": "せいしん",
+  "dit": "精神"
+ },
+ "155df303244e": {
+  "mot": "伝える",
+  "lecture": "つたえる",
+  "dit": "伝える"
+ },
+ "56acbb3ace56": {
+  "mot": "手伝う",
+  "lecture": "てつだう",
+  "dit": "手伝う"
+ },
+ "03394719f551": {
+  "mot": "説明",
+  "lecture": "せつめい",
+  "dit": "説明"
+ },
+ "5a9ce110e7f6": {
+  "mot": "小説",
+  "lecture": "しょうせつ",
+  "dit": "小説"
+ },
+ "331633f76491": {
+  "mot": "危険",
+  "lecture": "きけん",
+  "dit": "危険"
+ },
+ "40c35e52c83d": {
+  "mot": "神殿",
+  "lecture": "しんでん",
+  "dit": "神殿"
+ },
+ "cc0529c1f46d": {
+  "mot": "魔女",
+  "lecture": "まじょ",
+  "dit": "魔女"
+ },
+ "4043d0fc6fbf": {
+  "mot": "魔法",
+  "lecture": "まほう",
+  "dit": "魔法"
+ },
+ "67c0dd31b9f9": {
+  "mot": "悪魔",
+  "lecture": "あくま",
+  "dit": "悪魔"
+ },
+ "1cfcd183ed7f": {
+  "mot": "怪物",
+  "lecture": "かいぶつ",
+  "dit": "怪物"
+ },
+ "80e056803a19": {
+  "mot": "箒",
+  "lecture": "ほうき",
+  "dit": "ほうき"
+ },
+ "a9fef5213297": {
+  "mot": "ミイラ",
+  "lecture": "miira",
+  "dit": "ミイラ"
+ },
+ "e2529928f87f": {
+  "mot": "怪しい",
+  "lecture": "あやしい",
+  "dit": "怪しい"
+ },
+ "d3e02832d85a": {
+  "mot": "王",
+  "lecture": "おう",
+  "dit": "王"
+ },
+ "d8a3fecef2f5": {
+  "mot": "王国",
+  "lecture": "おうこく",
+  "dit": "王国"
+ },
+ "0c1f03d1acac": {
+  "mot": "王子",
+  "lecture": "おうじ",
+  "dit": "王子"
+ },
+ "00c71c0a2878": {
+  "mot": "王女",
+  "lecture": "おうじょ",
+  "dit": "王女"
+ },
+ "544656811ec3": {
+  "mot": "姫",
+  "lecture": "ひめ",
+  "dit": "姫"
+ },
+ "ef0bae702226": {
+  "mot": "食べ物",
+  "lecture": "たべもの",
+  "dit": "食べ物"
+ },
+ "6025025f5f51": {
+  "mot": "生き物",
+  "lecture": "いきもの",
+  "dit": "生き物"
+ },
+ "b7ef783f25a2": {
+  "mot": "買い物",
+  "lecture": "かいもの",
+  "dit": "買い物"
+ },
+ "d6724909d3de": {
+  "mot": "服",
+  "lecture": "ふく",
+  "dit": "服"
+ },
+ "efd34315414a": {
+  "mot": "シャツ",
+  "lecture": "shatsu",
+  "dit": "シャツ"
+ },
+ "613edb004831": {
+  "mot": "Tシャツ",
+  "lecture": "tī-shatsu",
+  "dit": "Tシャツ"
+ },
+ "35d9c1efd2ba": {
+  "mot": "セーター",
+  "lecture": "sētā",
+  "dit": "セーター"
+ },
+ "2ca9e2d49ee0": {
+  "mot": "ジャケット",
+  "lecture": "jaketto",
+  "dit": "ジャケット"
+ },
+ "a0d8a2db4951": {
+  "mot": "ズボン",
+  "lecture": "zubon",
+  "dit": "ズボン"
+ },
+ "0187ecf114d4": {
+  "mot": "ジーンズ",
+  "lecture": "jīnzu",
+  "dit": "ジーンズ"
+ },
+ "91bd6d11386f": {
+  "mot": "ベルト",
+  "lecture": "beruto",
+  "dit": "ベルト"
+ },
+ "a28c621e42ae": {
+  "mot": "靴",
+  "lecture": "くつ",
+  "dit": "靴"
+ },
+ "8c23f33278be": {
+  "mot": "下駄",
+  "lecture": "げた",
+  "dit": "下駄"
+ },
+ "2757c981566d": {
+  "mot": "運動靴",
+  "lecture": "うんどうぐつ",
+  "dit": "うんどうぐつ"
+ },
+ "a6e5a34855a4": {
+  "mot": "スニーカー",
+  "lecture": "sunīkā",
+  "dit": "スニーカー"
+ },
+ "e0abee32762e": {
+  "mot": "靴下",
+  "lecture": "くつした",
+  "dit": "靴下"
+ },
+ "5438abd9f2db": {
+  "mot": "タイツ",
+  "lecture": "taitsu",
+  "dit": "タイツ"
+ },
+ "29f84992e261": {
+  "mot": "ブリーフ",
+  "lecture": "burīfu",
+  "dit": "ブリーフ"
+ },
+ "5b39f7af2249": {
+  "mot": "トランクス",
+  "lecture": "torankusu",
+  "dit": "トランクス"
+ },
+ "3b4cd5253a56": {
+  "mot": "パンティー",
+  "lecture": "pantī",
+  "dit": "パンティー"
+ },
+ "77bd18b4054d": {
+  "mot": "ショーツ",
+  "lecture": "shōtsu",
+  "dit": "ショーツ"
+ },
+ "d4bbfc645691": {
+  "mot": "ブルマー",
+  "lecture": "burumā",
+  "dit": "ブルマー"
+ },
+ "f22d7d34b5d2": {
+  "mot": "ブラジャー",
+  "lecture": "burajā",
+  "dit": "ブラジャー"
+ },
+ "0f27c022f330": {
+  "mot": "ブラ",
+  "lecture": "bura",
+  "dit": "ブラ"
+ },
+ "63c2951fe556": {
+  "mot": "スカート",
+  "lecture": "sukāto",
+  "dit": "スカート"
+ },
+ "3dd813c867e2": {
+  "mot": "ミニスカート",
+  "lecture": "minisukāto",
+  "dit": "ミニスカート"
+ },
+ "933f6cb9a56d": {
+  "mot": "ドレス",
+  "lecture": "doresu",
+  "dit": "ドレス"
+ },
+ "aa207c207be0": {
+  "mot": "ワンピース",
+  "lecture": "wanpīsu",
+  "dit": "ワンピース"
+ },
+ "e1792302611c": {
+  "mot": "トレーニングウェア",
+  "lecture": "torēningu-wea",
+  "dit": "トレーニングウェア"
+ },
+ "14daa76dfcc8": {
+  "mot": "ジャージ",
+  "lecture": "jāji",
+  "dit": "ジャージ"
+ },
+ "5d3c4b2aec09": {
+  "mot": "外套",
+  "lecture": "がいとう",
+  "dit": "外套"
+ },
+ "17355a08c4c7": {
+  "mot": "コート",
+  "lecture": "kōto",
+  "dit": "コート"
+ },
+ "e2da2a2bb956": {
+  "mot": "帽子",
+  "lecture": "ぼうし",
+  "dit": "帽子"
+ },
+ "4d11ce47db7b": {
+  "mot": "キャップ",
+  "lecture": "kyappu",
+  "dit": "キャップ"
+ },
+ "6782ab4f179f": {
+  "mot": "手袋",
+  "lecture": "てぶくろ",
+  "dit": "手袋"
+ },
+ "d3334d6a7c80": {
+  "mot": "襟巻き",
+  "lecture": "えりまき",
+  "dit": "襟巻き"
+ },
+ "9088f4697213": {
+  "mot": "マフラー",
+  "lecture": "mafurā",
+  "dit": "マフラー"
+ },
+ "f2abda57cdbf": {
+  "mot": "ネクタイ",
+  "lecture": "nekutai",
+  "dit": "ネクタイ"
+ },
+ "1f0b611f7df6": {
+  "mot": "ボウ",
+  "lecture": "bō",
+  "dit": "ボウ"
+ },
+ "982991009ac1": {
+  "mot": "蝶ネクタイ",
+  "lecture": "ちょうネクタイ",
+  "dit": "蝶ネクタイ"
+ },
+ "f370e6acf4fb": {
+  "mot": "着る",
+  "lecture": "きる",
+  "dit": "着る"
+ },
+ "44bb932305a7": {
+  "mot": "上着",
+  "lecture": "うわぎ",
+  "dit": "上着"
+ },
+ "d6e83a260c70": {
+  "mot": "下着",
+  "lecture": "したぎ",
+  "dit": "下着"
+ },
+ "197c1d4e58ef": {
+  "mot": "着物",
+  "lecture": "きもの",
+  "dit": "着物"
+ },
+ "3a51f8554a89": {
+  "mot": "パンツ",
+  "lecture": "pantsu",
+  "dit": "パンツ"
+ },
+ "d8b94d0e736e": {
+  "mot": "ストッキング",
+  "lecture": "sutokkingu",
+  "dit": "ストッキング"
+ },
+ "6afdab8592d9": {
+  "mot": "服装",
+  "lecture": "ふくそう",
+  "dit": "服装"
+ },
+ "2696dba6d617": {
+  "mot": "運動",
+  "lecture": "うんどう",
+  "dit": "運動"
+ },
+ "60d9ca27b278": {
+  "mot": "ハロウィン",
+  "lecture": "harowin",
+  "dit": "ハロウィン"
+ },
+ "81079cfc00a3": {
+  "mot": "魔法使い",
+  "lecture": "まほうつかい",
+  "dit": "魔法使い"
+ },
+ "33677bd8dcae": {
+  "mot": "ゾンビ",
+  "lecture": "zonbi",
+  "dit": "ゾンビ"
+ },
+ "6683cf73f66a": {
+  "mot": "アンデッド",
+  "lecture": "andeddo",
+  "dit": "アンデッド"
+ },
+ "d58327edc933": {
+  "mot": "お化け",
+  "lecture": "おばけ",
+  "dit": "お化け"
+ },
+ "09424a7895c2": {
+  "mot": "化け物",
+  "lecture": "ばけもの",
+  "dit": "化け物"
+ },
+ "a6c58d8c7d64": {
+  "mot": "幽霊",
+  "lecture": "ゆうれい",
+  "dit": "幽霊"
+ },
+ "66cf4517e57f": {
+  "mot": "亡霊",
+  "lecture": "ぼうれい",
+  "dit": "亡霊"
+ },
+ "faa19a5979b0": {
+  "mot": "吸血鬼",
+  "lecture": "きゅうけつき",
+  "dit": "吸血鬼"
+ },
+ "792ab1017ca5": {
+  "mot": "狼男",
+  "lecture": "おおかみおとこ",
+  "dit": "狼男"
+ },
+ "e652df705221": {
+  "mot": "人狼",
+  "lecture": "じんろう",
+  "dit": "人狼"
+ },
+ "c2a76410652f": {
+  "mot": "骨格",
+  "lecture": "こっかく",
+  "dit": "骨格"
+ },
+ "ffcb9e4de18f": {
+  "mot": "骸骨",
+  "lecture": "がいこつ",
+  "dit": "がいこつ"
+ },
+ "2d2838f16dde": {
+  "mot": "骨",
+  "lecture": "ほね",
+  "dit": "骨"
+ },
+ "2a46dd1499ce": {
+  "mot": "黒猫",
+  "lecture": "くろねこ",
+  "dit": "黒猫"
+ },
+ "5fc1e57871fc": {
+  "mot": "コウモリ",
+  "lecture": "kōmori",
+  "dit": "コウモリ"
+ },
+ "5010c90a6788": {
+  "mot": "クモ",
+  "lecture": "kumo",
+  "dit": "クモ"
+ },
+ "277e40c3b023": {
+  "mot": "かぼちゃ",
+  "lecture": "kabocha",
+  "dit": "かぼちゃ"
+ },
+ "47b17c2ebfdd": {
+  "mot": "蝋燭",
+  "lecture": "ろうそく",
+  "dit": "蝋燭"
+ },
+ "a4f008437434": {
+  "mot": "飴",
+  "lecture": "あめ",
+  "dit": "飴"
+ },
+ "838eb314c5cf": {
+  "mot": "お菓子",
+  "lecture": "おかし",
+  "dit": "お菓子"
+ },
+ "5dc662afe88d": {
+  "mot": "仮面",
+  "lecture": "かめん",
+  "dit": "仮面"
+ },
+ "a64bb95fd448": {
+  "mot": "お面",
+  "lecture": "おめん",
+  "dit": "お面"
+ },
+ "b8ff99aef111": {
+  "mot": "マスク",
+  "lecture": "masuku",
+  "dit": "マスク"
+ },
+ "8b04d78113d0": {
+  "mot": "仮装",
+  "lecture": "かそう",
+  "dit": "仮装"
+ },
+ "0a36295f652c": {
+  "mot": "コスプレ",
+  "lecture": "kosupure",
+  "dit": "コスプレ"
+ },
+ "7c617fc8ae5c": {
+  "mot": "満月",
+  "lecture": "まんげつ",
+  "dit": "満月"
+ },
+ "9c63904e561a": {
+  "mot": "墓",
+  "lecture": "はか",
+  "dit": "墓"
+ },
+ "99a7f74441cc": {
+  "mot": "墓地",
+  "lecture": "ぼち",
+  "dit": "墓地"
+ },
+ "a4808ae24d58": {
+  "mot": "墓場",
+  "lecture": "はかば",
+  "dit": "墓場"
+ },
+ "abf2949e977b": {
+  "mot": "幽霊屋敷",
+  "lecture": "ゆうれいやしき",
+  "dit": "幽霊屋敷"
+ },
+ "faee631b41c2": {
+  "mot": "血",
+  "lecture": "ち",
+  "dit": "血"
+ },
+ "28bae5bf4035": {
+  "mot": "死",
+  "lecture": "し",
+  "dit": "死"
+ },
+ "aba8e285518d": {
+  "kanji": "一",
+  "kun": "ひと(つ)",
+  "sens": "un",
+  "dit": "一つ"
+ },
+ "acfff58e84b0": {
+  "kanji": "二",
+  "kun": "ふた(つ)",
+  "sens": "deux",
+  "dit": "二つ"
+ },
+ "65d9b19b1702": {
+  "kanji": "三",
+  "kun": "みっ(つ)",
+  "sens": "trois",
+  "dit": "三つ"
+ },
+ "c49d3aa0bd3a": {
+  "kanji": "四",
+  "kun": "よ(っつ) ・ よん",
+  "sens": "quatre",
+  "dit": "四つ、よん"
+ },
+ "768dea20252e": {
+  "kanji": "五",
+  "kun": "いつ(つ)",
+  "sens": "cinq",
+  "dit": "五つ"
+ },
+ "699d2fd134e4": {
+  "kanji": "六",
+  "kun": "むっ(つ)",
+  "sens": "six",
+  "dit": "六つ"
+ },
+ "ce67b99f4baf": {
+  "kanji": "七",
+  "kun": "なな(つ)",
+  "sens": "sept",
+  "dit": "七つ"
+ },
+ "9b4076bb45fc": {
+  "kanji": "八",
+  "kun": "やっ(つ)",
+  "sens": "huit",
+  "dit": "八つ"
+ },
+ "b020c7914951": {
+  "kanji": "九",
+  "kun": "ここの(つ)",
+  "sens": "neuf",
+  "dit": "九つ"
+ },
+ "1bfd9561bfc0": {
+  "kanji": "十",
+  "kun": "とお",
+  "sens": "dix",
+  "dit": "とお"
+ },
+ "8e3ffa01394e": {
+  "kanji": "千",
+  "kun": "ち",
+  "sens": "mille",
+  "dit": "ち"
+ },
+ "e8522af0a404": {
+  "kanji": "雨",
+  "kun": "あめ",
+  "sens": "pluie",
+  "dit": "あめ"
+ },
+ "098fe3707851": {
+  "kanji": "雷",
+  "kun": "かみなり",
+  "sens": "foudre, tonnerre",
+  "dit": "かみなり"
+ },
+ "85ec4b710792": {
+  "kanji": "雪",
+  "kun": "ゆき",
+  "sens": "neige",
+  "dit": "ゆき"
+ },
+ "3c0ef9407592": {
+  "kanji": "水",
+  "kun": "みず",
+  "sens": "eau",
+  "dit": "みず"
+ },
+ "f6c425d03310": {
+  "kanji": "氷",
+  "kun": "こおり",
+  "sens": "glace",
+  "dit": "こおり"
+ },
+ "7f7bf810907d": {
+  "kanji": "海",
+  "kun": "うみ",
+  "sens": "mer",
+  "dit": "うみ"
+ },
+ "541702a59f46": {
+  "kanji": "川",
+  "kun": "かわ",
+  "sens": "rivière",
+  "dit": "かわ"
+ },
+ "09e68e1c9bba": {
+  "kanji": "秋",
+  "kun": "あき",
+  "sens": "automne",
+  "dit": "あき"
+ },
+ "03b63de8f6ce": {
+  "kanji": "日",
+  "kun": "ひ",
+  "sens": "soleil, jour",
+  "dit": "ひ"
+ },
+ "ff37e57eefdd": {
+  "kanji": "春",
+  "kun": "はる",
+  "sens": "printemps",
+  "dit": "はる"
+ },
+ "8590773a8394": {
+  "kanji": "時",
+  "kun": "とき",
+  "sens": "temps, heure",
+  "dit": "とき"
+ },
+ "2cb781969063": {
+  "kanji": "木",
+  "kun": "き",
+  "sens": "arbre, bois",
+  "dit": "き"
+ },
+ "07c138fe1437": {
+  "kanji": "林",
+  "kun": "はやし",
+  "sens": "bois, bosquet",
+  "dit": "はやし"
+ },
+ "b23c8ac8c306": {
+  "kanji": "森",
+  "kun": "もり",
+  "sens": "forêt",
+  "dit": "もり"
+ },
+ "c4a08901f102": {
+  "kanji": "山",
+  "kun": "やま",
+  "sens": "montagne",
+  "dit": "やま"
+ },
+ "07efff1ed11b": {
+  "kanji": "島",
+  "kun": "しま",
+  "sens": "île",
+  "dit": "しま"
+ },
+ "9db5a159f048": {
+  "kanji": "土",
+  "kun": "つち",
+  "sens": "terre (matière)",
+  "dit": "つち"
+ },
+ "39b789322125": {
+  "kanji": "人",
+  "kun": "ひと",
+  "sens": "personne",
+  "dit": "ひと"
+ },
+ "b67dad0bb1c6": {
+  "kanji": "大",
+  "kun": "おお(きい)",
+  "sens": "grand",
+  "dit": "大きい"
+ },
+ "eb1d93116559": {
+  "kanji": "天",
+  "kun": "あめ",
+  "sens": "cieux",
+  "dit": "あめ"
+ },
+ "dbb743237e3f": {
+  "kanji": "金",
+  "kun": "かね",
+  "sens": "or, métal",
+  "dit": "かね"
+ },
+ "97958b645a2d": {
+  "kanji": "月",
+  "kun": "つき",
+  "sens": "lune, mois",
+  "dit": "つき"
+ },
+ "ba917edef132": {
+  "kanji": "火",
+  "kun": "ひ",
+  "sens": "feu",
+  "dit": "ひ"
+ },
+ "574d37f5f4fe": {
+  "kanji": "風",
+  "kun": "かぜ",
+  "sens": "vent",
+  "dit": "かぜ"
+ },
+ "a907e6c9000d": {
+  "kanji": "石",
+  "kun": "いし",
+  "sens": "pierre",
+  "dit": "いし"
+ },
+ "50c1faeda5d8": {
+  "kanji": "田",
+  "kun": "た",
+  "sens": "rizière",
+  "dit": "た"
+ },
+ "850ec47dc4b3": {
+  "kanji": "花",
+  "kun": "はな",
+  "sens": "fleur",
+  "dit": "はな"
+ },
+ "41c06619fd63": {
+  "kanji": "年",
+  "kun": "とし",
+  "sens": "année",
+  "dit": "とし"
+ },
+ "c3669a42dc67": {
+  "kanji": "音",
+  "kun": "おと",
+  "sens": "son",
+  "dit": "おと"
+ },
+ "cf3576642da0": {
+  "kanji": "空",
+  "kun": "そら",
+  "sens": "ciel, vide",
+  "dit": "そら"
+ },
+ "84fb70350112": {
+  "kanji": "神",
+  "kun": "かみ",
+  "sens": "dieu",
+  "dit": "かみ"
+ },
+ "1574a3095cd7": {
+  "kanji": "分",
+  "kun": "わ(ける)",
+  "sens": "minute, part, comprendre",
+  "dit": "分ける"
+ },
+ "88dd4a46ae77": {
+  "kanji": "光",
+  "kun": "ひかり",
+  "sens": "lumière",
+  "dit": "ひかり"
+ },
+ "77b48b5b83a3": {
+  "kanji": "冬",
+  "kun": "ふゆ",
+  "sens": "hiver",
+  "dit": "ふゆ"
+ },
+ "7e48765b8cc3": {
+  "kanji": "夏",
+  "kun": "なつ",
+  "sens": "été",
+  "dit": "なつ"
+ },
+ "d6fb06cf037b": {
+  "kanji": "全",
+  "kun": "まった(く) ・ すべ(て)",
+  "sens": "entièreté, tout",
+  "dit": "全く、全て"
+ },
+ "6bcc820babe5": {
+  "kanji": "半",
+  "kun": "なか(ば)",
+  "sens": "moitié",
+  "dit": "半ば"
+ },
+ "d9fa9fc46f41": {
+  "kanji": "今",
+  "kun": "いま",
+  "sens": "maintenant",
+  "dit": "いま"
+ },
+ "3d2c5e5900ba": {
+  "kanji": "上",
+  "kun": "うえ",
+  "sens": "dessus, en haut",
+  "dit": "うえ"
+ },
+ "4ca7498343fe": {
+  "kanji": "下",
+  "kun": "した",
+  "sens": "dessous, en bas",
+  "dit": "した"
+ },
+ "54edaa3a1205": {
+  "kanji": "右",
+  "kun": "みぎ",
+  "sens": "droite",
+  "dit": "みぎ"
+ },
+ "f00ae3144951": {
+  "kanji": "左",
+  "kun": "ひだり",
+  "sens": "gauche",
+  "dit": "ひだり"
+ },
+ "d6d0616dd5a7": {
+  "kanji": "前",
+  "kun": "まえ",
+  "sens": "avant, devant",
+  "dit": "まえ"
+ },
+ "c8919619c1f0": {
+  "kanji": "後",
+  "kun": "うし(ろ) ・ あと",
+  "sens": "après, derrière",
+  "dit": "後ろ、あと"
+ },
+ "1db486711354": {
+  "kanji": "中",
+  "kun": "なか",
+  "sens": "milieu, dedans",
+  "dit": "なか"
+ },
+ "6acefc7c0fe3": {
+  "kanji": "内",
+  "kun": "うち",
+  "sens": "intérieur",
+  "dit": "うち"
+ },
+ "e98dae07c4c9": {
+  "kanji": "外",
+  "kun": "そと",
+  "sens": "extérieur",
+  "dit": "そと"
+ },
+ "72a77b12f702": {
+  "kanji": "北",
+  "kun": "きた",
+  "sens": "nord",
+  "dit": "きた"
+ },
+ "a0fe37e32b9f": {
+  "kanji": "南",
+  "kun": "みなみ",
+  "sens": "sud",
+  "dit": "みなみ"
+ },
+ "039543e8f4d4": {
+  "kanji": "東",
+  "kun": "ひがし",
+  "sens": "est (point cardinal)",
+  "dit": "ひがし"
+ },
+ "b3012051b7c7": {
+  "kanji": "西",
+  "kun": "にし",
+  "sens": "ouest",
+  "dit": "にし"
+ },
+ "e14b1aaa3587": {
+  "kanji": "国",
+  "kun": "くに",
+  "sens": "pays",
+  "dit": "くに"
+ },
+ "8ea9a946b1ea": {
+  "kanji": "町",
+  "kun": "まち",
+  "sens": "ville",
+  "dit": "まち"
+ },
+ "313a59b28e2a": {
+  "kanji": "店",
+  "kun": "みせ",
+  "sens": "magasin",
+  "dit": "みせ"
+ },
+ "705a26b91711": {
+  "kanji": "円",
+  "kun": "まる(い)",
+  "sens": "rond, yen",
+  "dit": "円い"
+ },
+ "6e73dea9e560": {
+  "kanji": "美",
+  "kun": "うつく(しい)",
+  "sens": "beau",
+  "dit": "美しい"
+ },
+ "600e3892283f": {
+  "kanji": "新",
+  "kun": "あたら(しい)",
+  "sens": "nouveau",
+  "dit": "新しい"
+ },
+ "7486ef3c9896": {
+  "kanji": "古",
+  "kun": "ふる(い)",
+  "sens": "ancien",
+  "dit": "古い"
+ },
+ "931bba8513b5": {
+  "kanji": "本",
+  "kun": "もと",
+  "sens": "origine, livre",
+  "dit": "もと"
+ },
+ "988b8986c330": {
+  "kanji": "車",
+  "kun": "くるま",
+  "sens": "voiture",
+  "dit": "くるま"
+ },
+ "9dc76926d6a6": {
+  "kanji": "道",
+  "kun": "みち",
+  "sens": "voie, chemin",
+  "dit": "みち"
+ },
+ "16bec305776b": {
+  "kanji": "家",
+  "kun": "いえ ・ うち",
+  "sens": "maison",
+  "dit": "いえ、うち"
+ },
+ "7a1b14d1d9b5": {
+  "kanji": "名",
+  "kun": "な",
+  "sens": "nom",
+  "dit": "な"
+ },
+ "3d8c267a6ec6": {
+  "kanji": "男",
+  "kun": "おとこ",
+  "sens": "homme",
+  "dit": "おとこ"
+ },
+ "343b4cb93b95": {
+  "kanji": "女",
+  "kun": "おんな",
+  "sens": "femme",
+  "dit": "おんな"
+ },
+ "9029888cee08": {
+  "kanji": "子",
+  "kun": "こ",
+  "sens": "enfant",
+  "dit": "こ"
+ },
+ "79a35483c803": {
+  "kanji": "私",
+  "kun": "わたし",
+  "sens": "je, moi",
+  "dit": "わたし"
+ },
+ "782e968da809": {
+  "kanji": "父",
+  "kun": "ちち",
+  "sens": "père",
+  "dit": "ちち"
+ },
+ "94a00e0c9b03": {
+  "kanji": "母",
+  "kun": "はは",
+  "sens": "mère",
+  "dit": "はは"
+ },
+ "23ed21e23274": {
+  "kanji": "兄",
+  "kun": "あに",
+  "sens": "grand frère",
+  "dit": "あに"
+ },
+ "bd77266e5b65": {
+  "kanji": "弟",
+  "kun": "おとうと",
+  "sens": "petit frère",
+  "dit": "おとうと"
+ },
+ "6f947ee0928d": {
+  "kanji": "姉",
+  "kun": "あね",
+  "sens": "grande sœur",
+  "dit": "あね"
+ },
+ "934176fe6234": {
+  "kanji": "妹",
+  "kun": "いもうと",
+  "sens": "petite sœur",
+  "dit": "いもうと"
+ },
+ "b2a5e205aa7e": {
+  "kanji": "友",
+  "kun": "とも",
+  "sens": "ami",
+  "dit": "とも"
+ },
+ "4ff050ab1a05": {
+  "kanji": "力",
+  "kun": "ちから",
+  "sens": "force",
+  "dit": "ちから"
+ },
+ "e836f271a452": {
+  "kanji": "目",
+  "kun": "め",
+  "sens": "œil",
+  "dit": "め"
+ },
+ "1f6ec2cb9088": {
+  "kanji": "口",
+  "kun": "くち",
+  "sens": "bouche",
+  "dit": "くち"
+ },
+ "ab53558c48a5": {
+  "kanji": "耳",
+  "kun": "みみ",
+  "sens": "oreille",
+  "dit": "みみ"
+ },
+ "32ca08308096": {
+  "kanji": "鼻",
+  "kun": "はな",
+  "sens": "nez",
+  "dit": "はな"
+ },
+ "a49d9d3d7a37": {
+  "kanji": "髪",
+  "kun": "かみ",
+  "sens": "cheveux",
+  "dit": "かみ"
+ },
+ "73a6792c016b": {
+  "kanji": "頭",
+  "kun": "あたま",
+  "sens": "tête",
+  "dit": "あたま"
+ },
+ "985060bbb1d8": {
+  "kanji": "体",
+  "kun": "からだ",
+  "sens": "corps",
+  "dit": "からだ"
+ },
+ "ac0e6f216249": {
+  "kanji": "腹",
+  "kun": "はら",
+  "sens": "ventre",
+  "dit": "はら"
+ },
+ "26d2e5f66cb2": {
+  "kanji": "心",
+  "kun": "こころ",
+  "sens": "cœur, esprit",
+  "dit": "こころ"
+ },
+ "f024cab7bb9a": {
+  "kanji": "足",
+  "kun": "あし ・ た(りる)",
+  "sens": "pied, jambe ; suffire",
+  "dit": "あし、足りる"
+ },
+ "82950ca51bd9": {
+  "kanji": "手",
+  "kun": "て",
+  "sens": "main",
+  "dit": "て"
+ },
+ "8e4810563cb0": {
+  "kanji": "毛",
+  "kun": "け",
+  "sens": "poil",
+  "dit": "け"
+ },
+ "e84989db298f": {
+  "kanji": "羽",
+  "kun": "はね ・ は",
+  "sens": "plume, aile",
+  "dit": "はね、は"
+ },
+ "b6d02487e802": {
+  "kanji": "鳥",
+  "kun": "とり",
+  "sens": "oiseau",
+  "dit": "とり"
+ },
+ "d653f148110c": {
+  "kanji": "魚",
+  "kun": "さかな ・ うお",
+  "sens": "poisson",
+  "dit": "さかな、うお"
+ },
+ "95eeac82aa02": {
+  "kanji": "犬",
+  "kun": "いぬ",
+  "sens": "chien",
+  "dit": "いぬ"
+ },
+ "642d1e598773": {
+  "kanji": "猫",
+  "kun": "ねこ",
+  "sens": "chat",
+  "dit": "ねこ"
+ },
+ "2bddfff4e9c6": {
+  "kanji": "牛",
+  "kun": "うし",
+  "sens": "vache, bœuf",
+  "dit": "うし"
+ },
+ "4839a1e4d845": {
+  "kanji": "羊",
+  "kun": "ひつじ",
+  "sens": "mouton",
+  "dit": "ひつじ"
+ },
+ "fb21d8047231": {
+  "kanji": "馬",
+  "kun": "うま",
+  "sens": "cheval",
+  "dit": "うま"
+ },
+ "c4096d3687ca": {
+  "kanji": "鹿",
+  "kun": "しか",
+  "sens": "cerf",
+  "dit": "しか"
+ },
+ "d671db0bf059": {
+  "kanji": "豚",
+  "kun": "ぶた",
+  "sens": "cochon",
+  "dit": "ぶた"
+ },
+ "17dbeb42ebf4": {
+  "kanji": "虫",
+  "kun": "むし",
+  "sens": "insecte",
+  "dit": "むし"
+ },
+ "ed2b566e9da6": {
+  "kanji": "色",
+  "kun": "いろ",
+  "sens": "couleur",
+  "dit": "いろ"
+ },
+ "c212c28c0443": {
+  "kanji": "白",
+  "kun": "しろ ・ しろ(い)",
+  "sens": "blanc",
+  "dit": "しろ、白い"
+ },
+ "2ae55ece5f30": {
+  "kanji": "黒",
+  "kun": "くろ ・ くろ(い)",
+  "sens": "noir",
+  "dit": "くろ、黒い"
+ },
+ "228d3ff16465": {
+  "kanji": "赤",
+  "kun": "あか ・ あか(い)",
+  "sens": "rouge",
+  "dit": "あか、赤い"
+ },
+ "3cc523495bd5": {
+  "kanji": "青",
+  "kun": "あお ・ あお(い)",
+  "sens": "bleu (et vert)",
+  "dit": "あお、青い"
+ },
+ "36a7a13be73b": {
+  "kanji": "黄",
+  "kun": "き ・ こ",
+  "sens": "jaune",
+  "dit": "き、こ"
+ },
+ "c879c5575acc": {
+  "kanji": "緑",
+  "kun": "みどり",
+  "sens": "vert",
+  "dit": "みどり"
+ },
+ "8f3226e06faf": {
+  "kanji": "紫",
+  "kun": "むらさき",
+  "sens": "violet",
+  "dit": "むらさき"
+ },
+ "7f4ac5ffceae": {
+  "kanji": "米",
+  "kun": "こめ",
+  "sens": "riz (le grain)",
+  "dit": "こめ"
+ },
+ "0ea75730ea1e": {
+  "kanji": "食",
+  "kun": "た(べる) ・ く(う)",
+  "sens": "manger",
+  "dit": "食べる、食う"
+ },
+ "0858da3bc463": {
+  "kanji": "飲",
+  "kun": "の(む)",
+  "sens": "boire",
+  "dit": "飲む"
+ },
+ "274ea73807ae": {
+  "kanji": "見",
+  "kun": "み(る) ・ み(せる)",
+  "sens": "regarder, voir",
+  "dit": "見る、見せる"
+ },
+ "ac256ff0447a": {
+  "kanji": "聞",
+  "kun": "き(く) ・ き(こえる)",
+  "sens": "écouter, entendre",
+  "dit": "聞く、聞こえる"
+ },
+ "92ab0d981c2f": {
+  "kanji": "行",
+  "kun": "い(く) ・ おこな(う)",
+  "sens": "aller",
+  "dit": "行く、行う"
+ },
+ "9fbd68120ad6": {
+  "kanji": "来",
+  "kun": "く(る) ・ きた(る)",
+  "sens": "venir",
+  "dit": "来る、きたる"
+ },
+ "dfe954339ef3": {
+  "kanji": "入",
+  "kun": "はい(る) ・ い(れる)",
+  "sens": "entrer",
+  "dit": "入る、入れる"
+ },
+ "9f6afe4dd752": {
+  "kanji": "出",
+  "kun": "で(る) ・ だ(す)",
+  "sens": "sortir",
+  "dit": "出る、出す"
+ },
+ "fa7dba65c626": {
+  "kanji": "歩",
+  "kun": "ある(く)",
+  "sens": "marcher",
+  "dit": "歩く"
+ },
+ "93ff760fd9f0": {
+  "kanji": "止",
+  "kun": "と(まる) ・ と(める)",
+  "sens": "s'arrêter",
+  "dit": "止まる、止める"
+ },
+ "0bed79c9a1f6": {
+  "kanji": "立",
+  "kun": "た(つ) ・ た(てる)",
+  "sens": "être debout",
+  "dit": "立つ、立てる"
+ },
+ "2b2936dbd1ad": {
+  "kanji": "寝",
+  "kun": "ね(る)",
+  "sens": "se coucher, dormir",
+  "dit": "寝る"
+ },
+ "bfe4f17063ea": {
+  "kanji": "言",
+  "kun": "い(う) ・ こと",
+  "sens": "dire",
+  "dit": "言う、こと"
+ },
+ "e7a1984d936c": {
+  "kanji": "話",
+  "kun": "はな(す) ・ はなし",
+  "sens": "parler ; conversation",
+  "dit": "話す、はなし"
+ },
+ "6179d067d26f": {
+  "kanji": "語",
+  "kun": "かた(る)",
+  "sens": "raconter ; langage",
+  "dit": "語る"
+ },
+ "bcdb52e1bab2": {
+  "kanji": "読",
+  "kun": "よ(む)",
+  "sens": "lire",
+  "dit": "読む"
+ },
+ "f928137bef8f": {
+  "kanji": "書",
+  "kun": "か(く)",
+  "sens": "écrire",
+  "dit": "書く"
+ },
+ "5495590dc5f8": {
+  "kanji": "学",
+  "kun": "まな(ぶ)",
+  "sens": "étudier, apprendre",
+  "dit": "学ぶ"
+ },
+ "f4f2dea97fd0": {
+  "kanji": "会",
+  "kun": "あ(う)",
+  "sens": "rencontrer",
+  "dit": "会う"
+ },
+ "65859fef8b0d": {
+  "kanji": "買",
+  "kun": "か(う)",
+  "sens": "acheter",
+  "dit": "買う"
+ },
+ "5d1bdb57b751": {
+  "kanji": "売",
+  "kun": "う(る)",
+  "sens": "vendre",
+  "dit": "売る"
+ },
+ "a0e22fff8a22": {
+  "kanji": "生",
+  "kun": "い(きる) ・ う(まれる) ・ なま",
+  "sens": "vivre ; naître ; cru",
+  "dit": "生きる、生まれる、なま"
+ },
+ "41c4082bd9b2": {
+  "kanji": "死",
+  "kun": "し(ぬ)",
+  "sens": "mourir ; la mort",
+  "dit": "死ぬ"
+ },
+ "5fc7c0448dc9": {
+  "kanji": "灰",
+  "kun": "はい",
+  "sens": "cendre ; gris",
+  "dit": "はい"
+ },
+ "c05ff44cd00e": {
+  "kanji": "紅",
+  "kun": "べに ・ くれない",
+  "sens": "cramoisi, rouge vif",
+  "dit": "べに、くれない"
+ },
+ "5aa3ea7ef894": {
+  "kanji": "顔",
+  "kun": "かお",
+  "sens": "visage",
+  "dit": "かお"
+ },
+ "667c73c7908e": {
+  "kanji": "声",
+  "kun": "こえ",
+  "sens": "voix",
+  "dit": "こえ"
+ },
+ "c9638ee51d1a": {
+  "kanji": "歯",
+  "kun": "は",
+  "sens": "dent",
+  "dit": "は"
+ },
+ "26648030c282": {
+  "kanji": "舌",
+  "kun": "した",
+  "sens": "langue (organe)",
+  "dit": "した"
+ },
+ "bf95c65e8504": {
+  "kanji": "髭",
+  "kun": "ひげ",
+  "sens": "barbe, moustache",
+  "dit": "ひげ"
+ },
+ "059c49621e0d": {
+  "kanji": "首",
+  "kun": "くび",
+  "sens": "cou ; chef",
+  "dit": "くび"
+ },
+ "58b0fa3dc680": {
+  "kanji": "肩",
+  "kun": "かた",
+  "sens": "épaule",
+  "dit": "かた"
+ },
+ "d11d28570f6b": {
+  "kanji": "腕",
+  "kun": "うで",
+  "sens": "bras ; habileté",
+  "dit": "うで"
+ },
+ "78eea193ba80": {
+  "kanji": "指",
+  "kun": "ゆび ・ さ(す)",
+  "sens": "doigt ; montrer du doigt",
+  "dit": "ゆび、指す"
+ },
+ "6447ebd231fa": {
+  "kanji": "爪",
+  "kun": "つめ",
+  "sens": "ongle, griffe",
+  "dit": "つめ"
+ },
+ "0bb2aa812f0b": {
+  "kanji": "胸",
+  "kun": "むね",
+  "sens": "poitrine",
+  "dit": "むね"
+ },
+ "3af1083d8569": {
+  "kanji": "背",
+  "kun": "せ ・ せい",
+  "sens": "dos ; taille (stature)",
+  "dit": "せ、せい"
+ },
+ "2f2a0b09a020": {
+  "kanji": "肌",
+  "kun": "はだ",
+  "sens": "peau",
+  "dit": "はだ"
+ },
+ "e8637d705213": {
+  "kanji": "尻",
+  "kun": "しり",
+  "sens": "fesses ; derrière, bout",
+  "dit": "しり"
+ },
+ "ebe0a3740ffd": {
+  "kanji": "血",
+  "kun": "ち",
+  "sens": "sang",
+  "dit": "ち"
+ },
+ "c7afe57b6661": {
+  "kanji": "小",
+  "kun": "ちい(さい) ・ こ ・ お",
+  "sens": "petit",
+  "dit": "小さい、こ、お"
+ },
+ "64f6ea6727b5": {
+  "kanji": "良",
+  "kun": "よ(い) ・ い(い)",
+  "sens": "bon, bien",
+  "dit": "良い、いい"
+ },
+ "cbb5d4980f28": {
+  "kanji": "悪",
+  "kun": "わる(い)",
+  "sens": "mauvais ; méchant",
+  "dit": "悪い"
+ },
+ "aad1261b44d2": {
+  "kanji": "暑",
+  "kun": "あつ(い)",
+  "sens": "chaud (temps qu'il fait)",
+  "dit": "暑い"
+ },
+ "c01eddb9f2ed": {
+  "kanji": "熱",
+  "kun": "あつ(い)",
+  "sens": "chaud (objet, corps)",
+  "dit": "熱い"
+ },
+ "67185965a971": {
+  "kanji": "寒",
+  "kun": "さむ(い)",
+  "sens": "froid (temps qu'il fait)",
+  "dit": "寒い"
+ },
+ "3b4f8114bbf1": {
+  "kanji": "冷",
+  "kun": "つめ(たい) ・ ひ(える) ・ さ(める)",
+  "sens": "froid (objet, corps)",
+  "dit": "冷たい、冷える、冷める"
+ },
+ "f5273c6948ba": {
+  "kanji": "速",
+  "kun": "はや(い) ・ すみ(やか)",
+  "sens": "rapide (vitesse)",
+  "dit": "速い、速やか"
+ },
+ "8161e36b96c0": {
+  "kanji": "早",
+  "kun": "はや(い)",
+  "sens": "tôt (moment)",
+  "dit": "早い"
+ },
+ "3bcd2889e527": {
+  "kanji": "遅",
+  "kun": "おそ(い) ・ おく(れる)",
+  "sens": "lent (vitesse) ; tard",
+  "dit": "遅い、遅れる"
+ },
+ "24bef218ca9d": {
+  "kanji": "強",
+  "kun": "つよ(い)",
+  "sens": "fort",
+  "dit": "強い"
+ },
+ "012b8e6e52b6": {
+  "kanji": "弱",
+  "kun": "よわ(い)",
+  "sens": "faible",
+  "dit": "弱い"
+ },
+ "24d28e4d36f4": {
+  "kanji": "重",
+  "kun": "おも(い) ・ かさ(ねる)",
+  "sens": "lourd ; empiler",
+  "dit": "重い、重ねる"
+ },
+ "e3e6672987c1": {
+  "kanji": "軽",
+  "kun": "かる(い)",
+  "sens": "léger",
+  "dit": "軽い"
+ },
+ "dce5a223ee48": {
+  "kanji": "高",
+  "kun": "たか(い)",
+  "sens": "haut ; cher",
+  "dit": "高い"
+ },
+ "866b87064c45": {
+  "kanji": "低",
+  "kun": "ひく(い)",
+  "sens": "bas",
+  "dit": "低い"
+ },
+ "92c9c3b6d1fa": {
+  "kanji": "易",
+  "kun": "やさ(しい)",
+  "sens": "facile",
+  "dit": "易しい"
+ },
+ "7766a8da8faa": {
+  "kanji": "難",
+  "kun": "むずか(しい) ・ かた(い)",
+  "sens": "difficile",
+  "dit": "難しい、かたい"
+ },
+ "bf0ee5e143d6": {
+  "kanji": "楽",
+  "kun": "たの(しい) ・ らく",
+  "sens": "agréable, amusant",
+  "dit": "楽しい、らく"
+ },
+ "c5fc132e9c73": {
+  "kanji": "痛",
+  "kun": "いた(い)",
+  "sens": "douloureux ; avoir mal",
+  "dit": "痛い"
+ },
+ "49684dd82cff": {
+  "kanji": "醜",
+  "kun": "みにく(い)",
+  "sens": "laid, moche",
+  "dit": "醜い"
+ },
+ "e4922402930a": {
+  "kanji": "変",
+  "kun": "か(わる) ・ か(える)",
+  "sens": "bizarre ; changer",
+  "dit": "変わる、変える"
+ },
+ "60b9e89bf9b4": {
+  "kanji": "味",
+  "kun": "あじ",
+  "sens": "goût, saveur",
+  "dit": "あじ"
+ },
+ "f56fa155574a": {
+  "kanji": "静",
+  "kun": "しず(か)",
+  "sens": "calme, silencieux",
+  "dit": "静か"
+ },
+ "f99a57eaf74f": {
+  "kanji": "優",
+  "kun": "やさ(しい) ・ すぐ(れる)",
+  "sens": "gentil, doux ; excellent",
+  "dit": "優しい、優れる"
+ },
+ "54af1439d452": {
+  "kanji": "鶏",
+  "kun": "にわとり ・ とり",
+  "sens": "poule, poulet",
+  "dit": "にわとり、とり"
+ },
+ "dacb16a518b4": {
+  "kanji": "狸",
+  "kun": "たぬき",
+  "sens": "tanuki",
+  "dit": "たぬき"
+ },
+ "d3c62e7cc31c": {
+  "kanji": "兎",
+  "kun": "うさぎ",
+  "sens": "lapin, lièvre",
+  "dit": "うさぎ"
+ },
+ "5c0d6cf6af8a": {
+  "kanji": "歌",
+  "kun": "うた ・ うた(う)",
+  "sens": "chant, chanson",
+  "dit": "うた、歌う"
+ },
+ "cecb621f3257": {
+  "kanji": "妖",
+  "kun": "あや(しい)",
+  "sens": "surnaturel, ensorcelant",
+  "dit": "妖しい"
+ },
+ "5cb3a1e9be0a": {
+  "kanji": "伝",
+  "kun": "つた(える)",
+  "sens": "transmettre",
+  "dit": "伝える"
+ },
+ "b9ac2ea4880d": {
+  "kanji": "説",
+  "kun": "と(く)",
+  "sens": "expliquer, théorie",
+  "dit": "説く"
+ },
+ "4659b7316837": {
+  "kanji": "冒",
+  "kun": "おか(す)",
+  "sens": "braver, risquer",
+  "dit": "冒す"
+ },
+ "18ae41ea9c6d": {
+  "kanji": "険",
+  "kun": "けわ(しい)",
+  "sens": "escarpé, dangereux",
+  "dit": "険しい"
+ },
+ "491823ff8aa8": {
+  "kanji": "殿",
+  "kun": "との ・ どの",
+  "sens": "palais, seigneur",
+  "dit": "との、どの"
+ },
+ "5e082267c298": {
+  "kanji": "箒",
+  "kun": "ほうき",
+  "sens": "balai",
+  "dit": "ほうき"
+ },
+ "8abed55c08a6": {
+  "kanji": "怪",
+  "kun": "あや(しい)",
+  "sens": "étrange, mystérieux",
+  "dit": "怪しい"
+ },
+ "38de4ca79393": {
+  "kanji": "物",
+  "kun": "もの",
+  "sens": "chose, objet",
+  "dit": "もの"
+ },
+ "c6f086f4b7f4": {
+  "kanji": "姫",
+  "kun": "ひめ",
+  "sens": "princesse",
+  "dit": "ひめ"
+ },
+ "059879cc9948": {
+  "kanji": "炎",
+  "kun": "ほのお",
+  "sens": "flamme",
+  "dit": "ほのお"
+ },
+ "8875fb1401f2": {
+  "kanji": "夜",
+  "kun": "よる ・ よ",
+  "sens": "nuit",
+  "dit": "よる、よ"
+ },
+ "73eac5df05e0": {
+  "kanji": "仮",
+  "kun": "かり",
+  "sens": "provisoire, faux",
+  "dit": "かり"
+ },
+ "eb19ba63d3c5": {
+  "kanji": "面",
+  "kun": "おも ・ おもて ・ つら",
+  "sens": "visage, face, surface",
+  "dit": "おも、おもて、つら"
+ },
+ "89d8ec20addd": {
+  "kanji": "狼",
+  "kun": "おおかみ",
+  "sens": "loup",
+  "dit": "おおかみ"
+ },
+ "adfe18912f1d": {
+  "kanji": "墓",
+  "kun": "はか",
+  "sens": "tombe",
+  "dit": "はか"
+ },
+ "705678fbbc56": {
+  "kanji": "霊",
+  "kun": "たま",
+  "sens": "esprit, âme",
+  "dit": "たま"
+ },
+ "5a2262b9aeec": {
+  "kanji": "化",
+  "kun": "ば(ける) ・ ば(かす)",
+  "sens": "se transformer",
+  "dit": "化ける、化かす"
+ },
+ "a8f7282bc840": {
+  "kanji": "着",
+  "kun": "き(る) ・ つ(く)",
+  "sens": "porter (un vêtement) ; arriver",
+  "dit": "着る、着く"
+ },
+ "9775a041e755": {
+  "kanji": "靴",
+  "kun": "くつ",
+  "sens": "chaussure",
+  "dit": "くつ"
+ },
+ "16e6b9c44658": {
+  "kanji": "袋",
+  "kun": "ふくろ",
+  "sens": "sac, poche",
+  "dit": "ふくろ"
+ },
+ "660bb4e45bd2": {
+  "kanji": "運",
+  "kun": "はこ(ぶ)",
+  "sens": "transporter ; chance",
+  "dit": "運ぶ"
+ },
+ "2e8678896633": {
+  "kanji": "動",
+  "kun": "うご(く) ・ うご(かす)",
+  "sens": "bouger",
+  "dit": "動く、動かす"
+ },
+ "534d18330829": {
+  "kanji": "襟",
+  "kun": "えり",
+  "sens": "col (de vêtement)",
+  "dit": "えり"
+ },
+ "82f8e84fbd02": {
+  "kanji": "巻",
+  "kun": "ま(く) ・ まき",
+  "sens": "enrouler ; tome",
+  "dit": "巻く、まき"
+ },
+ "1049ef334644": {
+  "kanji": "装",
+  "kun": "よそお(う)",
+  "sens": "tenue, se parer",
+  "dit": "装う"
+ },
+ "9db8c9529821": {
+  "kanji": "飴",
+  "kun": "あめ",
+  "sens": "bonbon",
+  "dit": "あめ"
+ },
+ "f25766852e79": {
+  "kanji": "使",
+  "kun": "つか(う)",
+  "sens": "utiliser ; envoyé",
+  "dit": "使う"
+ },
+ "864c8f15c1e5": {
+  "kanji": "亡",
+  "kun": "な(い) ・ な(くなる)",
+  "sens": "défunt, disparaître",
+  "dit": "ない、亡くなる"
+ },
+ "f1fe79edba80": {
+  "kanji": "吸",
+  "kun": "す(う)",
+  "sens": "aspirer",
+  "dit": "吸う"
+ },
+ "aa17533ae54a": {
+  "kanji": "鬼",
+  "kun": "おに",
+  "sens": "oni, ogre",
+  "dit": "おに"
+ },
+ "b8bc976bacb9": {
+  "kanji": "骨",
+  "kun": "ほね",
+  "sens": "os",
+  "dit": "ほね"
+ },
+ "372951b141cd": {
+  "kanji": "屋",
+  "kun": "や",
+  "sens": "toit, échoppe",
+  "dit": "や"
+ },
+ "3b480a1629f4": {
+  "kanji": "敷",
+  "kun": "し(く)",
+  "sens": "étendre, étaler",
+  "dit": "敷く"
+ },
+ "67cad9f5edbb": {
+  "kanji": "満",
+  "kun": "み(ちる) ・ み(たす)",
+  "sens": "plein, remplir",
+  "dit": "満ちる、満たす"
+ }
+}
