@@ -168,7 +168,8 @@ details summary { cursor: pointer; color: var(--sarcelle); font-weight: 600; }
         <div class="reglage"><label for="delai">Temps pour répondre</label><output id="o-delai"></output><input id="delai" type="range" min="1" max="8" step="0.5"></div>
         <div class="reglage"><label for="apres">Pause après la correction</label><output id="o-apres"></output><input id="apres" type="range" min="0.5" max="5" step="0.5"></div>
         <div class="reglage"><label for="nombre">Nombre de questions</label><output id="o-nombre"></output><input id="nombre" type="range" min="5" max="120" step="5"></div>
-        <label class="case">Répéter la correction deux fois<input type="checkbox" id="repeter"></label>
+        <label class="case" id="case-repeterFJ">Français → 日本語 : répéter la correction en japonais<input type="checkbox" id="repeterFJ"></label>
+        <label class="case" id="case-repeterJF">日本語 → Français : répéter le mot japonais avant de répondre<input type="checkbox" id="repeterJF"></label>
         <label class="case">Petit signal avant chaque question<input type="checkbox" id="signal"></label>
       </div>
       <button class="grand" id="lancer">Lancer la séance</button>
@@ -215,9 +216,10 @@ details summary { cursor: pointer; color: var(--sarcelle); font-weight: 600; }
 
   // ---------- réglages, gardés d'une ouverture à l'autre ----------
   const DEFAUT = { vue: 'kanji', modeKanji: 'liste', choixKanji: null, choixMots: null,
-    groupes: null, sens: 'fj', delai: 3, apres: 1.5, nombre: 20, repeter: false, signal: true, afficher: false };
+    groupes: null, sens: 'fj', delai: 3, apres: 1.5, nombre: 20, repeterFJ: false, repeterJF: false, signal: true, afficher: false };
   let R = Object.assign({}, DEFAUT);
   try { Object.assign(R, JSON.parse(localStorage.getItem('japonais') || '{}')); } catch (e) {}
+  if ('repeter' in R) { R.repeterFJ = !!R.repeter; delete R.repeter; }
   const garder = () => { try { localStorage.setItem('japonais', JSON.stringify(R)); } catch (e) {} };
 
   // ---------- onglets (l'ancre #kanji, #mots, #quiz ouvre l'onglet voulu) ----------
@@ -344,7 +346,11 @@ details summary { cursor: pointer; color: var(--sarcelle); font-weight: 600; }
     $('o-nombre').textContent = n + (R.nombre >= dispo && dispo ? ' (toutes)' : '');
     document.querySelectorAll('#sens button').forEach((b) => b.setAttribute('aria-pressed', b.dataset.v === R.sens));
     document.querySelectorAll('#g-mots .puce, #g-kanji .puce').forEach((p) => p.setAttribute('aria-pressed', !!R.groupes && R.groupes.includes(p.dataset.g)));
-    const duree = n * (2.2 + R.delai + 1.6 * (R.repeter ? 2 : 1) + R.apres + (R.signal ? 0.5 : 0));
+    // une case de répétition par sens d'entraînement, visible seulement si ce sens est choisi
+    $('case-repeterFJ').hidden = R.sens === 'jf';
+    $('case-repeterJF').hidden = R.sens === 'fj';
+    const rep = (R.sens !== 'jf' && R.repeterFJ ? 1 : 0) + (R.sens !== 'fj' && R.repeterJF ? 1 : 0);
+    const duree = n * (2.2 + R.delai + 1.6 * (1 + (R.sens === 'mix' ? rep / 2 : rep)) + R.apres + (R.signal ? 0.5 : 0));
     $('resume').textContent = dispo ? `${n} questions, environ ${Math.max(1, Math.round(duree / 60))} min` : 'Choisis au moins une liste.';
     $('lancer').disabled = !dispo;
     garder();
@@ -353,7 +359,7 @@ details summary { cursor: pointer; color: var(--sarcelle); font-weight: 600; }
     $(id).value = R[id];
     $(id).addEventListener('input', () => { R[id] = +$(id).value; majQuiz(); });
   }
-  for (const id of ['repeter', 'signal', 'afficher']) {
+  for (const id of ['repeterFJ', 'repeterJF', 'signal', 'afficher']) {
     $(id).checked = R[id];
     $(id).addEventListener('change', () => { R[id] = $(id).checked; majQuiz(); afficherCourant(); });
   }
@@ -441,10 +447,12 @@ details summary { cursor: pointer; color: var(--sarcelle); font-weight: 600; }
       } catch (e) { continue; } // son introuvable (hors connexion) : on passe
       const debut = total / TAUX;
       if (R.signal) { ajouter(bip()); silence(0.35); }
-      ajouter(a); silence(R.delai);
+      ajouter(a);
+      if (sens === 'jf' && R.repeterJF) { silence(0.8); ajouter(a); }   // le mot japonais, dit deux fois
+      silence(R.delai);
       const corr = total / TAUX;
       ajouter(b);
-      if (R.repeter) { silence(0.7); ajouter(b); }
+      if (sens === 'fj' && R.repeterFJ) { silence(0.7); ajouter(b); }  // la correction japonaise, deux fois
       silence(R.apres);
       plan.push({ debut, corr, fin: total / TAUX, q, sens });
     }
