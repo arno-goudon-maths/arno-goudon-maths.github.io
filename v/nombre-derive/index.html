@@ -6,6 +6,11 @@
 main{width:min(100%,1100px);padding:16px;box-sizing:border-box}h1{font-size:1.2rem;font-weight:600;margin:0 0 12px}
 video{width:100%;border-radius:10px;background:#000}a{color:#9cc2ff}</style>
 </head><body><main><h1>Le nombre dérivé par le zoom</h1>
-<video src="../../videos/premiere/le-nombre-derive-par-le-zoom.mp4" controls playsinline preload="metadata"></video>
+<video src="../../videos/premiere/le-nombre-derive-par-le-zoom.mp4#t=0" controls playsinline preload="metadata"></video>
 <p><a href="../../">Tous les cours et vidéos</a></p></main>
+<script>
+// le fragment #t= suffit dans les navigateurs récents ; ceci couvre les autres
+const v = document.querySelector("video"), d = 0;
+v.addEventListener("loadedmetadata", () => { if (d > 0 && v.currentTime < d - 1) v.currentTime = d; });
+</script>
 </body></html>
