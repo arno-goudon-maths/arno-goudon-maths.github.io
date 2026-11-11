@@ -203,7 +203,8 @@ summary { cursor: pointer; color: var(--discret); font-weight: 500; }
   // ---------------------------------------------------------------
   // État des deux scènes
   // ---------------------------------------------------------------
-  const etat = { scene: "param", t: 1.5, sel: [6, 0, 1, 7] };
+  // l'ancre #cube (QR code du cours, 1.2) ouvre directement les positions relatives de deux droites
+  const etat = { scene: location.hash === "#cube" ? "cube" : "param", t: 1.5, sel: [6, 0, 1, 7] };
   const lire = ids => ids.map(id => { const v = parseFloat($(id).value); return Number.isFinite(v) ? v : 0; });
   const CUBE = [[0, 0, 0], [4, 0, 0], [4, 4, 0], [0, 4, 0], [0, 0, 4], [4, 0, 4], [4, 4, 4], [0, 4, 4]];
   const NOMS = "ABCDEFGH";
@@ -422,6 +423,7 @@ summary { cursor: pointer; color: var(--discret); font-weight: 500; }
   };
   function changerScene() {
     const s = etat.scene;
+    $("scene").value = s;
     $("chapeau").innerHTML = CHAPEAUX[s];
     $("zone-t").hidden = s !== "param";
     $("plus-param").hidden = s !== "param";
