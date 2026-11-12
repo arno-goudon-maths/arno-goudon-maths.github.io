@@ -1,7 +1,7 @@
 // Application « Japonais » (fiches, mots, quiz audio) : fonctionne hors connexion une fois les fichiers en cache.
 // L'application et la liste des mots : réseau d'abord (pour recevoir les mots nouveaux),
 // cache sinon. Les mp3 : cache d'abord (ils ne changent jamais : leur nom est une empreinte).
-const CACHE = 'japonais-v1';
+const CACHE = 'japonais-v2';
 const COQUILLE = ['./', './index.html', './vocab.json', './fiches.json', './manifest.json', './icone-180.png', './icone-192.png'];
 
 self.addEventListener('install', (e) => {

@@ -64,7 +64,7 @@ input[type=search] { flex: 1; min-width: 160px; border: 1.5px solid var(--filet)
 .fiche .cle { font-size: 12.5px; color: var(--rouge); font-family: var(--jp); }
 .fiche .note { grid-column: 1 / -1; font-size: 13px; color: var(--discret); font-family: var(--jp); line-height: 1.4; }
 .jouer { flex: none; width: 34px; height: 34px; border-radius: 50%; border: 0; background: var(--sarcelle); color: #fff; cursor: pointer; display: grid; place-items: center; padding: 0; }
-.jouer svg { width: 14px; height: 14px; margin-left: 2px; }
+.jouer svg, .fiche .jouer svg { width: 14px; height: 14px; margin-left: 2px; }  /* .fiche .jouer : plus fort que « .fiche svg » du téléphone, prévu pour le tracé du kanji */
 .jouer.joue { background: var(--rouge); }
 /* mots */
 .mots { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 8px; }
