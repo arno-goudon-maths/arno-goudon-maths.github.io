@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;box-sizing:border-box}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head><body>
+<title>Tracer une courbe</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Tracer la courbe représentative d'une fonction (TD3, exercices 13 à 16) :
+   tableau de valeurs, points placés avec les pointillés de lecture en rouge,
+   puis courbe lisse tracée à main levée, en bleu comme dans le corrigé. */
+:root {
+  --papier: #f7f8fa; --carte: #ffffff; --encre: #1b1f24; --discret: #5d6672; --filet: #d9dee5; --grille: #e4e8ee; --entete: #f1f3f6;
+  --courbe: #1f5fbf; --lecture: #e0161b; --lecture-fond: rgba(224, 22, 27, 0.10);
+  --peau: #f2cdac; --peau-trait: #a8754f; --stylo: #2c3440; --metal: #c9ced6;
+  --math: "STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --ui: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #262c35; --entete: #232832; --courbe: #6fa3f0; --lecture: #ff4d52; --lecture-fond: rgba(255, 77, 82, 0.14); --peau: #d8ac88; --peau-trait: #7a5236; --stylo: #11151a; --metal: #9aa3ae; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #262c35; --entete: #232832; --courbe: #6fa3f0; --lecture: #ff4d52; --lecture-fond: rgba(255, 77, 82, 0.14); --peau: #d8ac88; --peau-trait: #7a5236; --stylo: #11151a; --metal: #9aa3ae; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--papier); color: var(--encre); font-family: var(--ui); font-size: 15px; line-height: 1.5; margin: 0; }
+.page { max-width: 920px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 40px; display: grid; gap: 12px; }
+.page > * { min-width: 0; }
+.niveau { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--discret); }
+h1 { font-family: var(--math); font-weight: 600; font-size: clamp(26px, 4vw, 36px); line-height: 1.15; margin: 0; }
+.chapeau { margin: 0; color: var(--discret); max-width: 68ch; }
+.m { font-family: var(--math); font-style: italic; }
+.barre { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; justify-content: space-between; }
+.choix, .commandes { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+button { font: inherit; font-size: 14px; padding: 4px 12px; border-radius: 999px; border: 1px solid var(--filet); background: var(--carte); color: var(--encre); cursor: pointer; line-height: 1.4; }
+.choix button { font-family: var(--math); font-size: 16px; color: var(--discret); min-width: 46px; }
+.choix button[aria-pressed="true"] { border-color: var(--courbe); color: var(--courbe); box-shadow: inset 0 0 0 1px var(--courbe); }
+.commandes button.principal { background: var(--courbe); border-color: var(--courbe); color: var(--carte); font-weight: 500; min-width: 92px; }
+.commandes button.pas { padding: 4px 10px; color: var(--discret); }
+.vitesse { display: flex; align-items: center; gap: 6px; color: var(--discret); font-size: 13px; }
+.vitesse input { width: 84px; accent-color: var(--courbe); }
+.carte { background: var(--carte); border: 1px solid var(--filet); border-radius: 10px; padding: 10px 10px 6px; }
+.enonce { margin: 0 0 8px; font-size: 14px; color: var(--discret); text-align: center; }
+.enonce .f { font-family: var(--math); font-size: 18px; color: var(--encre); }
+table.valeurs { border-collapse: collapse; margin: 0 auto; width: 100%; font-family: var(--math); font-size: clamp(16px, 3.4vw, 21px); font-variant-numeric: tabular-nums; table-layout: fixed; }
+.valeurs th, .valeurs td { border: 1px solid var(--discret); text-align: center; padding: 5px 1px; white-space: nowrap; height: 1.9em; }
+.valeurs th { background: var(--entete); font-weight: 400; width: 3.1em; }
+.valeurs td { transition: background-color .25s; }
+.valeurs td.actif { background: var(--lecture-fond); }
+.valeurs tr:first-child td.actif { color: var(--lecture); font-weight: 600; }
+.valeurs .res { display: inline-block; color: var(--courbe); font-weight: 600; }
+.calcul { min-height: 58px; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; column-gap: .3em; row-gap: 2px; padding: 6px 4px 2px; font-family: var(--math); font-size: clamp(16px, 2.6vw, 19px); }
+.calcul .seg { display: inline-block; white-space: nowrap; }
+.calcul .note { color: var(--discret); font-size: .86em; margin-left: .5em; }
+.r { color: var(--lecture); font-weight: 600; }
+.b { color: var(--courbe); font-weight: 600; }
+.frac { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; line-height: 1.15; font-size: .95em; }
+.frac > span:first-child { border-bottom: 1.3px solid currentColor; padding: 0 .25em; }
+.rad { white-space: nowrap; }
+.rad > span { border-top: 1.3px solid currentColor; padding: 0 .12em 0 .08em; margin-left: -.06em; }
+.figure { background: var(--carte); border: 1px solid var(--filet); border-radius: 10px; padding: 6px; }
+svg { display: block; width: 100%; height: auto; user-select: none; -webkit-user-select: none; }
+.constat { font-family: var(--math); font-size: clamp(18px, 2.4vw, 22px); text-align: center; margin: 0; padding: 8px 14px; border-radius: 10px; background: var(--lecture-fond); border: 1.5px solid var(--lecture); min-height: 1.6em; }
+.constat b { color: var(--lecture); font-weight: 600; white-space: nowrap; }
+button:focus-visible, input:focus-visible { outline: 3px solid var(--lecture); outline-offset: 2px; }
+@media (max-width: 520px) { .niveau { padding-top: 34px; } .valeurs th { width: 2.7em; } }
+</style>
+
+<div class="page">
+  <span class="niveau">Seconde · Chapitre 3 · Généralités sur les fonctions · TD3</span>
+  <h1>Tracer une courbe</h1>
+  <p class="chapeau">On calcule les images, on place les points, puis on les relie à main levée par une courbe lisse.</p>
+  <div class="barre">
+    <div class="choix" role="group" aria-label="Choix de la fonction" id="choix"></div>
+    <div class="commandes">
+      <button type="button" class="pas" id="avant" aria-label="Étape précédente">◀</button>
+      <button type="button" class="principal" id="animer">Animer</button>
+      <button type="button" class="pas" id="apres" aria-label="Étape suivante">▶</button>
+      <label class="vitesse" for="vitesse">Vitesse <input id="vitesse" type="range" min="1" max="10" value="4"></label>
+    </div>
+  </div>
+  <div class="carte">
+    <p class="enonce" id="enonce"></p>
+    <table class="valeurs" id="tableau"></table>
+    <div class="calcul" id="calcul" aria-live="polite"></div>
+  </div>
+  <div class="figure" id="cadre"><svg id="g" role="img" aria-label="Repère où l'on place les points puis où l'on trace la courbe"></svg></div>
+  <p class="constat" id="constat" aria-live="polite"></p>
+</div>
+
+<script>
+(() => {
+  const NS = "http://www.w3.org/2000/svg", $ = id => document.getElementById(id);
+  const el = (t, a, txt) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); if (txt != null) e.textContent = txt; return e; };
+  const fr = v => { const r = Math.round(v * 100) / 100; return (Object.is(r, -0) ? 0 : r).toString().replace(".", ",").replace("-", "−"); };
+  const R = s => `<span class="r">${s}</span>`, B = s => `<span class="b">${s}</span>`;
+  const f_ = a => `<i>f</i>(${a})`;
+  const par = v => v < 0 ? `(${fr(v)})` : fr(v);
+  const frac = (n, d) => `<span class="frac"><span>${n}</span><span>${d}</span></span>`;
+  const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
+  const lisse = t => t * t * (3 - 2 * t);
+  const phase = (p, a, b) => clamp((p - a) / (b - a));
+
+  // Les quatre exercices du TD3 (13 à 16), avec le repère du corrigé :
+  // grille (bornes et pas), axes, graduations écrites, rapport des unités (uy / ux, en cm).
+  const F = {
+    carre: {
+      ex: 14, bouton: "−<i>x</i>²+5", expr: "−<i>x</i>² + 5", f: x => 5 - x * x, xs: [-2, -1, 0, 1, 2],
+      grille: { x: [-3.5, 3.5, 1], y: [-1.5, 6.5, 1] }, axes: { x: [-3.5, 3.6], y: [-1.5, 6.6] },
+      gradX: [-3, -2, -1, 1, 2, 3].map(v => [v, "dessous"]), gradY: [-1, 1, 2, 3, 4, 5, 6], zero: true, rapport: 1,
+      branches: [{ t: [-2.45, 2.45], pt: t => [t, 5 - t * t] }],
+      calcul: a => [f_(R(fr(a))), `= −${a < 0 ? `(${R(fr(a))})` : R(fr(a))}² + 5`, `= ${fr(-a * a)} + 5`, `= ${fr(5 - a * a)}`]
+    },
+    cube: {
+      ex: 15, bouton: "<i>x</i>³", expr: "<i>x</i>³", f: x => x ** 3, xs: [-3, -2, -1, 0, 1, 2, 3],
+      grille: { x: [-3.5, 3.5, 1], y: [-30, 30, 5] }, axes: { x: [-3.5, 3.7], y: [-30, 32] },
+      gradX: [-3, -2, -1, 1, 2, 3].map(v => [v, "dessous"]), gradY: [-25, -20, -15, -10, -5, 5, 10, 15, 20, 25], zero: false, rapport: 0.09 / 0.8,
+      branches: [{ t: [-3, 3], pt: t => [t, t ** 3] }],
+      calcul: a => [f_(R(fr(a))), `= ${a < 0 ? `(${R(fr(a))})` : R(fr(a))}³`, `= ${par(a)} × ${par(a)} × ${par(a)}`, `= ${fr(a ** 3)}`]
+    },
+    racine: {
+      ex: 16, bouton: "√<span style='text-decoration:overline'><i>x</i></span>", expr: "<span class='rad'>√<span><i>x</i></span></span>", f: x => Math.sqrt(x), xs: [0, 1, 4, 9, 16, 25],
+      grille: { x: [-1, 26, 1], y: [-0.5, 5.5, 1] }, axes: { x: [-1, 26.5], y: [-0.5, 5.8] },
+      gradX: [5, 10, 15, 20, 25].map(v => [v, "dessous"]), gradY: [1, 2, 3, 4, 5], zero: true, rapport: 0.8 / 0.5,
+      branches: [{ t: [0, 5], pt: t => [t * t, t] }],
+      calcul: a => [f_(R(fr(a))), `= <span class="rad">√<span>${R(fr(a))}</span></span>`, `= ${fr(Math.sqrt(a))}`, `<span class="note">car ${fr(Math.sqrt(a))}² = ${fr(a)}</span>`]
+    },
+    inverse: {
+      ex: 17, bouton: "1/<i>x</i>", expr: frac("1", "<i>x</i>"), f: x => 1 / x, xs: [-2, -1, -0.5, -0.1, 0.1, 0.5, 1, 2],
+      grille: { x: [-2.5, 2.5, 0.5], y: [-10.5, 10.5, 1] }, axes: { x: [-2.5, 2.7], y: [-10.5, 11] },
+      gradX: [[-2, "dessus"], [-1, "dessus"], [1, "dessous"], [2, "dessous"]], gradY: [-10, -5, 5, 10], zero: false, rapport: 0.3,
+      branches: [{ t: [-2.5, -0.095], pt: t => [t, 1 / t] }, { t: [0.095, 2.5], pt: t => [t, 1 / t] }],
+      calcul: a => [f_(R(fr(a))), "= " + frac("1", R(fr(a))), `= ${fr(1 / a)}`, `<span class="note">car ${fr(a)} × ${par(1 / a)} = 1</span>`]
+    }
+  };
+  const ORDRE = ["carre", "cube", "racine", "inverse"];
+  const DUREE = { debut: 0.5, calcul: 3.0, point: 2.0, trace: 5.2, lever: 1.5 };
+
+  let cle = ORDRE.find(c => "#" + c === location.hash) || "carre";
+  let etapes = [], i = 0, p = 0, joue = false, dernier = 0, L = null;
+
+  // ---------- sélecteur, tableau ----------
+  const choix = $("choix");
+  ORDRE.forEach(c => {
+    const b = document.createElement("button"); b.type = "button"; b.innerHTML = F[c].bouton; b.dataset.cle = c;
+    b.setAttribute("aria-label", "Exercice " + F[c].ex);
+    b.addEventListener("click", () => { cle = c; try { history.replaceState(null, "", "#" + c); } catch (e) {} charge(); });
+    choix.appendChild(b);
+  });
+
+  function charge() {
+    const F0 = F[cle];
+    [...choix.children].forEach(b => b.setAttribute("aria-pressed", b.dataset.cle === cle));
+    $("enonce").innerHTML = `Exercice ${F0.ex} · <span class="f"><i>f</i>(<i>x</i>) = ${F0.expr}</span>`;
+    const tab = $("tableau");
+    tab.style.maxWidth = (F0.xs.length * 74 + 70) + "px";
+    tab.innerHTML = `<tr><th><i>x</i></th>${F0.xs.map(x => `<td>${fr(x)}</td>`).join("")}</tr>` +
+                    `<tr><th><i>f</i>(<i>x</i>)</th>${F0.xs.map(x => `<td><span class="res">${fr(F0.f(x))}</span></td>`).join("")}</tr>`;
+    etapes = [{ k: "debut" }];
+    F0.xs.forEach((x, j) => etapes.push({ k: "calcul", j }));
+    F0.xs.forEach((x, j) => etapes.push({ k: "point", j }));
+    F0.branches.forEach((b, n) => { if (n) etapes.push({ k: "lever" }); etapes.push({ k: "trace", n }); });
+    i = 0; p = 0; joue = false; calculAffiche = null;
+    mise();
+  }
+
+  // ---------- repère : mise à l'échelle sur la largeur réelle (1 unité SVG = 1 px) ----------
+  const mG = 22, mD = 26, mH = 28, mB = 18;
+  function mise() {
+    const F0 = F[cle], W = Math.max(280, $("cadre").clientWidth - 14);
+    const plein = document.body.classList.contains("plein-ecran");
+    const Hmax = Math.max(300, Math.min(plein ? 2000 : 640, window.innerHeight * (plein ? 0.58 : 0.62)));
+    const ex = F0.axes.x[1] - F0.grille.x[0], ey = F0.axes.y[1] - F0.grille.y[0];
+    let ux = (W - mG - mD) / ex, uy = ux * F0.rapport;
+    if (uy * ey > Hmax - mH - mB) { uy = (Hmax - mH - mB) / ey; ux = uy / F0.rapport; }
+    const Hmin = W * (W < 600 ? 0.6 : 0.42);
+    if (uy * ey + mH + mB < Hmin) uy = (Hmin - mH - mB) / ey;           // repère très aplati : on l'étire en hauteur
+    const H = Math.round(uy * ey + mH + mB), x0 = mG + ((W - mG - mD) - ux * ex) / 2;
+    L = { W, H, ux, uy, sx: x => x0 + (x - F0.grille.x[0]) * ux, sy: y => mH + (F0.axes.y[1] - y) * uy, main: clamp(Math.min(W, H) / 640, 0.55, 0.85) };
+    const g = $("g"); g.setAttribute("viewBox", `0 0 ${W} ${H}`);
+    // courbes échantillonnées, avec leur longueur pour que le stylo avance à vitesse régulière
+    L.branches = F0.branches.map(b => {
+      const pts = [], N = 1400; let long = 0;
+      for (let n = 0; n <= N; n++) {
+        const [x, y] = b.pt(b.t[0] + (b.t[1] - b.t[0]) * n / N), P = [L.sx(x), L.sy(y)];
+        if (n) long += Math.hypot(P[0] - pts[n - 1][0], P[1] - pts[n - 1][1]);
+        P.push(long); pts.push(P);
+      }
+      return { pts, long };
+    });
+    statique(); rendu();
+  }
+
+  const gradXel = {}, gradYel = {};
+  let calculAffiche = null;
+  function statique() {
+    const F0 = F[cle], g = $("g"), { sx, sy } = L; g.textContent = "";
+    for (const k in gradXel) delete gradXel[k];
+    for (const k in gradYel) delete gradYel[k];
+    // fondu du poignet (dans le repère local de la main)
+    const defs = el("defs"), deg = el("linearGradient", { id: "fondu", gradientUnits: "userSpaceOnUse", x1: 0, y1: 120, x2: 0, y2: 215 });
+    deg.appendChild(el("stop", { offset: 0, "stop-color": "#fff" })); deg.appendChild(el("stop", { offset: 1, "stop-color": "#000" }));
+    const masque = el("mask", { id: "poignet", maskUnits: "userSpaceOnUse", x: -200, y: -200, width: 600, height: 600 });
+    masque.appendChild(el("rect", { x: -200, y: -200, width: 600, height: 600, fill: "url(#fondu)" }));
+    defs.appendChild(deg); defs.appendChild(masque); g.appendChild(defs);
+    const fond = el("g"); g.appendChild(fond);
+    g.appendChild(el("g", { id: "dyn" }));           // courbe, pointillés, points
+    const grad = el("g"); g.appendChild(grad);       // graduations, au-dessus des pointillés
+    g.appendChild(el("g", { id: "tmp" }));           // valeurs lues en rouge
+    g.appendChild(el("g", { id: "haut" }));          // la main
+    const [gx0, gx1, px] = F0.grille.x, [gy0, gy1, py] = F0.grille.y;
+    for (let x = Math.ceil(gx0 / px - 1e-9) * px; x <= gx1 + 1e-9; x += px) fond.appendChild(el("line", { x1: sx(x), x2: sx(x), y1: sy(gy0), y2: sy(gy1), stroke: "var(--grille)", "stroke-width": 1 }));
+    for (let y = Math.ceil(gy0 / py - 1e-9) * py; y <= gy1 + 1e-9; y += py) fond.appendChild(el("line", { x1: sx(gx0), x2: sx(gx1), y1: sy(y), y2: sy(y), stroke: "var(--grille)", "stroke-width": 1 }));
+    // axes avec flèches
+    const [ax0, ax1] = F0.axes.x, [ay0, ay1] = F0.axes.y;
+    fond.appendChild(el("line", { x1: sx(ax0), x2: sx(ax1) - 8, y1: sy(0), y2: sy(0), stroke: "var(--encre)", "stroke-width": 1.6 }));
+    fond.appendChild(el("path", { d: `M${sx(ax1)},${sy(0)} l-11,-4.5 v9 z`, fill: "var(--encre)" }));
+    fond.appendChild(el("line", { x1: sx(0), x2: sx(0), y1: sy(ay0), y2: sy(ay1) + 8, stroke: "var(--encre)", "stroke-width": 1.6 }));
+    fond.appendChild(el("path", { d: `M${sx(0)},${sy(ay1)} l-4.5,11 h9 z`, fill: "var(--encre)" }));
+    const lettre = (x, y, t, anc) => fond.appendChild(el("text", { x, y, "text-anchor": anc, "font-family": "var(--math)", "font-style": "italic", "font-size": 19, fill: "var(--discret)" }, t));
+    lettre(sx(ax1) + 5, sy(0) + 6, "x", "start");
+    lettre(sx(0), sy(ay1) - 6, "y", "middle");
+    const txt = (x, y, t, anc) => el("text", { x, y, "text-anchor": anc, "font-size": 15, fill: "var(--discret)", "font-family": "var(--ui)", stroke: "var(--carte)", "stroke-width": 4, "paint-order": "stroke" }, t);
+    // graduation de l'axe des abscisses traversée par la courbe (−1 de la fonction cube) : de l'autre côté de l'axe
+    const coupeX = (x, cote) => { const a = sx(x) - 12, b = sx(x) + 12, h = cote === "dessous" ? [sy(0) + 4, sy(0) + 21] : [sy(0) - 22, sy(0) - 5];
+      return L.branches.some(br => br.pts.some(([u, v]) => u > a && u < b && v > h[0] && v < h[1])); };
+    F0.gradX.forEach(([x, pos]) => {
+      fond.appendChild(el("line", { x1: sx(x), x2: sx(x), y1: sy(0) - 4, y2: sy(0) + 4, stroke: "var(--encre)", "stroke-width": 1.3 }));
+      const autre = pos === "dessous" ? "dessus" : "dessous";
+      if (coupeX(x, pos) && !coupeX(x, autre)) pos = autre;
+      const t = txt(sx(x), pos === "dessous" ? sy(0) + 19 : sy(0) - 9, fr(x), "middle"); grad.appendChild(t); gradXel[x] = t; t.dataset.cote = pos;
+    });
+    F0.gradY.forEach(y => {
+      fond.appendChild(el("line", { x1: sx(0) - 4, x2: sx(0) + 4, y1: sy(y), y2: sy(y), stroke: "var(--encre)", "stroke-width": 1.3 }));
+      // une graduation qu'un point du tableau toucherait (point (−0,1 ; −10) de l'inverse) s'écarte un peu de l'axe
+      // et une graduation que la courbe traverse passe de l'autre côté de l'axe si la place y est libre
+      const gene = F0.xs.some(x => sx(x) < sx(0) && sx(x) > sx(0) - 40 && Math.abs(sy(F0.f(x)) - sy(y)) < 12);
+      const l = 9 * fr(y).length + 4, coupe = (xa, xb) => L.branches.some(b => b.pts.some(([u, v]) => u > xa && u < xb && Math.abs(v - sy(y)) < 10));
+      const aDroite = !gene && coupe(sx(0) - 8 - l, sx(0) - 4) && !coupe(sx(0) + 4, sx(0) + 8 + l);
+      const t = aDroite ? txt(sx(0) + 8, sy(y) + 5, fr(y), "start") : txt(sx(0) - (gene ? 19 : 8), sy(y) + 5, fr(y), "end");
+      grad.appendChild(t); gradYel[y] = t; t.dataset.droite = aDroite ? 1 : "";
+    });
+    if (F0.zero) { const t = txt(sx(0) - 5, sy(0) + 17, "0", "end"); grad.appendChild(t); gradXel[0] = t; }
+  }
+
+  // ---------- la main qui tient le stylo (pointe du stylo à l'origine du groupe) ----------
+  function main(x, y, s, leve, opacite) {
+    const h = el("g", { transform: `translate(${x.toFixed(1)},${y.toFixed(1)}) scale(${s.toFixed(3)})`, opacity: opacite });
+    if (leve) h.appendChild(el("ellipse", { cx: 0, cy: 0, rx: 5, ry: 2.4, fill: "var(--encre)", opacity: 0.18 }));
+    const r = el("g", { transform: `translate(${leve ? "7,-13" : "0,0"}) rotate(-58)`, mask: "url(#poignet)", "stroke-linejoin": "round", "stroke-linecap": "round" });
+    const peau = { fill: "var(--peau)", stroke: "var(--peau-trait)", "stroke-width": 1.5 };
+    // paume et doigts repliés (côté droit du stylo), le poignet part vers le bas à droite
+    r.appendChild(el("path", Object.assign({ d: "M22,6 C36,1 58,-1 78,2 C98,5 116,16 122,36 C128,60 130,90 128,120 L124,240 L40,240 C44,190 48,150 44,118 C40,90 34,64 30,46 C26,30 22,18 22,6 Z" }, peau)));
+    r.appendChild(el("path", { d: "M20,6 C22,14 32,19 46,19 C56,19 60,13 58,8 M34,30 C44,36 58,36 64,28 M42,58 C54,62 66,58 70,48", fill: "none", stroke: "var(--peau-trait)", "stroke-width": 1.2, opacity: 0.6 }));
+    // pouce (de l'autre côté du stylo)
+    r.appendChild(el("path", Object.assign({ d: "M28,-5 C32,-14 46,-19 62,-18 C76,-17 88,-11 92,-2 L78,0 C64,-4 48,-4 36,-1 Z" }, peau)));
+    // stylo : pointe métal, embout, corps bleu, capuchon
+    r.appendChild(el("path", { d: "M0,0 L14,-3.6 L14,3.6 Z", fill: "var(--metal)", stroke: "var(--stylo)", "stroke-width": 0.8 }));
+    r.appendChild(el("rect", { x: 13, y: -4.8, width: 27, height: 9.6, rx: 2, fill: "var(--stylo)" }));
+    r.appendChild(el("rect", { x: 39, y: -5.6, width: 96, height: 11.2, rx: 3, fill: "var(--courbe)", stroke: "var(--stylo)", "stroke-width": 0.8 }));
+    r.appendChild(el("rect", { x: 132, y: -5.2, width: 13, height: 10.4, rx: 4.5, fill: "var(--stylo)" }));
+    // index posé sur le stylo
+    r.appendChild(el("path", Object.assign({ d: "M17,-5 C17,-11 26,-12 34,-11 L74,-9 C83,-8 87,1 82,7 L42,9 C31,10 19,8 17,3 Z" }, peau)));
+    r.appendChild(el("path", { d: "M20,-4.5 C21,-8 26,-9 30,-8.5 L30,3 C25,4 21,3 20,0.5 Z", fill: "#fff", opacity: 0.35 }));
+    r.appendChild(el("path", { d: "M52,-9 C50,-4 50,3 52,8", fill: "none", stroke: "var(--peau-trait)", "stroke-width": 1.1, opacity: 0.55 }));
+    h.appendChild(r);
+    return h;
+  }
+
+  // ---------- rendu d'un instant (étape i, avancement p dans l'étape) ----------
+  function rendu() {
+    const F0 = F[cle], E = etapes[i], dyn = $("dyn"), tmp = $("tmp"), haut = $("haut"), { sx, sy } = L;
+    dyn.textContent = ""; tmp.textContent = ""; haut.textContent = "";
+    // tableau
+    const ligX = $("tableau").rows[0].cells, ligF = $("tableau").rows[1].cells;
+    const jActif = (E.k === "calcul" || E.k === "point") ? E.j : -1;
+    F0.xs.forEach((x, j) => {
+      ligX[j + 1].classList.toggle("actif", j === jActif); ligF[j + 1].classList.toggle("actif", j === jActif);
+      const n = etapes.findIndex(e => e.k === "calcul" && e.j === j);
+      const q = i > n ? 1 : i < n ? 0 : lisse(phase(p, 0.68, 0.84));
+      const r = ligF[j + 1].firstChild;
+      r.style.visibility = q > 0 ? "visible" : "hidden"; r.style.clipPath = q < 1 ? `inset(-30% ${(100 - q * 104).toFixed(1)}% -30% -4%)` : "";
+    });
+    // calcul sous le tableau
+    const zone = $("calcul"), cleCalcul = E.k + (E.j ?? "");
+    if (calculAffiche !== cleCalcul) {
+      calculAffiche = cleCalcul;
+      if (E.k === "calcul") zone.innerHTML = F0.calcul(F0.xs[E.j]).map(s => `<span class="seg">${s}</span>`).join("");
+      else if (E.k === "point") { const a = F0.xs[E.j]; zone.innerHTML = `<span class="seg">(<i>x</i>&nbsp;;&nbsp;<i>f</i>(<i>x</i>)) = (${R(fr(a))}&nbsp;;&nbsp;${B(fr(F0.f(a)))})</span>`; }
+      else zone.innerHTML = "";
+    }
+    const segs = zone.querySelectorAll(".seg");
+    if (E.k === "calcul") segs.forEach((s, n) => { const a = 0.04 + n * 0.15, q = lisse(phase(p, a, a + 0.13)); s.style.visibility = q > 0 ? "visible" : "hidden"; s.style.clipPath = q < 1 ? `inset(-40% ${(100 - q * 104).toFixed(1)}% -40% -4%)` : ""; });
+    // graduations remises à zéro
+    const neutre = t => { t.setAttribute("opacity", 1); t.setAttribute("fill", "var(--discret)"); t.setAttribute("font-weight", 400); t.setAttribute("font-size", 15); };
+    Object.values(gradXel).forEach(neutre); Object.values(gradYel).forEach(neutre);
+    const rouge = t => { t.setAttribute("fill", "var(--lecture)"); t.setAttribute("font-weight", 700); t.setAttribute("font-size", 16); };
+    // points déjà placés
+    const nPoint = etapes.findIndex(e => e.k === "point");
+    const placesAvant = E.k === "point" ? E.j : (i > nPoint ? F0.xs.length : 0);
+    // courbe déjà tracée et en cours
+    const encre = (pts, jusqua) => {
+      let d = "", fin = null;
+      for (let n = 0; n < pts.length; n++) {
+        if (pts[n][2] > jusqua) {
+          if (n) { const a = pts[n - 1], b = pts[n], t = (jusqua - a[2]) / (b[2] - a[2] || 1); fin = [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]; d += "L" + fin[0].toFixed(2) + "," + fin[1].toFixed(2); }
+          break;
+        }
+        d += (n ? "L" : "M") + pts[n][0].toFixed(2) + "," + pts[n][1].toFixed(2); fin = [pts[n][0], pts[n][1]];
+      }
+      if (d) dyn.appendChild(el("path", { d, fill: "none", stroke: "var(--courbe)", "stroke-width": 3.2, "stroke-linecap": "round", "stroke-linejoin": "round" }));
+      return fin;
+    };
+    let pointe = null, leve = false, opMain = 0;
+    L.branches.forEach((b, n) => {
+      const nT = etapes.findIndex(e => e.k === "trace" && e.n === n);
+      if (i > nT) encre(b.pts, b.long + 1);
+      else if (i === nT) {
+        const derniere = n === L.branches.length - 1;
+        const a = 0.05, z = derniere ? 0.9 : 1;
+        const fin = encre(b.pts, b.long * phase(p, a, z));
+        pointe = fin || [b.pts[0][0], b.pts[0][1]];
+        opMain = Math.min(phase(p, 0, a), derniere ? 1 - phase(p, 0.92, 1) : 1);
+      }
+    });
+    if (E.k === "lever") {
+      const a = L.branches[0].pts.at(-1), b = L.branches[1].pts[0], t = lisse(p);
+      pointe = [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]; leve = true; opMain = 1;
+    }
+    for (let j = 0; j < placesAvant; j++) { const x = F0.xs[j]; dyn.appendChild(el("circle", { cx: sx(x), cy: sy(F0.f(x)), r: 5, fill: "var(--courbe)" })); }
+    // point en cours : pointillés depuis les deux axes, puis le point
+    if (E.k === "point") {
+      const x = F0.xs[E.j], y = F0.f(x), X = sx(x), Y = sy(y), X0 = sx(0), Y0 = sy(0);
+      const q1 = lisse(phase(p, 0.05, 0.38)), q2 = lisse(phase(p, 0.36, 0.7)), q3 = phase(p, 0.7, 0.8);
+      const tiret = (x1, y1, x2, y2) => dyn.appendChild(el("line", { x1, y1, x2, y2, stroke: "var(--lecture)", "stroke-width": 2.6, "stroke-dasharray": "7 6", "stroke-linecap": "round" }));
+      if (q1 > 0 && Math.abs(Y - Y0) > 1) tiret(X, Y0, X, Y0 + (Y - Y0) * q1);
+      if (q2 > 0 && Math.abs(X - X0) > 1) tiret(X0, Y, X0 + (X - X0) * q2, Y);
+      // valeurs lues en rouge sur les axes
+      const etiq = (x, y, t, anc) => tmp.appendChild(el("text", { x, y, "text-anchor": anc, "font-size": 16, "font-weight": 700, fill: "var(--lecture)", "font-family": "var(--ui)", stroke: "var(--carte)", "stroke-width": 5, "paint-order": "stroke" }, t));
+      // abscisse : sur l'axe, du côté prévu par le corrigé, sauf si le point est tout près de l'axe de ce côté
+      if (p > 0.03) {
+        if (x === 0) { if (gradXel[0]) rouge(gradXel[0]); else etiq(X0 - 5, Y0 + 17, "0", "end"); }
+        else {
+          const g0 = F0.gradX.find(([v]) => v === x);
+          let cote = g0 ? gradXel[x].dataset.cote : (F0.gradX.some(([v, pos]) => pos === "dessus" && Math.sign(v) === Math.sign(x)) ? "dessus" : "dessous");
+          const prevu = cote;
+          if (Math.abs(Y - Y0) < 26 && (y < 0 ? "dessous" : "dessus") === cote) cote = cote === "dessus" ? "dessous" : "dessus";
+          if (gradXel[x] && cote === prevu) rouge(gradXel[x]);
+          else {
+            if (gradXel[x]) gradXel[x].setAttribute("opacity", 0);
+            const proche = Math.abs(X - X0) < 24;
+            etiq(X + (proche ? (x < 0 ? 4 : -4) : 0), cote === "dessus" ? Y0 - 9 : Y0 + 19, fr(x), proche ? (x < 0 ? "end" : "start") : "middle");
+          }
+        }
+      }
+      // ordonnée : à gauche de l'axe, ou à droite quand le pointillé part vers la gauche ; jamais sur l'axe des abscisses
+      if (p > 0.36 && y !== 0) {
+        const droite = x < 0, base = y < 0 ? Math.max(Y + 5, Y0 + 17) : Math.min(Y + 5, Y0 - 6);
+        if (gradYel[y] && droite === !!gradYel[y].dataset.droite && base === Y + 5) rouge(gradYel[y]);
+        else {
+          if (gradYel[y]) gradYel[y].setAttribute("opacity", 0);
+          etiq(droite ? X0 + 8 : X0 - 8, base, fr(y), droite ? "start" : "end");
+        }
+      }
+      if (q3 > 0) dyn.appendChild(el("circle", { cx: X, cy: Y, r: 5 + 8 * q3 * (1 - q3), fill: "var(--lecture)", stroke: "var(--carte)", "stroke-width": 1.5 }));
+    }
+    if (pointe && opMain > 0) haut.appendChild(main(pointe[0], pointe[1], L.main, leve, opMain.toFixed(2)));
+    // texte de constat et boutons
+    const fin = i === etapes.length - 1 && p >= 1;
+    let c = "";
+    if (E.k === "debut") c = "Appuyez sur « Animer » : on remplit le tableau, on place les points, puis on trace la courbe.";
+    else if (E.k === "calcul") c = `On calcule l'image de <b>${fr(F0.xs[E.j])}</b>.`;
+    else if (E.k === "point") { const a = F0.xs[E.j]; c = `On place le point <b>(${fr(a)}&nbsp;;&nbsp;${fr(F0.f(a))})</b>.`; }
+    else if (E.k === "lever") c = "On lève le stylo : 0 n'a pas d'image, on ne traverse pas l'axe des ordonnées.";
+    else c = "On relie les points à main levée par une courbe lisse, pas à la règle.";
+    if (fin) c = L.branches.length > 1 ? "La courbe est formée de <b>deux morceaux</b>, car 0 n'a pas d'image." : "La courbe passe par <b>tous les points</b> du tableau.";
+    $("constat").innerHTML = c;
+    $("animer").textContent = joue ? "Pause" : fin ? "Rejouer" : (i === 0 && p === 0) ? "Animer" : "Reprendre";
+  }
+
+  // ---------- animation ----------
+  const vitesse = () => +$("vitesse").value / 4;
+  function boucle(t) {
+    if (!joue) return;
+    const dt = Math.min(0.1, (t - dernier) / 1000); dernier = t;
+    p += dt * vitesse() / DUREE[etapes[i].k];
+    while (p >= 1) { if (i < etapes.length - 1) { p -= 1; i++; } else { p = 1; joue = false; break; } }
+    rendu();
+    if (joue) requestAnimationFrame(boucle);
+  }
+  function lancer() { joue = true; dernier = performance.now(); requestAnimationFrame(boucle); }
+  $("animer").addEventListener("click", () => {
+    if (joue) { joue = false; rendu(); return; }
+    if (i === etapes.length - 1 && p >= 1) { i = 0; p = 0; }
+    lancer(); rendu();
+  });
+  const pas = sens => {
+    joue = false;
+    if (sens > 0) { if (p < 1) p = 1; else if (i < etapes.length - 1) { i++; p = 1; } }
+    else { i = Math.max(0, i - 1); p = i === 0 ? 0 : 1; }
+    rendu();
+  };
+  $("apres").addEventListener("click", () => pas(1));
+  $("avant").addEventListener("click", () => pas(-1));
+  window.addEventListener("keydown", e => {
+    if (e.target.tagName === "INPUT") return;
+    if (e.key === "ArrowRight") { pas(1); e.preventDefault(); }
+    if (e.key === "ArrowLeft") { pas(-1); e.preventDefault(); }
+  });
+  window.addEventListener("hashchange", () => { const c = ORDRE.find(c => "#" + c === location.hash); if (c && c !== cle) { cle = c; charge(); } });
+  let attente; window.addEventListener("resize", () => { clearTimeout(attente); attente = setTimeout(mise, 60); });
+  charge();
+  // fin
+})();
+</script>
+
+<!-- plein-ecran : bouton commun à toutes les pages interactives -->
+<style>
+#pleinEcran { position: fixed; top: calc(10px + env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); z-index: 50; font: 500 13px var(--ui, system-ui, sans-serif); padding: 6px 12px; border-radius: 999px; border: 1px solid var(--filet, #d9dee5); background: var(--carte, #fff); color: var(--encre, #1b1f24); cursor: pointer; opacity: .9; }
+#pleinEcran:hover { opacity: 1; }
+body.plein-ecran .niveau, body.plein-ecran h1, body.plein-ecran h1 + .chapeau { display: none !important; }
+body.plein-ecran .page { max-width: none !important; min-height: 100vh; padding-top: 48px !important; align-content: start; }
+body.plein-ecran .page svg:not(.mini) { max-height: 76vh; }
+body.plein-ecran.plein-multi .page svg:not(.mini) { max-height: 46vh; }
+body.plein-ecran .constat { font-size: clamp(20px, 2.6vw, 30px); }
+</style>
+<script>
+(() => {
+  const b = document.createElement("button");
+  b.type = "button"; b.id = "pleinEcran"; document.body.appendChild(b);
+  function etat(on) { document.body.classList.toggle("plein-ecran", on); b.textContent = on ? "✕ Quitter le plein écran" : "⛶ Plein écran"; b.setAttribute("aria-pressed", on); window.dispatchEvent(new Event("resize")); }
+  b.addEventListener("click", async () => {
+    const on = !document.body.classList.contains("plein-ecran");
+    etat(on);
+    try { on ? await document.documentElement.requestFullscreen() : (document.fullscreenElement && await document.exitFullscreen()); } catch (e) {}
+  });
+  document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement && document.body.classList.contains("plein-ecran")) etat(false); });
+  window.addEventListener("keydown", e => { if (e.key === "Escape" && document.body.classList.contains("plein-ecran")) etat(false); });
+  if (document.querySelectorAll(".page svg:not(.mini), .page canvas").length > 1) document.body.classList.add("plein-multi");
+  etat(location.hash === "#plein");
+})();
+</script>
+
+</body></html>

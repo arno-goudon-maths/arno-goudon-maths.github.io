@@ -8,210 +8,317 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <style>
-/* Lecture graphique d'une image ou d'antécédents, comme dans le chapitre 3 :
-   courbe Cf en bleu, traits de lecture en rouge vif, graduation lue en rouge. */
+/* Lectures graphiques du chapitre 3 de 2nde : chaque figure du cours et du TD3, tracée comme
+   dans le PDF ; les pointillés de lecture se construisent pas à pas, en rouge vif. */
 :root {
   --papier: #f7f8fa; --carte: #ffffff; --encre: #1b1f24; --discret: #5d6672; --filet: #d9dee5; --grille: #e4e8ee;
-  --courbe: #1f5fbf; --lecture: #e0161b; --lecture-fond: rgba(224, 22, 27, 0.10);
+  --courbe: #1f5fbf; --courbe2: #e07000; --lecture: #e0161b; --lecture-fond: rgba(224, 22, 27, 0.10);
   --math: "STIX Two Text", "Cambria Math", "Times New Roman", serif;
   --ui: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
 }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) { --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #262c35; --courbe: #6fa3f0; --lecture: #ff4d52; --lecture-fond: rgba(255, 77, 82, 0.14); color-scheme: dark; }
+  :root:not([data-theme="light"]) { --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #262c35; --courbe: #6fa3f0; --courbe2: #ff9a3c; --lecture: #ff4d52; --lecture-fond: rgba(255, 77, 82, 0.14); color-scheme: dark; }
 }
-:root[data-theme="dark"] { --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #262c35; --courbe: #6fa3f0; --lecture: #ff4d52; --lecture-fond: rgba(255, 77, 82, 0.14); color-scheme: dark; }
+:root[data-theme="dark"] { --papier: #14171c; --carte: #1c2027; --encre: #e8ebf0; --discret: #9aa4b1; --filet: #313844; --grille: #262c35; --courbe: #6fa3f0; --courbe2: #ff9a3c; --lecture: #ff4d52; --lecture-fond: rgba(255, 77, 82, 0.14); color-scheme: dark; }
 * { box-sizing: border-box; }
 body { background: var(--papier); color: var(--encre); font-family: var(--ui); font-size: 15px; line-height: 1.5; margin: 0; }
-.page { max-width: 920px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 40px; display: grid; gap: 14px; }
+.page { max-width: 940px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 40px; display: grid; gap: 12px; }
 .niveau { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--discret); }
 h1 { font-family: var(--math); font-weight: 600; font-size: clamp(26px, 4vw, 36px); line-height: 1.15; margin: 0; }
-.chapeau { margin: 0; color: var(--discret); max-width: 68ch; }
+.chapeau { margin: 0; color: var(--discret); max-width: 70ch; }
 .m { font-family: var(--math); font-style: italic; }
-.barre { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
-.modes, .courbes { display: flex; gap: 8px; flex-wrap: wrap; }
-button { font: inherit; padding: 7px 14px; border-radius: 999px; border: 1px solid var(--filet); background: var(--carte); color: var(--encre); cursor: pointer; }
-.modes button { font-weight: 500; font-size: 16px; }
-.modes button[aria-pressed="true"] { border-color: var(--lecture); box-shadow: inset 0 0 0 1.5px var(--lecture); color: var(--lecture); }
-.courbes button { font-size: 14px; color: var(--discret); }
-.courbes button[aria-pressed="true"] { border-color: var(--courbe); color: var(--courbe); box-shadow: inset 0 0 0 1px var(--courbe); }
-.figure { background: var(--carte); border: 1px solid var(--filet); border-radius: 10px; padding: 6px; touch-action: none; }
-svg { display: block; width: 100%; height: auto; user-select: none; -webkit-user-select: none; }
-.constat { font-family: var(--math); font-size: clamp(19px, 2.6vw, 24px); text-align: center; margin: 0; padding: 10px 14px; border-radius: 10px; background: var(--lecture-fond); border: 1.5px solid var(--lecture); min-height: 1.6em; }
+.barre { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+select, button { font: inherit; font-size: 14px; padding: 5px 12px; border-radius: 999px; border: 1px solid var(--filet); background: var(--carte); color: var(--encre); cursor: pointer; }
+select { border-radius: 8px; max-width: 100%; }
+.lectures { display: flex; flex-wrap: wrap; gap: 6px; }
+.lectures button { font-family: var(--math); font-size: 17px; padding: 4px 14px; }
+.lectures button[aria-pressed="true"] { border-color: var(--lecture); box-shadow: inset 0 0 0 1.5px var(--lecture); color: var(--lecture); }
+.libre { display: flex; gap: 6px; align-items: center; color: var(--discret); font-size: 13px; flex-wrap: wrap; }
+.libre button { font-size: 13px; padding: 3px 10px; color: var(--discret); }
+.libre button[aria-pressed="true"] { border-color: var(--courbe); color: var(--courbe); box-shadow: inset 0 0 0 1px var(--courbe); }
+.vitesse { display: flex; gap: 6px; align-items: center; font-size: 13px; color: var(--discret); }
+.vitesse input { width: 110px; accent-color: var(--lecture); }
+.figure { background: var(--carte); border: 1px solid var(--filet); border-radius: 10px; padding: 6px; touch-action: none; display: flex; justify-content: center; }
+svg { display: block; width: 100%; height: auto; max-height: 64vh; user-select: none; -webkit-user-select: none; }
+.constat { font-family: var(--math); font-size: clamp(19px, 2.6vw, 24px); text-align: center; margin: 0; padding: 8px 14px; border-radius: 10px; background: var(--lecture-fond); border: 1.5px solid var(--lecture); min-height: 1.6em; }
 .constat b { color: var(--lecture); font-weight: 600; }
-button:focus-visible { outline: 3px solid var(--lecture); outline-offset: 2px; }
+button:focus-visible, select:focus-visible { outline: 3px solid var(--lecture); outline-offset: 2px; }
 </style>
 
 <div class="page">
   <span class="niveau">Seconde · Chapitre 3 · Généralités sur les fonctions</span>
   <h1>Lire une courbe</h1>
-  <p class="chapeau" id="chapeau"></p>
+  <p class="chapeau">Choisissez une lecture : les pointillés se construisent sur la figure, comme au tableau.</p>
   <div class="barre">
-    <div class="modes" role="group" aria-label="Que lire ?">
-      <button type="button" data-mode="image">Lire une image</button>
-      <button type="button" data-mode="ante">Lire des antécédents</button>
-    </div>
-    <div class="courbes" role="group" aria-label="Choix de la courbe" id="courbes"></div>
+    <select id="choix" aria-label="Exercice ou exemple"></select>
+    <div class="vitesse"><button type="button" id="rejouer">↻ Rejouer</button><label for="vit">Vitesse</label><input id="vit" type="range" min="0.4" max="3" step="0.1" value="1"></div>
   </div>
-  <div class="figure"><svg id="g" viewBox="0 0 900 575" role="img" aria-label="Courbe représentative d'une fonction f et lecture graphique"></svg></div>
+  <div class="lectures" id="lectures" role="group" aria-label="Lectures"></div>
+  <div class="figure"><svg id="g" role="img" aria-label="Courbe et lecture graphique"></svg></div>
   <p class="constat" id="constat" aria-live="polite"></p>
+  <div class="libre" id="libre"><span>Lecture libre :</span><button type="button" data-l="image">une image</button><button type="button" data-l="ante">des antécédents</button></div>
 </div>
 
 <script>
 (() => {
   const NS = "http://www.w3.org/2000/svg", $ = id => document.getElementById(id);
   const el = (t, a, txt) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); if (txt != null) e.textContent = txt; return e; };
-  const fr = (x, d = 1) => { const r = Math.round(x * 10 ** d) / 10 ** d; return (Object.is(r, -0) ? 0 : r).toString().replace(".", ",").replace("-", "−"); };
+  const fr = (x, d = 2) => { const r = Math.round(x * 10 ** d) / 10 ** d; return (Object.is(r, -0) ? 0 : r).toString().replace(".", ",").replace("-", "−"); };
   const entier = x => Math.abs(x - Math.round(x)) < 1e-6;
+  const M = s => `<span class="m">${s}</span>`;
 
-  // Courbes du cours 3 (exemple 3.3, puis exemple 3.2 en courbe 4) et du TD3 (exercices 24 et 26),
-  // passant exactement par leurs points
-  const C = [
-    { P: [[-5,-3],[-4,-2],[-2,0],[-1,2],[0,3],[2,2],[3,0],[4,-2],[6,-3]], X: [-6, 7], Y: [-4, 4] },
-    { P: [[-5,-2],[-4,-1],[-3,0],[-2,1],[-1,2],[0,1],[1,0],[2,-1],[3,-3],[6,-1.5]], X: [-6, 7], Y: [-4, 4] },
-    { P: [[-3,-1],[-2,1],[-1,3],[0,2],[0.5,1],[1,0],[2,-0.5]], X: [-4, 3], Y: [-2, 4] },
-    { P: [[-4,-2],[-3,1],[-1,2],[0,1],[2,-3],[4,0],[6,3]], X: [-5, 8], Y: [-4, 4] }
+  // ---- courbes : tracé « smooth » de TikZ (tension × 0,2775, Bézier par points d'appui) ou fonction
+  function lisse(P, tension = 0.5) {
+    const n = P.length, t = 0.2775 * tension, d = P.map((p, i) => (i > 0 && i < n - 1) ? [t * (P[i + 1][0] - P[i - 1][0]), t * (P[i + 1][1] - P[i - 1][1])] : null), out = [];
+    for (let i = 0; i < n - 1; i++) {
+      const a = P[i], b = P[i + 1];
+      const c1 = i === 0 ? a : [a[0] + d[i][0], a[1] + d[i][1]];
+      const c2 = i + 1 === n - 1 ? b : [b[0] - d[i + 1][0], b[1] - d[i + 1][1]];
+      for (let k = (i ? 1 : 0); k <= 80; k++) { const s = k / 80, u = 1 - s;
+        out.push([u*u*u*a[0] + 3*u*u*s*c1[0] + 3*u*s*s*c2[0] + s*s*s*b[0], u*u*u*a[1] + 3*u*u*s*c1[1] + 3*u*s*s*c2[1] + s*s*s*b[1]]); }
+    }
+    return out;
+  }
+  const fonction = (f, a, b) => Array.from({ length: 401 }, (_, i) => { const x = a + (b - a) * i / 400; return [x, f(x)]; });
+  // ordonnée d'une courbe en x (null hors de l'ensemble de définition)
+  function image(c, x) { const T = c.T; for (let i = 0; i < T.length - 1; i++) { const [x0, y0] = T[i], [x1, y1] = T[i + 1];
+    if ((x - x0) * (x - x1) <= 0 && x0 !== x1) return y0 + (y1 - y0) * (x - x0) / (x1 - x0); } return null; }
+  function abscisses(T, y) { const r = []; for (let i = 0; i < T.length - 1; i++) { const [x0, y0] = T[i], [x1, y1] = T[i + 1];
+    if (y0 === y) r.push(x0); else if ((y0 - y) * (y1 - y) < 0) r.push(x0 + (x1 - x0) * (y - y0) / (y1 - y0)); }
+    if (T.at(-1)[1] === y) r.push(T.at(-1)[0]); return r.filter((z, i, t) => t.findIndex(w => Math.abs(w - z) < 0.02) === i); }
+
+  // ---- les figures (repère : grille de xmin−0,5 à xmax+0,5, comme \repere ; r = échelle y / échelle x)
+  const R = (xmin, xmax, ymin, ymax, o = {}) => Object.assign({ xmin, xmax, ymin, ymax, gx: xmin - 0.5, Gx: xmax + 0.5, gy: ymin - 0.5, Gy: ymax + 0.5, r: 1, pasx: 1, pasy: 1 }, o);
+  const B = (nom, P, t, o = {}) => Object.assign({ nom, T: lisse(P, t), bouts: true }, o);
+  const F = (nom, f, a, b, o = {}) => Object.assign({ nom, T: fonction(f, a, b), bouts: false }, o);
+  // lectures : img (x, y), ant (k, xs), egal (xs), dom, sans (image hors domaine), aucun (pas d'antécédent)
+  const img = (c, x, y) => ({ type: "img", c, x, y }), ant = (c, k, xs, titre) => ({ type: "ant", c, k, xs, titre }), egal = xs => ({ type: "egal", xs });
+  const dom = c => ({ type: "dom", c }), sans = (c, x) => ({ type: "sans", c, x }), aucun = (c, k) => ({ type: "aucun", c, k });
+
+  const FIG = [
+    { id: "image", titre: "Cours · lecture graphique d'une image", rep: R(-5, 8, -3, 3, { r: 0.78 / 0.66 }),
+      C: [B("f", [[-4,-2],[-3,1],[-1,2],[0,1],[2,-3],[4,0],[6,3]], 0.6, { lab: [6, 3, "right"] })],
+      L: [dom(0), img(0, -1, 2), img(0, 4, 0), img(0, 2, -3)], depart: 1 },
+    { id: "antecedents", titre: "Cours · lecture graphique d'antécédents", rep: R(-7, 7, -3, 3, { r: 0.78 / 0.62 }),
+      C: [B("f", [[-5,-3],[-4,-2],[-2,0],[-1,2],[0,3],[2,2],[3,0],[4,-2],[6,-3]], 0.6, { lab: [6, -3, "right"] })],
+      L: [dom(0), ant(0, -2, [-4, 4]), ant(0, 0, [-2, 3], "eq")], depart: 1 },
+    { id: "egalite", titre: "Cours · résolution graphique de f(x) = g(x)", rep: R(-4, 4, -1, 6),
+      C: [F("f", x => x * x, -2.5, 2.5, { lab: [2.5, 6.25, "right"] }), F("g", x => x + 2, -3.5, 4, { lab: [4, 6, "right"], g: true })],
+      L: [egal([-1, 2])] },
+    { id: "e22", titre: "Exercice 22", panneaux: [
+        { rep: R(-6, 4, -1, 3), C: [B("f", [[-4,3],[-2,1.5],[3,0]], 0.8, { lab: [-2, 1.6, "above right"] })] },
+        { rep: R(-1, 6, -1, 3), C: [B("g", [[0,2.5],[2,-1],[5,3]], 0.8, { lab: [3.9, 1.0, "below right"] })] }],
+      L: [img(0, -4, 3), img(0, 3, 0), Object.assign(img(0, 2, -1), { p: 1 }), Object.assign(img(0, 5, 3), { p: 1 })] },
+    { id: "e23", titre: "Exercice 23", rep: R(-7, 7, -3, 3),
+      C: [B("f", [[-5,3],[-3,-3],[-1,0],[0,3],[2,-2],[3,0],[6,2]], 0.6, { lab: [6, 2, "above left"] })],
+      L: [dom(0), img(0, 0, 3), img(0, 3, 0), img(0, 2, -2)] },
+    { id: "e24", titre: "Exercice 24", rep: R(-6, 8, -3, 3),
+      C: [B("f", [[-5,-2],[-4,-1],[-3,0],[-2,1],[-1,2],[0,1],[1,0],[2,-1],[3,-3],[6,-1.5]], 0.6, { lab: [5, -1.8, "above"] })],
+      L: [dom(0), ant(0, 1, [-2, 0]), ant(0, -1, [-4, 2], "eq"), ant(0, 0, [-3, 1], "eq")] },
+    { id: "e25", titre: "Exercice 25", rep: R(-6, 6, -3, 4),
+      C: [B("f", [[-4,-1],[-3,1],[-2,3],[0,1],[2,-2],[4,1],[5,3]], 0.6, { lab: [5, 2.6, "right"] })],
+      L: [img(0, -2, 3), img(0, 0, 1), img(0, 4, 1), ant(0, 1, [-3, 0, 4]), ant(0, 3, [-2, 5], "eq"), ant(0, -2, [2], "eq"), aucun(0, 4)] },
+    { id: "e26", titre: "Exercice 26", rep: R(-4, 3, -2, 3),
+      C: [B("g", [[-3,-1],[-2,1],[-1.5,2.7],[-1,3],[-0.5,2.7],[0,2],[0.5,1],[1,0],[2,-0.5]], 0.55, { lab: [-1.6, 2.6, "above left"] })],
+      L: [dom(0), img(0, 1, 0), img(0, -1, 3), img(0, 0, 2), sans(0, 3), ant(0, 3, [-1]), ant(0, 1, [-2, 0.5])] },
+    { id: "e27", titre: "Exercice 27", rep: R(-6, 12, -3, 3, { Gx: 13.5, r: 0.70 / 0.40, pasx: 2 }),
+      C: [B("f", [[-4,-2],[-3,0],[-2,2],[0,3],[3,2],[5,-1],[8,-3],[11,-1],[12,1]], 0.6, { lab: [2, 2.6, "above right"] })],
+      L: [dom(0), img(0, -3, 0), img(0, 5, -1), img(0, 11, -1), ant(0, 0, null), sans(0, 12.5)] },
+    { id: "e28", titre: "Exercice 28", panneaux: [
+        { rep: R(-3, 3, -1, 5), C: [F("f", x => 4 - x * x, -2.2, 2.2, { lab: [2.2, 4 - 4.84, "right"] }), F("g", x => x + 2, -3, 3, { lab: [3, 5, "right"], g: true })] },
+        { rep: R(-3, 3, -1, 5), C: [B("f", [[-3,1],[-2,4],[-1,5],[0,4],[1,1],[1.5,-1],[2,0],[3,3]], 0.5, { lab: [3, 3, "right"], bouts: false }), F("g", x => 2 - x, -3, 3, { lab: [3, -1, "right"], g: true })] },
+        { rep: R(-3, 3, -1, 5), C: [B("f", [[-3,4],[-2,2],[-1.5,-1],[-1,0],[0,1],[1,2],[2,4],[3,2]], 0.7, { lab: [3, 2, "right"], bouts: false }), B("g", [[-3,2],[-2,2],[-1,3],[0,4],[1,2],[1.5,0],[2,4],[3,5]], 0.7, { lab: [3, 5, "right"], bouts: false, g: true })] }],
+      L: [Object.assign(egal([-2, 1]), { titre: "Figure 1", p: 0 }), Object.assign(egal([-2, 1, 2]), { titre: "Figure 2", p: 1 }), Object.assign(egal([-2, 1, 2]), { titre: "Figure 3", p: 2 })] },
+    { id: "e29", titre: "Exercice 29", rep: R(-3, 4, -3, 4),
+      C: [F("f", x => -0.5 * (x + 2) * (x - 3), -3, 4, { lab: [-1.3, 1.5, "above left"], bouts: true }), F("g", x => x, -3, 4, { lab: [3.6, 3.1, "below right"], g: true })],
+      L: [ant(0, -3, [-3, 4], "eq"), ant(1, 3, [3], "eq"), egal([-3, 2])] }
   ];
-  // Interpolation cubique monotone (Fritsch-Carlson) : pas de dépassement entre deux points
-  C.forEach(c => {
-    const P = c.P, n = P.length, h = [], s = [], m = [];
-    for (let i = 0; i < n - 1; i++) { h[i] = P[i + 1][0] - P[i][0]; s[i] = (P[i + 1][1] - P[i][1]) / h[i]; }
-    m[0] = s[0]; m[n - 1] = s[n - 2];
-    for (let i = 1; i < n - 1; i++) m[i] = s[i - 1] * s[i] <= 0 ? 0 : 3 * (h[i - 1] + h[i]) / ((2 * h[i] + h[i - 1]) / s[i - 1] + (h[i] + 2 * h[i - 1]) / s[i]);
-    c.a = P[0][0]; c.b = P[n - 1][0];
-    c.f = x => {
-      let i = 0; while (i < n - 2 && x > P[i + 1][0]) i++;
-      const t = (x - P[i][0]) / h[i], t2 = t * t, t3 = t2 * t;
-      return (2 * t3 - 3 * t2 + 1) * P[i][1] + (t3 - 2 * t2 + t) * h[i] * m[i] + (-2 * t3 + 3 * t2) * P[i + 1][1] + (t3 - t2) * h[i] * m[i + 1];
-    };
-  });
+  // anciennes ancres des QR codes déjà imprimés
+  const ALIAS = { "courbe2-antecedents": ["e24", 1], "courbe3": ["e26", 1] };
+  FIG.forEach(f => { if (!f.panneaux) f.panneaux = [{ rep: f.rep, C: f.C }]; f.L.forEach(l => { if (l.p == null) l.p = 0; }); });
 
-  let k = 0, mode = "image", xr = 2, yk = 1;
-  // Ancres des QR codes : chaque code du cours ou du TD ouvre la page sur sa courbe et son onglet.
-  //   #image : exemple 3.2 du cours (image de −1)      #antecedents : exemple 3.3 du cours
-  //   #courbe2-antecedents : exercice 24 du TD3          #courbe3 : exercice 26 du TD3 (images, puis antécédents)
-  const ANCRES = { "#image": [3, "image", -1], "#antecedents": [0, "ante", 2], "#courbe2-antecedents": [1, "ante", 2], "#courbe3": [2, "image", 1] };
-  if (ANCRES[location.hash]) [k, mode, xr] = ANCRES[location.hash];
-  const G = 52, D = 880, H = [18, 520];
-  const sx = x => G + (x - C[k].X[0]) / (C[k].X[1] - C[k].X[0]) * (D - G);
-  const sy = y => H[1] - (y - C[k].Y[0]) / (C[k].Y[1] - C[k].Y[0]) * (H[1] - H[0]);
-  const ix = px => C[k].X[0] + (px - G) / (D - G) * (C[k].X[1] - C[k].X[0]);
-  const iy = py => C[k].Y[0] + (H[1] - py) / (H[1] - H[0]) * (C[k].Y[1] - C[k].Y[0]);
+  // ---- état
+  let fig = FIG[3], lec = null, libre = null, xr = 1, yk = 1, anim = null;
+  const vit = () => +$("vit").value;
 
-  const chapeau = { image: "Faites glisser le point rouge sur l'axe des abscisses : on monte jusqu'à la courbe, puis on lit l'ordonnée.",
-                    ante: "Faites glisser la droite rouge : là où elle coupe la courbe, on descend lire les abscisses." };
+  const choix = $("choix");
+  FIG.forEach((f, i) => choix.appendChild(Object.assign(document.createElement("option"), { value: i, textContent: f.titre })));
+  choix.addEventListener("change", () => { fig = FIG[+choix.value]; ouvrir(fig.L[fig.depart || 0]); });
+  $("rejouer").addEventListener("click", () => lec && ouvrir(lec));
+  document.querySelectorAll("#libre button").forEach(b => b.addEventListener("click", () => { libre = b.dataset.l; lec = null; arreter(); dessine(); }));
 
-  const courbes = $("courbes");
-  C.forEach((c, i) => { const b = document.createElement("button"); b.type = "button"; b.textContent = "Courbe " + (i + 1); b.addEventListener("click", () => { k = i; xr = Math.round((C[i].a + C[i].b) / 2); yk = 1; dessine(); }); courbes.appendChild(b); });
-  document.querySelectorAll(".modes button").forEach(b => b.addEventListener("click", () => { mode = b.dataset.mode; dessine(); }));
-
-  // antécédents de y = yk : changements de signe de f − yk, plus les contacts en un point
-  function antecedents(c, y) {
-    const r = [], N = 4000;
-    let x0 = c.a, v0 = c.f(x0) - y;
-    for (let i = 1; i <= N; i++) {
-      const x1 = c.a + (c.b - c.a) * i / N, v1 = c.f(x1) - y;
-      if (Math.abs(v0) < 1e-9) r.push(x0);
-      else if (v0 * v1 < 0) { let lo = x0, hi = x1; for (let j = 0; j < 50; j++) { const mi = (lo + hi) / 2; ((c.f(lo) - y) * (c.f(mi) - y) <= 0) ? hi = mi : lo = mi; } r.push((lo + hi) / 2); }
-      x0 = x1; v0 = v1;
-    }
-    if (Math.abs(v0) < 1e-9) r.push(x0);
-    c.P.forEach(([px, py]) => { if (Math.abs(py - y) < 1e-9 && !r.some(z => Math.abs(z - px) < 1e-3)) r.push(px); });
-    return r.filter((z, i, t) => t.findIndex(w => Math.abs(w - z) < 1e-3) === i).sort((p, q) => p - q);
-  }
-
-  function dessine() {
-    const c = C[k], g = $("g"); g.textContent = "";
-    $("chapeau").textContent = chapeau[mode];
-    document.querySelectorAll(".modes button").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === mode));
-    [...courbes.children].forEach((b, i) => b.setAttribute("aria-pressed", i === k));
-    // grille, axes, graduations (on garde les nœuds de texte pour pouvoir les colorer)
-    for (let x = Math.ceil(c.X[0]); x <= c.X[1]; x++) g.appendChild(el("line", { x1: sx(x), x2: sx(x), y1: H[0], y2: H[1], stroke: "var(--grille)" }));
-    for (let y = Math.ceil(c.Y[0]); y <= c.Y[1]; y++) g.appendChild(el("line", { x1: G, x2: D, y1: sy(y), y2: sy(y), stroke: "var(--grille)" }));
-    g.appendChild(el("line", { x1: G, x2: D, y1: sy(0), y2: sy(0), stroke: "var(--encre)", "stroke-width": 1.6 }));
-    g.appendChild(el("line", { x1: sx(0), x2: sx(0), y1: H[0], y2: H[1], stroke: "var(--encre)", "stroke-width": 1.6 }));
-    g.appendChild(el("text", { x: D - 4, y: sy(0) - 8, "text-anchor": "end", "font-family": "var(--math)", "font-style": "italic", "font-size": 20, fill: "var(--discret)" }, "x"));
-    g.appendChild(el("text", { x: sx(0) + 8, y: H[0] + 18, "font-family": "var(--math)", "font-style": "italic", "font-size": 20, fill: "var(--discret)" }, "y"));
-    const gradX = {}, gradY = {};
-    for (let x = Math.ceil(c.X[0]); x <= c.X[1]; x++) { const t = el("text", { x: x ? sx(x) : sx(0) - 9, y: sy(0) + 21, "text-anchor": "middle", "font-size": 15, fill: "var(--discret)", "font-family": "var(--ui)" }, String(x).replace("-", "−")); g.appendChild(t); gradX[x] = t; }
-    for (let y = Math.ceil(c.Y[0]); y <= c.Y[1]; y++) if (y) { const t = el("text", { x: sx(0) - 9, y: sy(y) + 5, "text-anchor": "end", "font-size": 15, fill: "var(--discret)", "font-family": "var(--ui)" }, String(y).replace("-", "−")); g.appendChild(t); gradY[y] = t; }
-    // courbe
-    let d = "";
-    for (let i = 0; i <= 500; i++) { const x = c.a + (c.b - c.a) * i / 500; d += (i ? "L" : "M") + sx(x).toFixed(1) + "," + sy(c.f(x)).toFixed(1); }
-    g.appendChild(el("path", { d, fill: "none", stroke: "var(--courbe)", "stroke-width": 4, "stroke-linejoin": "round" }));
-    [c.a, c.b].forEach(x => g.appendChild(el("circle", { cx: sx(x), cy: sy(c.f(x)), r: 5.5, fill: "var(--courbe)" })));
-    const nom = el("text", { x: sx(c.b) - 6, y: sy(c.f(c.b)) - 14, "text-anchor": "end", "font-family": "var(--math)", "font-size": 24, fill: "var(--courbe)" });
-    nom.appendChild(el("tspan", { "font-style": "italic" }, "C")); nom.appendChild(el("tspan", { "font-size": 16, dy: 6, "font-style": "italic" }, "f")); g.appendChild(nom);
-
-    const aRemonter = [];
-    const rouge = t => { if (t) { t.setAttribute("fill", "var(--lecture)"); t.setAttribute("font-weight", 700); t.setAttribute("font-size", 17); t.setAttribute("stroke", "var(--carte)"); t.setAttribute("stroke-width", 6); t.setAttribute("paint-order", "stroke"); aRemonter.push(t); } };
-    const etiquetteX = (x, dessous, approx = true) => {
-      if (entier(x) && gradX[Math.round(x)]) return rouge(gradX[Math.round(x)]);
-      const y = dessous ? sy(0) + 40 : sy(0) - 12, txt = (approx ? "≈ " : "") + fr(x);
-      g.appendChild(el("text", { x: sx(x), y, "text-anchor": "middle", "font-size": 16, "font-weight": 700, fill: "var(--lecture)", stroke: "var(--carte)", "stroke-width": 6, "paint-order": "stroke", "font-family": "var(--ui)" }, txt));
-    };
-    const etiquetteY = y => {
-      if (entier(y) && (gradY[Math.round(y)] || Math.round(y) === 0)) return Math.round(y) === 0 ? rouge(gradX[0]) : rouge(gradY[Math.round(y)]);
-      g.appendChild(el("text", { x: sx(0) - 9, y: sy(y) + 5, "text-anchor": "end", "font-size": 16, "font-weight": 700, fill: "var(--lecture)", stroke: "var(--carte)", "stroke-width": 6, "paint-order": "stroke", "font-family": "var(--ui)" }, "≈ " + fr(y)));
-    };
-    const trait = (x1, y1, x2, y2) => g.appendChild(el("line", { x1, y1, x2, y2, stroke: "var(--lecture)", "stroke-width": 3.5, "stroke-dasharray": "9 7", "stroke-linecap": "round" }));
-    const point = (x, y) => g.appendChild(el("circle", { cx: sx(x), cy: sy(y), r: 7, fill: "var(--lecture)", stroke: "var(--carte)", "stroke-width": 2 }));
-    const constat = $("constat");
-
-    if (mode === "image") {
-      const dans = xr >= c.a - 1e-9 && xr <= c.b + 1e-9;
-      if (dans) {
-        const y = c.f(xr);
-        trait(sx(xr), sy(0), sx(xr), sy(y)); trait(sx(xr), sy(y), sx(0), sy(y));
-        point(xr, y); etiquetteX(xr, true, false); etiquetteY(y);
-        const ex = c.P.some(([px]) => Math.abs(px - xr) < 1e-9);
-        constat.innerHTML = `<span class="m">f</span>(${fr(xr)}) ${ex ? "=" : "≈"} <b>${fr(y)}</b>` + (ex ? "" : " <span style='color:var(--discret);font-size:.8em'>(lecture approchée)</span>");
-      } else {
-        etiquetteX(xr, true, false);
-        constat.innerHTML = `${fr(xr)} n'est pas dans l'ensemble de définition : <b>pas d'image</b>.`;
-      }
-      // poignée sur l'axe des abscisses
-      const hx = sx(xr), hy = sy(0);
-      g.appendChild(el("path", { d: `M${hx},${hy + 27} l-11,22 h22 z`, fill: "var(--lecture)", stroke: "var(--carte)", "stroke-width": 2 }));
-      aRemonter.forEach(t => g.appendChild(t));
-      const zone = el("rect", { x: G, y: H[0], width: D - G, height: H[1] - H[0] + 40, fill: "transparent", style: "cursor:ew-resize" }); g.appendChild(zone);
-      glisser(zone, (px) => { xr = Math.max(c.X[0] + 0.5, Math.min(c.X[1] - 0.5, Math.round(ix(px) * 2) / 2)); });
-    } else {
-      trait(G, sy(yk), D, sy(yk));
-      etiquetteY(yk);
-      const r = antecedents(c, yk);
-      r.forEach(x => { trait(sx(x), sy(yk), sx(x), sy(0)); point(x, yk); etiquetteX(x, yk > 0); });
-      const liste = r.map(x => (entier(x) ? "" : "≈ ") + fr(x));
-      const yy = fr(yk);
-      constat.innerHTML = r.length === 0 ? `${yy} n'a <b>aucun antécédent</b> par <span class="m">f</span>.`
-        : r.length === 1 ? `${yy} a <b>un seul antécédent</b> : <b>${liste[0]}</b>.`
-        : `Les antécédents de ${yy} sont <b>${liste.slice(0, -1).join(" ; ")}</b> et <b>${liste.at(-1)}</b>.`;
-      // poignée sur l'axe des ordonnées
-      const hy = sy(yk);
-      g.appendChild(el("path", { d: `M${D - 26},${hy} l24,-11 v22 z`, fill: "var(--lecture)", stroke: "var(--carte)", "stroke-width": 2 }));
-      aRemonter.forEach(t => g.appendChild(t));
-      const zone = el("rect", { x: G, y: H[0], width: D - G, height: H[1] - H[0], fill: "transparent", style: "cursor:ns-resize" }); g.appendChild(zone);
-      glisser(zone, (px, py) => { yk = Math.max(c.Y[0] + 0.5, Math.min(c.Y[1] - 0.5, Math.round(iy(py) * 2) / 2)); });
+  function titreLecture(l) {
+    const c = fig.panneaux[l.p].C[l.c ?? 0], n = c ? c.nom : "f";
+    if (l.titre && l.titre !== "eq") return l.titre;
+    switch (l.type) {
+      case "img": return `${n}(${fr(l.x)})`;
+      case "dom": return `D<sub>${n}</sub>`;
+      case "sans": return `Image de ${fr(l.x)} ?`;
+      case "aucun": return `Antécédents de ${fr(l.k)} ?`;
+      case "ant": return l.titre === "eq" ? `${n}(x) = ${fr(l.k)}` : `Antécédents de ${fr(l.k)}`;
+      case "egal": return "f(x) = g(x)";
     }
   }
+  function boutons() {
+    const z = $("lectures"); z.textContent = "";
+    fig.L.forEach(l => { const b = document.createElement("button"); b.type = "button"; b.innerHTML = titreLecture(l);
+      b.setAttribute("aria-pressed", l === lec); b.addEventListener("click", () => ouvrir(l)); z.appendChild(b); });
+    document.querySelectorAll("#libre button").forEach(b => b.setAttribute("aria-pressed", !lec && b.dataset.l === libre));
+  }
 
-  // glisser à la souris ou au doigt ; les flèches du clavier déplacent aussi
-  function glisser(cible, maj) {
-    const svg = $("g");
-    const pos = e => { const p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY; return p.matrixTransform(svg.getScreenCTM().inverse()); };
-    cible.addEventListener("pointerdown", e => {
-      e.preventDefault(); const p = pos(e); maj(p.x, p.y); dessine();
-      const bouge = ev => { const q = pos(ev); maj(q.x, q.y); dessine(); };
-      const fin = () => { window.removeEventListener("pointermove", bouge); window.removeEventListener("pointerup", fin); };
-      window.addEventListener("pointermove", bouge); window.addEventListener("pointerup", fin);
+  // ---- dessin du repère et des courbes
+  let S;  // échelle courante
+  function repere(p) {
+    const g = $("g"); g.textContent = "";
+    const r = p.rep, W = 840, Hmax = 540, lx = r.Gx - r.gx + 0.6, ly = (r.Gy - r.gy + 0.6) * r.r;
+    const u = Math.min(W / lx, Hmax / ly), m = { l: 34, r: 34, t: 22, b: 30 };
+    const w = (r.Gx - r.gx + 0.6) * u, h = (r.Gy - r.gy + 0.6) * u * r.r;
+    g.setAttribute("viewBox", `0 0 ${w + m.l + m.r} ${h + m.t + m.b}`);
+    S = { sx: x => m.l + (x - r.gx) * u, sy: y => m.t + (r.Gy + 0.6 - y) * u * r.r, ix: px => r.gx + (px - m.l) / u, iy: py => r.Gy + 0.6 - (py - m.t) / (u * r.r), u, r };
+    const { sx, sy } = S;
+    for (let x = Math.ceil(r.gx); x <= r.Gx; x++) g.appendChild(el("line", { x1: sx(x), x2: sx(x), y1: sy(r.gy), y2: sy(r.Gy), stroke: "var(--grille)" }));
+    for (let y = Math.ceil(r.gy); y <= r.Gy; y++) g.appendChild(el("line", { x1: sx(r.gx), x2: sx(r.Gx), y1: sy(y), y2: sy(y), stroke: "var(--grille)" }));
+    const fl = (x1, y1, x2, y2) => { g.appendChild(el("line", { x1, y1, x2, y2, stroke: "var(--encre)", "stroke-width": 1.6 }));
+      const a = Math.atan2(y2 - y1, x2 - x1); g.appendChild(el("path", { d: `M${x2},${y2} l${-11 * Math.cos(a - 0.4)},${-11 * Math.sin(a - 0.4)} l${11 * Math.cos(a - 0.4) - 11 * Math.cos(a + 0.4)},${11 * Math.sin(a - 0.4) - 11 * Math.sin(a + 0.4)} z`, fill: "var(--encre)" })); };
+    fl(sx(r.gx), sy(0), sx(r.Gx + 0.6), sy(0)); fl(sx(0), sy(r.gy), sx(0), sy(r.Gy + 0.6));
+    const t = (x, y, s, o) => g.appendChild(el("text", Object.assign({ x, y, "font-size": 15, fill: "var(--discret)", "font-family": "var(--ui)" }, o), s));
+    t(sx(r.Gx + 0.6) - 2, sy(0) - 8, "x", { "text-anchor": "end", "font-family": "var(--math)", "font-style": "italic", "font-size": 19 });
+    t(sx(0) + 8, sy(r.Gy + 0.6) + 14, "y", { "font-family": "var(--math)", "font-style": "italic", "font-size": 19 });
+    S.gradX = {}; S.gradY = {};
+    for (let x = r.xmin; x <= r.xmax; x++) if (x && x % r.pasx === 0) { g.appendChild(el("line", { x1: sx(x), x2: sx(x), y1: sy(0) - 4, y2: sy(0) + 4, stroke: "var(--encre)" })); S.gradX[x] = t(sx(x), sy(0) + 20, String(x).replace("-", "−"), { "text-anchor": "middle" }); }
+    for (let y = r.ymin; y <= r.ymax; y++) if (y && y % r.pasy === 0) { g.appendChild(el("line", { x1: sx(0) - 4, x2: sx(0) + 4, y1: sy(y), y2: sy(y), stroke: "var(--encre)" })); S.gradY[y] = t(sx(0) - 9, sy(y) + 5, String(y).replace("-", "−"), { "text-anchor": "end" }); }
+    S.zero = t(sx(0) - 6, sy(0) + 18, "0", { "text-anchor": "end" });
+    S.courbes = p.C.map(c => {
+      const grp = el("g", {}); const d = c.T.map((q, i) => (i ? "L" : "M") + sx(q[0]).toFixed(1) + "," + sy(q[1]).toFixed(1)).join("");
+      grp.appendChild(el("path", Object.assign({ d, fill: "none", stroke: c.g ? "var(--courbe2)" : "var(--courbe)", "stroke-width": 4, "stroke-linejoin": "round" }, c.g ? { "stroke-dasharray": "15 6" } : {})));
+      if (c.bouts) [c.T[0], c.T.at(-1)].forEach(q => grp.appendChild(el("circle", { cx: sx(q[0]), cy: sy(q[1]), r: 5.5, fill: c.g ? "var(--courbe2)" : "var(--courbe)" })));
+      if (c.lab) { const [x, y, pos] = c.lab, dx = pos.includes("right") ? 8 : pos.includes("left") ? -8 : 0, dy = pos.includes("above") ? -10 : pos.includes("below") ? 24 : 7;
+        const n = el("text", { x: sx(x) + dx, y: sy(y) + dy, "text-anchor": dx > 0 ? "start" : dx < 0 ? "end" : "middle", "font-family": "var(--math)", "font-size": 24, fill: c.g ? "var(--courbe2)" : "var(--courbe)" });
+        n.appendChild(el("tspan", { "font-style": "italic" }, "C")); n.appendChild(el("tspan", { "font-size": 16, dy: 6, "font-style": "italic" }, c.nom)); grp.appendChild(n); }
+      g.appendChild(grp); return grp;
     });
+    S.calque = el("g", {}); g.appendChild(S.calque);
+    S.dessus = el("g", {}); g.appendChild(S.dessus);
   }
-  window.addEventListener("keydown", e => {
-    if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key) || e.target.tagName === "BUTTON" && e.key.startsWith("Arrow") && false) return;
-    const c = C[k];
-    if (mode === "image" && (e.key === "ArrowLeft" || e.key === "ArrowRight")) { xr = Math.max(c.X[0] + 0.5, Math.min(c.X[1] - 0.5, xr + (e.key === "ArrowRight" ? 0.5 : -0.5))); e.preventDefault(); dessine(); }
-    if (mode === "ante" && (e.key === "ArrowUp" || e.key === "ArrowDown")) { yk = Math.max(c.Y[0] + 0.5, Math.min(c.Y[1] - 0.5, yk + (e.key === "ArrowUp" ? 0.5 : -0.5))); e.preventDefault(); dessine(); }
-  });
-  dessine();
+
+  // ---- éléments de lecture
+  const R2 = { stroke: "var(--lecture)", "stroke-width": 3.5, "stroke-dasharray": "9 7", "stroke-linecap": "round", fill: "none" };
+  function trait(x1, y1, x2, y2) { const l = el("line", Object.assign({ x1: S.sx(x1), y1: S.sy(y1), x2: S.sx(x1), y2: S.sy(y1) }, R2)); S.calque.appendChild(l);
+    return p => { l.setAttribute("x2", S.sx(x1 + (x2 - x1) * p)); l.setAttribute("y2", S.sy(y1 + (y2 - y1) * p)); }; }
+  function point(x, y) { const c = el("circle", { cx: S.sx(x), cy: S.sy(y), r: 0, fill: "var(--lecture)", stroke: "var(--carte)", "stroke-width": 2 }); S.dessus.appendChild(c);
+    return p => c.setAttribute("r", 7 * Math.min(1, p * 1.6) * (p < 0.6 ? 1 : 1 + 0.25 * Math.sin((p - 0.6) * 7.8))); }
+  const rouge = t => { t.setAttribute("fill", "var(--lecture)"); t.setAttribute("font-weight", 700); t.setAttribute("font-size", 17); t.setAttribute("stroke", "var(--carte)"); t.setAttribute("stroke-width", 6); t.setAttribute("paint-order", "stroke"); S.dessus.appendChild(t); };
+  function etiqX(x, dessus) {
+    if (entier(x) && Math.round(x) === 0) return () => rouge(S.zero);
+    if (entier(x) && S.gradX[Math.round(x)]) return () => rouge(S.gradX[Math.round(x)]);
+    return () => S.dessus.appendChild(el("text", { x: S.sx(x), y: dessus ? S.sy(0) - 10 : S.sy(0) + 21, "text-anchor": "middle", "font-size": 17, "font-weight": 700, fill: "var(--lecture)", stroke: "var(--carte)", "stroke-width": 6, "paint-order": "stroke", "font-family": "var(--ui)" }, (entier(x * 10) ? "" : "≈ ") + fr(x, 1)));
+  }
+  function etiqY(y, droite = false, approx = false) {
+    if (entier(y) && Math.round(y) === 0) return () => rouge(S.zero);
+    if (entier(y) && S.gradY[Math.round(y)]) return () => rouge(S.gradY[Math.round(y)]);
+    return () => S.dessus.appendChild(el("text", { x: S.sx(0) + (droite ? 9 : -9), y: S.sy(y) + 5, "text-anchor": droite ? "start" : "end", "font-size": 17, "font-weight": 700, fill: "var(--lecture)", stroke: "var(--carte)", "stroke-width": 6, "paint-order": "stroke", "font-family": "var(--ui)" }, (approx ? "≈ " : "") + fr(y)));
+  }
+  const pxLong = (x1, y1, x2, y2) => Math.hypot(S.sx(x2) - S.sx(x1), S.sy(y2) - S.sy(y1));
+  // une étape = [durée de base en ms, fonction(p)] ; une étape instantanée = [0, fonction]
+  const ligne = (x1, y1, x2, y2) => [Math.max(350, pxLong(x1, y1, x2, y2) * 2.2), trait(x1, y1, x2, y2)];
+  const pt = (x, y) => [380, point(x, y)];
+  const pause = ms => [ms, () => {}];
+  const tout = f => [0, f];
+
+  function etapes(l, p) {
+    const C = p.C, c = C[l.c ?? 0], n = c.nom, r = p.rep, E = [], att = 260;
+    const constat = s => E.push(tout(() => $("constat").innerHTML = s));
+    const listeX = xs => xs.map(x => (entier(x * 10) ? "" : "≈ ") + fr(x, 1));
+    const ens = xs => xs.length ? "{ " + listeX(xs).join(" ; ") + " }" : "∅";
+    if (l.type === "img") {
+      constat(`On part de ${fr(l.x)} sur l'axe des abscisses…`);
+      E.push(tout(etiqX(l.x, l.y < 0)), pause(att));
+      if (l.y !== 0) E.push(ligne(l.x, 0, l.x, l.y));
+      E.push(pt(l.x, l.y), pause(att));
+      if (l.x !== 0 && l.y !== 0) { constat(`… on rejoint la courbe, puis on lit l'ordonnée.`); E.push(ligne(l.x, l.y, 0, l.y)); }
+      E.push(tout(etiqY(l.y, l.x < 0, l.approx)));
+      constat(`${M(n)}(${fr(l.x)}) ${l.approx ? "≈" : "="} <b>${fr(l.y)}</b>`);
+    } else if (l.type === "sans") {
+      constat(`On part de ${fr(l.x)} sur l'axe des abscisses…`);
+      E.push(tout(etiqX(l.x, false)), pause(att), ligne(l.x, 0, l.x, r.Gy), ligne(l.x, 0, l.x, r.gy));
+      constat(`La droite verticale ne rencontre pas la courbe : ${fr(l.x)} n'a <b>pas d'image</b> par ${M(n)}.`);
+    } else if (l.type === "dom") {
+      const a = c.T[0], b = c.T.at(-1);
+      constat(`On repère les extrémités de la courbe…`);
+      E.push(pt(a[0], a[1]), ligne(a[0], a[1], a[0], 0), tout(etiqX(a[0], a[1] < 0)), pause(att));
+      E.push(pt(b[0], b[1]), ligne(b[0], b[1], b[0], 0), tout(etiqX(b[0], b[1] < 0)), pause(att));
+      E.push([700, (() => { const s = el("line", { x1: S.sx(a[0]), x2: S.sx(a[0]), y1: S.sy(0), y2: S.sy(0), stroke: "var(--lecture)", "stroke-width": 7, "stroke-linecap": "round", opacity: 0.55 }); S.calque.appendChild(s); return q => s.setAttribute("x2", S.sx(a[0] + (b[0] - a[0]) * q)); })()]);
+      constat(`${M("D")}<sub>${M(n)}</sub> = <b>[${fr(a[0])} ; ${fr(b[0])}]</b>`);
+    } else if (l.type === "ant" || l.type === "aucun") {
+      const xs = l.type === "aucun" ? [] : (l.xs || abscisses(c.T, l.k));
+      constat(`On trace la droite horizontale d'ordonnée ${fr(l.k)}…`);
+      E.push(tout(etiqY(l.k)), pause(att), ligne(r.gx, l.k, r.Gx, l.k), pause(att));
+      if (xs.length) constat(`… là où elle coupe ${M("C")}<sub>${M(n)}</sub>, on descend lire les abscisses.`);
+      xs.forEach(x => { E.push(pt(x, l.k)); if (l.k !== 0) E.push(ligne(x, l.k, x, 0)); E.push(tout(etiqX(x, l.k < 0)), pause(att)); });
+      if (!xs.length) constat(`La droite ne coupe pas la courbe : ${fr(l.k)} n'a <b>aucun antécédent</b> par ${M(n)}.`);
+      else if (l.titre === "eq") constat(`${M(n)}(${M("x")}) = ${fr(l.k)} : &nbsp;${M("S")} = <b>${ens(xs)}</b>`);
+      else constat(xs.length === 1 ? `${fr(l.k)} a un seul antécédent par ${M(n)} : <b>${listeX(xs)[0]}</b>` : `Les antécédents de ${fr(l.k)} par ${M(n)} sont <b>${listeX(xs).slice(0, -1).join(" ; ")}</b> et <b>${listeX(xs).at(-1)}</b>.`);
+    } else if (l.type === "egal") {
+      constat(`On cherche les points d'intersection de ${M("C")}<sub>${M("f")}</sub> et ${M("C")}<sub>${M("g")}</sub>…`);
+      E.push(pause(att));
+      l.xs.forEach(x => { const y = image(C[0], x) ?? image(C[1], x); E.push(pt(x, Math.round(y * 100) / 100), pause(att)); });
+      constat(`… puis on descend lire leurs abscisses.`);
+      l.xs.forEach(x => { const y = Math.round((image(C[0], x) ?? 0) * 100) / 100; if (y) E.push(ligne(x, y, x, 0)); E.push(tout(etiqX(x, y < 0)), pause(att)); });
+      constat(`${M("f")}(${M("x")}) = ${M("g")}(${M("x")}) : &nbsp;${M("S")} = <b>${ens(l.xs)}</b>`);
+    }
+    return E;
+  }
+
+  // ---- moteur d'animation
+  function arreter() { if (anim) cancelAnimationFrame(anim.id); anim = null; }
+  function jouer(E) {
+    arreter(); let i = 0, t0 = null; anim = {};
+    const pas = t => {
+      if (t0 === null) t0 = t;
+      while (i < E.length) {
+        const [d, f] = E[i], D = d / vit();
+        if (D <= 0) { f(1); i++; t0 = t; continue; }
+        const p = Math.min(1, (t - t0) / D); f(p);
+        if (p < 1) break; i++; t0 = t;
+      }
+      if (i < E.length) anim.id = requestAnimationFrame(pas); else anim = null;
+    };
+    anim.id = requestAnimationFrame(pas);
+  }
+  function ouvrir(l) {
+    lec = l; libre = null; arreter(); boutons();
+    const p = fig.panneaux[l.p]; repere(p);
+    S.courbes.forEach((g, i) => g.setAttribute("opacity", (l.type === "egal" || i === (l.c ?? 0)) ? 1 : 0.3));
+    $("constat").innerHTML = "&nbsp;";
+    jouer(etapes(l, p));
+  }
+
+  // ---- lecture libre : on fait glisser, la lecture se refait aussitôt (sur la première courbe du panneau affiché)
+  function dessine() {
+    boutons(); const p = fig.panneaux[S && S.p != null ? S.p : 0]; repere(p); S.p = fig.panneaux.indexOf(p);
+    const c = p.C[0], r = p.rep;
+    S.courbes.forEach((g, i) => g.setAttribute("opacity", i ? 0.3 : 1));
+    let l;
+    if (libre === "image") { const y = image(c, xr); l = y == null ? sans(0, xr) : Object.assign(img(0, xr, Math.round(y * 10) / 10), { approx: Math.abs(y - Math.round(y * 10) / 10) > 1e-6 || !c.T.some(q => Math.abs(q[0] - xr) < 1e-9 && Math.abs(q[1] - y) < 1e-6) && !entier(y) }); }
+    else { l = ant(0, yk, null); if (!abscisses(c.T, yk).length) l = aucun(0, yk); }
+    l.p = S.p; etapes(l, p).forEach(([, f]) => f(1));
+    const zone = el("rect", { x: 0, y: 0, width: 2000, height: 2000, fill: "transparent", style: libre === "image" ? "cursor:ew-resize" : "cursor:ns-resize" });
+    $("g").appendChild(zone);
+    const svg = $("g"), pos = e => { const q = svg.createSVGPoint(); q.x = e.clientX; q.y = e.clientY; return q.matrixTransform(svg.getScreenCTM().inverse()); };
+    const maj = e => { const q = pos(e);
+      if (libre === "image") xr = Math.max(r.gx, Math.min(r.Gx, Math.round(S.ix(q.x) * 2) / 2)); else yk = Math.max(r.gy, Math.min(r.Gy, Math.round(S.iy(q.y) * 2) / 2)); dessine(); };
+    zone.addEventListener("pointerdown", e => { e.preventDefault(); maj(e);
+      const fin = () => { window.removeEventListener("pointermove", maj); window.removeEventListener("pointerup", fin); };
+      window.addEventListener("pointermove", maj); window.addEventListener("pointerup", fin); });
+  }
+
+  // ---- ouverture : l'ancre du QR code choisit la figure (et la lecture de départ)
+  const h = location.hash.slice(1);
+  let k0 = null;
+  if (ALIAS[h]) { fig = FIG.find(f => f.id === ALIAS[h][0]); k0 = ALIAS[h][1]; }
+  else if (FIG.some(f => f.id === h)) fig = FIG.find(f => f.id === h);
+  choix.value = FIG.indexOf(fig);
+  ouvrir(fig.L[k0 ?? fig.depart ?? 0]);
 })();
 </script>
 
